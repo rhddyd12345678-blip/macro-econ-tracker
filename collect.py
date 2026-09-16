@@ -405,9 +405,10 @@ class EstatClient:
 # ---------------------------------------------------------------------------
 
 def collect_indicator(clients, cfg, today):
-    """반환: (rows, error_message_or_None)
+    """반환: (rows, error_message_or_None, held_back)
 
     rows: [{date, value, release_date_or_None}]
+    held_back: [{series_id, date, value, vintage}] — 반복값 의심으로 저장하지 않은 최신월
     clients: {"fred": FredClient, "ecos": EcosClient, "estat": EstatClient}
     """
     fred_directive = parse_fred_directive(cfg["series_field"])
@@ -423,26 +424,27 @@ def collect_indicator(clients, cfg, today):
         return _collect_estat(clients["estat"], estat_directive, today)
 
     if cfg["series_field"] and cfg["series_field"].startswith(BOJ_MANUAL_PREFIX):
-        return _collect_boj_policy_rate(), None
+        return _collect_boj_policy_rate(), None, []
 
-    return None, "지원하지 않는 시리즈 출처 (시리즈 ID: %r)" % cfg["series_field"]
+    return None, "지원하지 않는 시리즈 출처 (시리즈 ID: %r)" % cfg["series_field"], []
 
 
 def _collect_fred(client, directive, freq, today):
     series_id = directive["series_id"]
     try:
         if freq == "수시":
-            return _collect_adhoc(client, series_id, today), None
+            return _collect_adhoc(client, series_id, today), None, []
         if directive["daily_to_monthly"]:
-            return _collect_daily_to_monthly(client, series_id, today), None
+            return _collect_daily_to_monthly(client, series_id, today), None, []
         if freq == "분기" and directive["qoq_from_level"]:
-            return _collect_fred_qoq(client, series_id, today), None
+            return _collect_fred_qoq(client, series_id, today), None, []
         units = "pc1" if directive["is_pc1"] else "lin"
-        return _collect_direct(client, series_id, units, today), None
+        rows, held_back = _collect_direct(client, series_id, units, today)
+        return rows, None, held_back
     except requests.HTTPError as e:
-        return None, f"FRED API 오류: {e}"
+        return None, f"FRED API 오류: {e}", []
     except Exception as e:  # noqa: BLE001
-        return None, f"수집 실패: {e}"
+        return None, f"수집 실패: {e}", []
 
 
 def _collect_ecos(client, directive, cfg, today):
@@ -452,36 +454,65 @@ def _collect_ecos(client, directive, cfg, today):
     category = cfg["category"]
     try:
         if freq == "수시":
-            return _collect_ecos_adhoc(client, stat_code, item_codes, today), None
+            return _collect_ecos_adhoc(client, stat_code, item_codes, today), None, []
         if category == "물가":
-            return _collect_ecos_yoy(client, stat_code, item_codes, today), None
+            return _collect_ecos_yoy(client, stat_code, item_codes, today), None, []
         if category == "성장":
-            return _collect_ecos_qoq(client, stat_code, item_codes, today), None
-        return _collect_ecos_level(client, stat_code, item_codes, today), None
+            return _collect_ecos_qoq(client, stat_code, item_codes, today), None, []
+        return _collect_ecos_level(client, stat_code, item_codes, today), None, []
     except requests.HTTPError as e:
-        return None, f"ECOS API 오류: {e}"
+        return None, f"ECOS API 오류: {e}", []
     except Exception as e:  # noqa: BLE001
-        return None, f"수집 실패: {e}"
+        return None, f"수집 실패: {e}", []
 
 
 def _collect_direct(client, series_id, units, today):
+    """월간(또는 pc1 변환) FRED 값을 그대로 저장. 최신 달 값이 직전 달과 완전히 같고
+    ALFRED 게시일(vintage)도 같으면 최신 달은 반복값(placeholder)으로 의심해 저장하지
+    않고 held_back에 기록한다."""
     values = client.latest_observations(series_id, OBS_START, today, units=units)
     if not values:
-        return []
-    if _fred_release_date_supported(series_id):
-        release_map = client.first_vintage_dates(series_id, set(values.keys()))
+        return [], []
+
+    supports_release = _fred_release_date_supported(series_id)
+    dates_sorted = sorted(values.keys())
+
+    if supports_release:
+        vintage_map = client.first_vintage_dates(series_id, set(values.keys()))
+    elif len(dates_sorted) >= 2:
+        vintage_map = client.first_vintage_dates(series_id, set(dates_sorted[-2:]))
     else:
-        release_map = {}
+        vintage_map = {}
+
+    skip = None
+    held_back = []
+    if len(dates_sorted) >= 2:
+        latest, prev = dates_sorted[-1], dates_sorted[-2]
+        latest_vintage = vintage_map.get(latest)
+        if values[latest] == values[prev] and latest_vintage and latest_vintage == vintage_map.get(prev):
+            skip = latest
+            held_back.append(
+                {
+                    "series_id": series_id,
+                    "date": datetime.strptime(latest, "%Y-%m-%d").date(),
+                    "value": float(values[latest]),
+                    "vintage": latest_vintage,
+                }
+            )
+
     rows = []
     for d_str, v_str in sorted(values.items()):
+        if d_str == skip:
+            continue
+        release_date = _parse_iso_or_none(vintage_map.get(d_str)) if supports_release else None
         rows.append(
             {
                 "date": datetime.strptime(d_str, "%Y-%m-%d").date(),
                 "value": round(float(v_str), 4),
-                "release_date": _parse_iso_or_none(release_map.get(d_str)),
+                "release_date": release_date,
             }
         )
-    return rows
+    return rows, held_back
 
 
 def _collect_daily_to_monthly(client, series_id, today):
@@ -627,13 +658,14 @@ def _collect_ecos_adhoc(client, stat_code, item_codes, today):
 
 def _collect_estat(client, directive, today):
     try:
-        return _collect_estat_direct(
+        rows = _collect_estat_direct(
             client, directive["stats_data_id"], directive["tab"], directive["cat01"], directive["area"], today
-        ), None
+        )
+        return rows, None, []
     except requests.HTTPError as e:
-        return None, f"e-Stat API 오류: {e}"
+        return None, f"e-Stat API 오류: {e}", []
     except Exception as e:  # noqa: BLE001
-        return None, f"수집 실패: {e}"
+        return None, f"수집 실패: {e}", []
 
 
 def _collect_estat_direct(client, stats_data_id, tab, cat01, area, today):
@@ -864,7 +896,7 @@ def clear_release_dates(xlsx_path, pairs):
         if (country, indicator) not in pairs:
             return m.group(0)
         blank_cell = f'<c r="E{row_num}" s="6"/>'
-        e_cell_re = re.compile(r'<c r="E%s"[^>]*(?:/>|>.*?</c>)' % row_num)
+        e_cell_re = re.compile(r'<c r="E%s"[^/>]*/>|<c r="E%s"[^>]*>.*?</c>' % (row_num, row_num))
         e_match = e_cell_re.search(body)
         if not e_match or e_match.group(0) == blank_cell:
             return m.group(0)  # 발표일 셀이 없거나 이미 빈 상태
@@ -1004,10 +1036,13 @@ def main():
     to_write = []
     summary = []  # (indicator_label, rows_for_print)
     failed = []
+    all_held_back = []  # (indicator_label, held_back_dict)
 
     for cfg in indicators:
         label = f"{cfg['country']} / {cfg['indicator']}"
-        rows, err = collect_indicator(clients, cfg, today)
+        rows, err, held_back = collect_indicator(clients, cfg, today)
+        for hb in held_back:
+            all_held_back.append((label, hb))
         if err:
             failed.append(f"{label}: {err}")
             continue
@@ -1048,6 +1083,11 @@ def main():
             print(f"  - {f}")
     else:
         print("모든 대상 지표를 수집했습니다.")
+
+    if all_held_back:
+        print("\n=== 반복값 의심으로 보류 (직전 달과 값·FRED 게시일이 모두 동일해 저장하지 않음) ===")
+        for label, hb in all_held_back:
+            print(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: 값={hb['value']}, 게시일={hb['vintage']}")
 
 
 if __name__ == "__main__":
