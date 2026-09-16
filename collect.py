@@ -7,6 +7,7 @@
 문자열 치환하는 방식으로 처리한다.
 """
 
+import json
 import os
 import re
 import shutil
@@ -1297,6 +1298,49 @@ def append_calendar_rows(xlsx_path, rows):
     return added
 
 
+def delete_calendar_rows(xlsx_path, country_indicator_pairs):
+    """발표일정 시트에서 (국가, 지표)가 country_indicator_pairs에 속하는 행을 전부
+    제거하고 뒤 행들을 당긴다(빈 행 없이). 출처를 교체할 때(예: Destatis -> Eurostat)
+    기존 항목을 먼저 지우는 용도."""
+    wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+    ws = wb[CALENDAR_SHEET_NAME]
+    kept, removed = [], []
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if row[0] is None:
+            continue
+        scheduled_date = row[0].date() if hasattr(row[0], "date") else row[0]
+        rec = (scheduled_date, row[1], row[2], row[3], row[4], row[5])
+        (removed if (row[1], row[2]) in country_indicator_pairs else kept).append(rec)
+    wb.close()
+
+    if not removed:
+        return []
+
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        sheet_xml = zin.read(CALENDAR_SHEET_XML).decode("utf-8")
+
+    def _row_xml(row_num, rec):
+        예정일, 국가, 지표, 대상기간, 출처, 비고 = rec
+        cells = (
+            f'<c r="A{row_num}" s="6"><v>{to_excel_serial(예정일)}</v></c>'
+            f'<c r="B{row_num}" s="7" t="inlineStr"><is><t>{escape(국가)}</t></is></c>'
+            f'<c r="C{row_num}" s="7" t="inlineStr"><is><t>{escape(지표)}</t></is></c>'
+            f'<c r="D{row_num}" s="7" t="inlineStr"><is><t>{escape(대상기간)}</t></is></c>'
+            f'<c r="E{row_num}" s="7" t="inlineStr"><is><t>{escape(출처)}</t></is></c>'
+            f'<c r="F{row_num}" s="7" t="inlineStr"><is><t>{escape(비고 or "")}</t></is></c>'
+        )
+        return f'<row r="{row_num}" spans="1:6">{cells}</row>'
+
+    header = re.search(r'<row r="1"[^>]*>.*?</row>', sheet_xml).group(0)
+    new_body = "".join(_row_xml(i + 2, rec) for i, rec in enumerate(kept))
+    sheet_xml = re.sub(r'<sheetData>.*?</sheetData>', f"<sheetData>{header}{new_body}</sheetData>", sheet_xml, flags=re.S)
+    last_row = 1 + len(kept)
+    sheet_xml = re.sub(r'<dimension ref="A1:F\d+"/>', f'<dimension ref="A1:F{last_row}"/>', sheet_xml)
+
+    _replace_sheet_xml(xlsx_path, CALENDAR_SHEET_XML, sheet_xml)
+    return removed
+
+
 def read_calendar(xlsx_path):
     """{(국가, 지표, 대상기간): 예정일} 반환. 시트가 없으면 빈 dict."""
     wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
@@ -1329,6 +1373,28 @@ def target_period(d, freq):
 CALENDAR_LOOKUP_CATEGORIES = {"물가", "고용", "성장"}
 
 LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+RECENT_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site", "data", "recent.json")
+RECENT_RETENTION_DAYS = 60  # 웹페이지에서 "최근 30일 강조"에 쓰는 여유 보존 기간
+
+
+def update_recent_json(new_entries, today):
+    """새로 추가된 (국가,지표,기준일,추가일) 기록을 site/data/recent.json에 누적한다.
+    RECENT_RETENTION_DAYS보다 오래된 기록은 정리한다."""
+    existing = []
+    if os.path.exists(RECENT_JSON_PATH):
+        try:
+            with open(RECENT_JSON_PATH, encoding="utf-8") as f:
+                existing = json.load(f).get("entries", [])
+        except (json.JSONDecodeError, OSError):
+            existing = []
+
+    cutoff = (today - timedelta(days=RECENT_RETENTION_DAYS)).isoformat()
+    existing = [e for e in existing if e.get("added_date", "") >= cutoff]
+    existing.extend(new_entries)
+
+    os.makedirs(os.path.dirname(RECENT_JSON_PATH), exist_ok=True)
+    with open(RECENT_JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump({"entries": existing}, f, ensure_ascii=False, indent=2)
 
 
 def main():
@@ -1391,6 +1457,7 @@ def main():
     failed = []
     all_held_back = []  # (indicator_label, held_back_dict)
     revisions = []  # (indicator_label, date, old_value, new_value)
+    recent_entries = []  # [{country, indicator, date, added_date}]
 
     for cfg in indicators:
         label = f"{cfg['country']} / {cfg['indicator']}"
@@ -1425,12 +1492,23 @@ def main():
             to_write.append((r["date"], cfg["country"], cfg["indicator"], r["value"], release_date, cfg["freq"]))
             existing_keys.add(key)
             new_rows.append({**r, "release_date": release_date})
+            recent_entries.append(
+                {
+                    "country": cfg["country"],
+                    "indicator": cfg["indicator"],
+                    "date": r["date"].isoformat(),
+                    "added_date": today.isoformat(),
+                }
+            )
 
         if new_rows:
             summary.append((label, new_rows))
 
     if to_write:
         write_new_rows(XLSX_PATH, to_write, next_row)
+
+    update_recent_json(recent_entries, today)
+    emit(f"=== site/data/recent.json 갱신: 이번 실행에서 {len(recent_entries)}건 신규 기록 ===\n")
 
     dropdown_updated = refresh_dropdown_ranges(XLSX_PATH)
     emit(f"=== 수집 결과: {len(to_write)}개 행 추가 ===")

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T00:53:59",
+  "generated_at": "2026-09-17T01:20:21",
   "events": [
     {
       "date": "2026-09-18",
@@ -50,19 +50,27 @@
       "note": ""
     },
     {
-      "date": "2026-10-13",
-      "country": "독일",
-      "indicator": "HICP 헤드라인",
-      "period": "2026-09",
-      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "date": "2026-10-02",
+      "country": "일본",
+      "indicator": "실업률",
+      "period": "2026-08",
+      "source": "総務省統計局(労働力調査 2026年公表予定日 PDF)",
       "note": ""
     },
     {
-      "date": "2026-10-13",
-      "country": "독일",
-      "indicator": "HICP 근원",
+      "date": "2026-10-02",
+      "country": "한국",
+      "indicator": "CPI 헤드라인",
       "period": "2026-09",
-      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-02",
+      "country": "한국",
+      "indicator": "CPI 근원",
+      "period": "2026-09",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
       "note": ""
     },
     {
@@ -79,6 +87,22 @@
       "indicator": "CPI 근원",
       "period": "2026-09",
       "source": "FRED(BLS release calendar)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-16",
+      "country": "한국",
+      "indicator": "실업률",
+      "period": "2026-09",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-16",
+      "country": "한국",
+      "indicator": "취업자수",
+      "period": "2026-09",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
       "note": ""
     },
     {
@@ -104,6 +128,14 @@
       "period": "2026-09",
       "source": "e-Stat(총무성 소비자물가지수 공표예정)",
       "note": ""
+    },
+    {
+      "date": "2026-10-27",
+      "country": "한국",
+      "indicator": "실질GDP 성장률",
+      "period": "2026-Q3",
+      "source": "한국은행(국민소득 공표일정 공식 페이지)",
+      "note": "속보치"
     },
     {
       "date": "2026-10-28",
@@ -136,6 +168,30 @@
       "period": "2026-10-30",
       "source": "日本銀行(金融政策決定会合 공식 일정)",
       "note": "10/29-30 회의 결정일"
+    },
+    {
+      "date": "2026-10-30",
+      "country": "일본",
+      "indicator": "실업률",
+      "period": "2026-09",
+      "source": "総務省統計局(労働力調査 2026年公表予定日 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-03",
+      "country": "한국",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-10",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-03",
+      "country": "한국",
+      "indicator": "CPI 근원",
+      "period": "2026-10",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
+      "note": ""
     },
     {
       "date": "2026-11-06",
@@ -171,18 +227,18 @@
     },
     {
       "date": "2026-11-11",
-      "country": "독일",
-      "indicator": "HICP 헤드라인",
+      "country": "한국",
+      "indicator": "실업률",
       "period": "2026-10",
-      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
       "note": ""
     },
     {
       "date": "2026-11-11",
-      "country": "독일",
-      "indicator": "HICP 근원",
+      "country": "한국",
+      "indicator": "취업자수",
       "period": "2026-10",
-      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
       "note": ""
     },
     {
@@ -226,6 +282,30 @@
       "note": ""
     },
     {
+      "date": "2026-12-01",
+      "country": "일본",
+      "indicator": "실업률",
+      "period": "2026-10",
+      "source": "総務省統計局(労働力調査 2026年公表予定日 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-02",
+      "country": "한국",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-11",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-02",
+      "country": "한국",
+      "indicator": "CPI 근원",
+      "period": "2026-11",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
+      "note": ""
+    },
+    {
       "date": "2026-12-04",
       "country": "미국",
       "indicator": "비농업고용",
@@ -266,19 +346,19 @@
       "note": ""
     },
     {
-      "date": "2026-12-10",
-      "country": "독일",
-      "indicator": "HICP 헤드라인",
+      "date": "2026-12-16",
+      "country": "한국",
+      "indicator": "실업률",
       "period": "2026-11",
-      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
       "note": ""
     },
     {
-      "date": "2026-12-10",
-      "country": "독일",
-      "indicator": "HICP 근원",
+      "date": "2026-12-16",
+      "country": "한국",
+      "indicator": "취업자수",
       "period": "2026-11",
-      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
       "note": ""
     },
     {
@@ -311,6 +391,30 @@
       "indicator": "PCE 근원",
       "period": "2026-11",
       "source": "FRED(BEA Personal Income and Outlays)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-25",
+      "country": "일본",
+      "indicator": "실업률",
+      "period": "2026-11",
+      "source": "総務省統計局(労働力調査 2026年公表予定日 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-31",
+      "country": "한국",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-12",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-31",
+      "country": "한국",
+      "indicator": "CPI 근원",
+      "period": "2026-12",
+      "source": "국가데이터처(2026년 물가·고용·산업활동동향 보도계획 PDF)",
       "note": ""
     }
   ]

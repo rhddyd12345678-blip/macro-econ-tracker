@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>매크로 트래커</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --fg: #16181d;
+    --muted: #6b7280;
+    --border: #e3e5e9;
+    --accent: #2563eb;
+    --accent2: #dc2626;
+    --accent3: #16a34a;
+    --accent4: #9333ea;
+    --recent: #f59e0b;
+    --neg: #dc2626;
+    --pos: #2563eb;
+    --tab-bg: #eceef1;
+    --tab-active-bg: #16181d;
+    --tab-active-fg: #ffffff;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161a;
+    --card-bg: #1d2025;
+    --fg: #e7e9ec;
+    --muted: #9aa0ab;
+    --border: #2c3038;
+    --accent: #5b8cff;
+    --accent2: #ff6b6b;
+    --accent3: #3ecf7e;
+    --accent4: #c084fc;
+    --recent: #fbbf24;
+    --neg: #ff6b6b;
+    --pos: #5b8cff;
+    --tab-bg: #23262c;
+    --tab-active-bg: #e7e9ec;
+    --tab-active-fg: #14161a;
+    --shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161a;
+      --card-bg: #1d2025;
+      --fg: #e7e9ec;
+      --muted: #9aa0ab;
+      --border: #2c3038;
+      --accent: #5b8cff;
+      --accent2: #ff6b6b;
+      --accent3: #3ecf7e;
+      --accent4: #c084fc;
+      --recent: #fbbf24;
+      --neg: #ff6b6b;
+      --pos: #5b8cff;
+      --tab-bg: #23262c;
+      --tab-active-bg: #e7e9ec;
+      --tab-active-fg: #14161a;
+      --shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, Roboto, sans-serif;
+    line-height: 1.5;
+    padding: 0 16px 48px;
+  }
+  a { color: var(--accent); }
+  header {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 20px 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  header h1 { font-size: 20px; margin: 0; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  #theme-toggle {
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--fg);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  main { max-width: 1180px; margin: 0 auto; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  #recent-banner { margin: 12px 0; padding: 12px 16px; }
+  #recent-banner h2 { font-size: 14px; margin: 0 0 8px; color: var(--muted); font-weight: 600; }
+  #recent-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .recent-chip {
+    background: color-mix(in srgb, var(--recent) 18%, var(--card-bg));
+    border: 1px solid var(--recent);
+    color: var(--fg);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  #recent-banner.empty { display: none; }
+
+  #country-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 16px 0;
+    background: var(--tab-bg);
+    border-radius: 10px;
+    padding: 4px;
+    overflow-x: auto;
+  }
+  #country-tabs button {
+    flex: 1 1 0;
+    min-width: 64px;
+    border: none;
+    background: transparent;
+    color: var(--fg);
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #country-tabs button.active {
+    background: var(--tab-active-bg);
+    color: var(--tab-active-fg);
+  }
+
+  #charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .chart-card { padding: 14px 16px 10px; min-width: 0; }
+  .chart-card .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .chart-card .chart-unit { font-size: 11.5px; color: var(--muted); margin-bottom: 8px; }
+  .chart-stats {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .chart-stats b { color: var(--fg); font-size: 15px; }
+  .chart-stats .stat-block { display: flex; flex-direction: column; gap: 1px; }
+  .chart-wrap { position: relative; height: 220px; }
+  .chart-empty { color: var(--muted); font-size: 13px; padding: 40px 0; text-align: center; }
+  .change-pos { color: var(--pos); }
+  .change-neg { color: var(--neg); }
+
+  section.panel { margin: 24px 0; padding: 16px 18px; }
+  section.panel h2 { font-size: 16px; margin: 0 0 12px; }
+
+  #cal-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+  #cal-controls .toggle-btn {
+    border: 1px solid var(--border);
+    background: var(--tab-bg);
+    color: var(--fg);
+    border-radius: 999px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 12.5px;
+  }
+  #cal-controls .toggle-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  #upcoming-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .upcoming-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .dday-badge {
+    flex: 0 0 auto;
+    min-width: 46px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+    color: var(--accent);
+  }
+  .dday-badge.today { background: var(--recent); color: #1a1200; }
+  .upcoming-item .ind-name { font-weight: 600; }
+  .upcoming-item .meta { color: var(--muted); font-size: 12px; }
+  #upcoming-empty { color: var(--muted); font-size: 13px; }
+
+  #month-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+  #month-nav button {
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--fg);
+    border-radius: 6px;
+    width: 28px; height: 28px;
+    cursor: pointer;
+  }
+  #cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .cal-dow { text-align: center; font-size: 11px; color: var(--muted); padding: 4px 0; }
+  .cal-cell {
+    min-height: 62px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px;
+    font-size: 10.5px;
+    overflow: hidden;
+  }
+  .cal-cell.empty { border: none; }
+  .cal-cell .cal-date { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .cal-cell.today { border-color: var(--accent); }
+  .cal-event {
+    background: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+    color: var(--fg);
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
+
+  @media (max-width: 640px) {
+    #charts-grid { grid-template-columns: 1fr; }
+    .chart-wrap { height: 200px; }
+    header h1 { font-size: 17px; }
+    .cal-cell { min-height: 48px; font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>매크로 트래커</h1>
+    <div class="sub" id="generated-at">데이터 불러오는 중…</div>
+  </div>
+  <button id="theme-toggle" type="button">🌓 테마</button>
+</header>
+
+<main>
+  <div id="recent-banner" class="card empty">
+    <h2>🆕 최근 30일 안에 추가된 지표</h2>
+    <div id="recent-list"></div>
+  </div>
+
+  <nav id="country-tabs"></nav>
+
+  <section id="charts-grid"></section>
+
+  <section class="panel card" id="calendar-section">
+    <h2>📅 발표일정</h2>
+    <div id="cal-controls">
+      <button class="toggle-btn active" data-scope="country" type="button" id="scope-country-btn">선택한 국가만</button>
+      <button class="toggle-btn" data-scope="all" type="button" id="scope-all-btn">전체 보기</button>
+    </div>
+
+    <div id="upcoming-list"></div>
+    <div id="upcoming-empty" style="display:none;">앞으로 14일 안에 예정된 발표가 없습니다.</div>
+
+    <div id="month-nav">
+      <button id="cal-prev" type="button">‹</button>
+      <span id="cal-month-label"></span>
+      <button id="cal-next" type="button">›</button>
+    </div>
+    <div id="cal-grid"></div>
+  </section>
+
+  <footer>매크로 트래커 · collect.py + export.py 로 생성된 데이터를 로컬에서 표시합니다.</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var COUNTRIES = ["미국", "일본", "독일", "프랑스", "한국"];
+  var CATEGORY_ORDER = ["물가", "고용", "성장", "유가", "금리"];
+  var CATEGORY_LABEL = { "물가": "물가", "고용": "고용", "성장": "성장", "유가": "유가", "금리": "금리" };
+  var LEVEL_EMPLOYMENT_INDICATORS = { "비농업고용": true, "취업자수": true };
+
+  var state = {
+    indicators: [],
+    observations: [],
+    events: [],
+    recent: [],
+    country: "미국",
+    calScope: "country",
+    calCursor: null, // {year, month} for month view
+    charts: []
+  };
+
+  // ---- theme ----
+  function applyStoredTheme() {
+    try {
+      var t = localStorage.getItem("mt_theme");
+      if (t === "light" || t === "dark") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* localStorage unavailable; ignore */ }
+  }
+  function toggleTheme() {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var isDark = cur ? cur === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("mt_theme", next); } catch (e) { /* ignore */ }
+    redrawAllCharts();
+  }
+  applyStoredTheme();
+  document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  // ---- data loading ----
+  function loadJSON(path) {
+    return fetch(path).then(function (r) {
+      if (!r.ok) throw new Error(path + " 로드 실패 (" + r.status + ")");
+      return r.json();
+    });
+  }
+
+  Promise.all([
+    loadJSON("data/data.json"),
+    loadJSON("data/calendar.json"),
+    loadJSON("data/recent.json").catch(function () { return { events: [] }; })
+  ]).then(function (results) {
+    var data = results[0], cal = results[1], recent = results[2];
+    state.indicators = data.indicators || [];
+    state.observations = data.observations || [];
+    state.events = (cal.events || []).filter(function (e) { return !!e.date; });
+    state.recent = recent.entries || recent.events || [];
+    document.getElementById("generated-at").textContent =
+      "지표 " + state.indicators.length + "개 · 관측치 " + state.observations.length + "개 · 생성: " +
+      (data.generated_at || "-").slice(0, 16).replace("T", " ");
+    var now = new Date();
+    state.calCursor = { year: now.getFullYear(), month: now.getMonth() };
+    init();
+  }).catch(function (err) {
+    document.getElementById("generated-at").textContent = "데이터 로드 오류: " + err.message;
+  });
+
+  function init() {
+    buildCountryTabs();
+    renderRecentBanner();
+    document.getElementById("scope-country-btn").addEventListener("click", function () { setCalScope("country"); });
+    document.getElementById("scope-all-btn").addEventListener("click", function () { setCalScope("all"); });
+    document.getElementById("cal-prev").addEventListener("click", function () { shiftMonth(-1); });
+    document.getElementById("cal-next").addEventListener("click", function () { shiftMonth(1); });
+    selectCountry(state.country);
+  }
+
+  // ---- country tabs ----
+  function buildCountryTabs() {
+    var nav = document.getElementById("country-tabs");
+    nav.innerHTML = "";
+    COUNTRIES.forEach(function (c) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = c;
+      btn.dataset.country = c;
+      btn.addEventListener("click", function () { selectCountry(c); });
+      nav.appendChild(btn);
+    });
+  }
+  function selectCountry(country) {
+    state.country = country;
+    Array.prototype.forEach.call(document.querySelectorAll("#country-tabs button"), function (b) {
+      b.classList.toggle("active", b.dataset.country === country);
+    });
+    renderCharts(country);
+    renderUpcoming();
+    renderMonthCalendar();
+  }
+
+  // ---- helpers ----
+  function indicatorsFor(country, category) {
+    var seen = {};
+    var out = [];
+    state.indicators.forEach(function (i) {
+      if (i.country !== country || i.category !== category) return;
+      var key = i.indicator;
+      if (seen[key]) return;
+      seen[key] = true;
+      out.push(i);
+    });
+    return out;
+  }
+  function observationsFor(country, indicator) {
+    return state.observations
+      .filter(function (o) { return o.country === country && o.indicator === indicator; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  }
+  function isRecent(country, indicator, dateStr) {
+    var cutoff = Date.now() - 30 * 86400000;
+    return state.recent.some(function (e) {
+      return e.country === country && e.indicator === indicator && e.date === dateStr &&
+        new Date(e.added_date).getTime() >= cutoff;
+    });
+  }
+  function fmtNum(v, digits) {
+    if (v === null || v === undefined || isNaN(v)) return "-";
+    return Number(v).toLocaleString("ko-KR", { maximumFractionDigits: digits == null ? 2 : digits, minimumFractionDigits: 0 });
+  }
+  function shiftMonthStr(dateStr, monthsDelta) {
+    var parts = dateStr.split("-");
+    var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10);
+    var total = y * 12 + (m - 1) + monthsDelta;
+    var ny = Math.floor(total / 12), nm = (total % 12) + 1;
+    return ny + "-" + String(nm).padStart(2, "0") + "-01";
+  }
+  function unionSortedLabels(seriesArr) {
+    var set = {};
+    seriesArr.forEach(function (s) { s.forEach(function (o) { set[o.date] = true; }); });
+    return Object.keys(set).sort();
+  }
+
+  // ---- chart rendering ----
+  function destroyCharts() {
+    state.charts.forEach(function (c) { c.destroy(); });
+    state.charts = [];
+  }
+
+  function renderCharts(country) {
+    destroyCharts();
+    var grid = document.getElementById("charts-grid");
+    grid.innerHTML = "";
+
+    CATEGORY_ORDER.forEach(function (cat) {
+      var inds = indicatorsFor(country, cat);
+      if (!inds.length) return;
+
+      if (cat === "물가") {
+        addLineCard(grid, country, "물가 (전년동월비)", inds, inds[0].unit, null);
+      } else if (cat === "고용") {
+        var rateInd = inds.filter(function (i) { return i.indicator === "실업률"; });
+        var levelInd = inds.filter(function (i) { return LEVEL_EMPLOYMENT_INDICATORS[i.indicator]; });
+        if (rateInd.length) addLineCard(grid, country, "고용 (실업률)", rateInd, rateInd[0].unit, null);
+        if (levelInd.length) addYoyBarCard(grid, country, levelInd[0]);
+      } else if (cat === "성장") {
+        addGrowthBarCard(grid, country, inds[0]);
+      } else if (cat === "유가") {
+        addLineCard(grid, country, "유가 (" + inds[0].indicator + ")", inds, inds[0].unit, null);
+      } else if (cat === "금리") {
+        var policy = inds.filter(function (i) { return i.indicator !== "국채10년"; });
+        var bond = inds.filter(function (i) { return i.indicator === "국채10년"; });
+        addRateCard(grid, country, policy[0] || null, bond[0] || null);
+      }
+    });
+
+    if (!grid.children.length) {
+      var empty = document.createElement("div");
+      empty.className = "chart-empty";
+      empty.textContent = "이 국가에 표시할 데이터가 없습니다.";
+      grid.appendChild(empty);
+    }
+  }
+
+  function makeCard(title, unit) {
+    var card = document.createElement("div");
+    card.className = "card chart-card";
+    var h = document.createElement("div");
+    h.className = "chart-title";
+    h.textContent = title;
+    var u = document.createElement("div");
+    u.className = "chart-unit";
+    u.textContent = unit ? ("단위: " + unit) : "";
+    var stats = document.createElement("div");
+    stats.className = "chart-stats";
+    var wrap = document.createElement("div");
+    wrap.className = "chart-wrap";
+    var canvas = document.createElement("canvas");
+    wrap.appendChild(canvas);
+    card.appendChild(h);
+    card.appendChild(u);
+    card.appendChild(stats);
+    card.appendChild(wrap);
+    return { card: card, stats: stats, canvas: canvas };
+  }
+
+  function renderStats(statsEl, points, digits, unit) {
+    statsEl.innerHTML = "";
+    if (!points.length) {
+      statsEl.textContent = "데이터 없음";
+      return;
+    }
+    var last = points[points.length - 1];
+    var prev = points.length > 1 ? points[points.length - 2] : null;
+    var change = prev ? last.y - prev.y : null;
+
+    function block(label, valueHtml) {
+      var d = document.createElement("div");
+      d.className = "stat-block";
+      var l = document.createElement("span");
+      l.textContent = label;
+      var v = document.createElement("b");
+      v.innerHTML = valueHtml;
+      d.appendChild(l); d.appendChild(v);
+      return d;
+    }
+    statsEl.appendChild(block("최신값", fmtNum(last.y, digits) + (unit ? "" : "")));
+    statsEl.appendChild(block("기준일", last.x));
+    if (change !== null) {
+      var cls = change > 0 ? "change-pos" : change < 0 ? "change-neg" : "";
+      var sign = change > 0 ? "+" : "";
+      statsEl.appendChild(block("전기 대비", "<span class='" + cls + "'>" + sign + fmtNum(change, digits) + "</span>"));
+    }
+  }
+
+  function pointStyling(points, country, indicator) {
+    var radius = [], bg = [], border = [];
+    points.forEach(function (p) {
+      if (isRecent(country, indicator, p.x)) {
+        radius.push(6); bg.push(cssVar("--recent")); border.push(cssVar("--recent"));
+      } else {
+        radius.push(2); bg.push(cssVar("--accent")); border.push(cssVar("--accent"));
+      }
+    });
+    return { radius: radius, bg: bg, border: border };
+  }
+
+  function tooltipLabel(unit) {
+    return function (ctx) {
+      var raw = ctx.raw || {};
+      var lines = [ctx.dataset.label + ": " + fmtNum(raw.y, 4) + (unit ? " " + unit : "")];
+      lines.push("발표일: " + (raw.release_date ? raw.release_date : "없음"));
+      return lines;
+    };
+  }
+
+  var PALETTE = ["--accent", "--accent2", "--accent3", "--accent4"];
+
+  function addLineCard(grid, country, title, inds, unit, opts) {
+    var c = makeCard(title, unit);
+    grid.appendChild(c.card);
+
+    var datasets = [];
+    var allPointsForStats = null;
+    inds.forEach(function (ind, idx) {
+      var obs = observationsFor(country, ind.indicator);
+      var points = obs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
+      if (idx === 0) allPointsForStats = points;
+      var color = cssVar(PALETTE[idx % PALETTE.length]);
+      var styling = pointStyling(points, country, ind.indicator);
+      datasets.push({
+        label: ind.indicator,
+        data: points,
+        borderColor: color,
+        backgroundColor: color,
+        pointRadius: styling.radius,
+        pointBackgroundColor: styling.bg,
+        pointBorderColor: styling.border,
+        borderWidth: 2,
+        tension: 0.15,
+        spanGaps: true
+      });
+    });
+
+    renderStats(c.stats, allPointsForStats || [], 2, unit);
+
+    if (!datasets.some(function (d) { return d.data.length; })) {
+      c.canvas.replaceWith(emptyMsg());
+      return;
+    }
+
+    var labels = unionSortedLabels(datasets.map(function (d) { return d.data; }));
+    var chart = new Chart(c.canvas.getContext("2d"), {
+      type: "line",
+      data: { labels: labels, datasets: datasets },
+      options: baseOptions(unit, { legend: inds.length > 1 })
+    });
+    state.charts.push(chart);
+  }
+
+  function addYoyBarCard(grid, country, ind) {
+    var title = (country === "미국" ? "고용 (비농업고용 전년동월대비)" : "고용 (취업자수 전년동월대비)");
+    var c = makeCard(title, "전년동월대비 증감 (" + ind.unit + ")");
+    grid.appendChild(c.card);
+
+    var obs = observationsFor(country, ind.indicator);
+    var byDate = {};
+    obs.forEach(function (o) { byDate[o.date] = o.value; });
+    var points = [];
+    obs.forEach(function (o) {
+      var prevKey = shiftMonthStr(o.date, -12);
+      if (byDate[prevKey] !== undefined) {
+        points.push({ x: o.date, y: o.value - byDate[prevKey], release_date: o.release_date });
+      }
+    });
+
+    renderStats(c.stats, points, 0, "천 명");
+
+    if (!points.length) {
+      c.canvas.replaceWith(emptyMsg());
+      return;
+    }
+
+    var colors = points.map(function (p) { return p.y >= 0 ? cssVar("--pos") : cssVar("--neg"); });
+    var labels = points.map(function (p) { return p.x; });
+    var chart = new Chart(c.canvas.getContext("2d"), {
+      type: "bar",
+      data: { labels: labels, datasets: [{ label: "전년동월대비 증감", data: points, backgroundColor: colors }] },
+      options: baseOptions("천 명", { legend: false })
+    });
+    state.charts.push(chart);
+  }
+
+  function addGrowthBarCard(grid, country, ind) {
+    var c = makeCard("성장 (" + ind.indicator + ")", ind.unit);
+    grid.appendChild(c.card);
+    var obs = observationsFor(country, ind.indicator);
+    var points = obs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
+    renderStats(c.stats, points, 2, ind.unit);
+    if (!points.length) { c.canvas.replaceWith(emptyMsg()); return; }
+    var colors = points.map(function (p) { return p.y >= 0 ? cssVar("--pos") : cssVar("--neg"); });
+    var labels = points.map(function (p) { return p.x; });
+    var chart = new Chart(c.canvas.getContext("2d"), {
+      type: "bar",
+      data: { labels: labels, datasets: [{ label: ind.indicator, data: points, backgroundColor: colors }] },
+      options: baseOptions(ind.unit, { legend: false })
+    });
+    state.charts.push(chart);
+  }
+
+  function addRateCard(grid, country, policyInd, bondInd) {
+    var title = "금리" + (policyInd ? " (" + policyInd.indicator + " · 국채10년)" : " (국채10년)");
+    var unit = (bondInd || policyInd).unit;
+    var c = makeCard(title, unit);
+    grid.appendChild(c.card);
+
+    var datasets = [];
+    var statsPoints = null;
+
+    if (policyInd) {
+      var pobs = observationsFor(country, policyInd.indicator);
+      var ppoints = pobs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
+      statsPoints = ppoints;
+      var pstyle = pointStyling(ppoints, country, policyInd.indicator);
+      datasets.push({
+        label: policyInd.indicator,
+        data: ppoints,
+        borderColor: cssVar("--accent2"),
+        backgroundColor: cssVar("--accent2"),
+        stepped: true,
+        pointRadius: pstyle.radius,
+        pointBackgroundColor: pstyle.bg,
+        pointBorderColor: pstyle.border,
+        borderWidth: 2,
+        spanGaps: true
+      });
+    }
+    if (bondInd) {
+      var bobs = observationsFor(country, bondInd.indicator);
+      var bpoints = bobs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
+      if (!statsPoints) statsPoints = bpoints;
+      var bstyle = pointStyling(bpoints, country, bondInd.indicator);
+      datasets.push({
+        label: "국채10년",
+        data: bpoints,
+        borderColor: cssVar("--accent"),
+        backgroundColor: cssVar("--accent"),
+        tension: 0.15,
+        pointRadius: bstyle.radius,
+        pointBackgroundColor: bstyle.bg,
+        pointBorderColor: bstyle.border,
+        borderWidth: 2,
+        spanGaps: true
+      });
+    }
+
+    renderStats(c.stats, statsPoints || [], 2, unit);
+
+    if (!datasets.some(function (d) { return d.data.length; })) {
+      c.canvas.replaceWith(emptyMsg());
+      return;
+    }
+
+    var labels = unionSortedLabels(datasets.map(function (d) { return d.data; }));
+    var chart = new Chart(c.canvas.getContext("2d"), {
+      type: "line",
+      data: { labels: labels, datasets: datasets },
+      options: baseOptions(unit, { legend: datasets.length > 1 })
+    });
+    state.charts.push(chart);
+  }
+
+  function emptyMsg() {
+    var d = document.createElement("div");
+    d.className = "chart-empty";
+    d.textContent = "데이터 없음";
+    return d;
+  }
+
+  function baseOptions(unit, opts) {
+    opts = opts || {};
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode: "nearest", axis: "x", intersect: false },
+      plugins: {
+        legend: { display: !!opts.legend, labels: { color: fg, boxWidth: 12, font: { size: 11 } } },
+        tooltip: {
+          callbacks: { label: tooltipLabel(unit) },
+          titleColor: fg, bodyColor: fg,
+          backgroundColor: cssVar("--card-bg"), borderColor: border, borderWidth: 1
+        }
+      },
+      scales: {
+        x: {
+          type: "category",
+          ticks: { color: muted, maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 10 } },
+          grid: { color: border }
+        },
+        y: {
+          ticks: { color: muted, font: { size: 10 } },
+          grid: { color: border },
+          title: { display: !!unit, text: unit || "", color: muted, font: { size: 10 } }
+        }
+      }
+    };
+  }
+
+  function redrawAllCharts() {
+    selectCountry(state.country);
+  }
+
+  // ---- recent banner ----
+  function renderRecentBanner() {
+    var cutoff = Date.now() - 30 * 86400000;
+    var recent = state.recent.filter(function (e) { return new Date(e.added_date).getTime() >= cutoff; });
+    var banner = document.getElementById("recent-banner");
+    var list = document.getElementById("recent-list");
+    list.innerHTML = "";
+    if (!recent.length) { banner.classList.add("empty"); return; }
+    banner.classList.remove("empty");
+    recent
+      .sort(function (a, b) { return a.added_date < b.added_date ? 1 : -1; })
+      .forEach(function (e) {
+        var chip = document.createElement("span");
+        chip.className = "recent-chip";
+        chip.textContent = e.country + " · " + e.indicator + " · " + e.date;
+        list.appendChild(chip);
+      });
+  }
+
+  // ---- calendar: upcoming list ----
+  function setCalScope(scope) {
+    state.calScope = scope;
+    document.getElementById("scope-country-btn").classList.toggle("active", scope === "country");
+    document.getElementById("scope-all-btn").classList.toggle("active", scope === "all");
+    renderUpcoming();
+    renderMonthCalendar();
+  }
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  function renderUpcoming() {
+    var listEl = document.getElementById("upcoming-list");
+    var emptyEl = document.getElementById("upcoming-empty");
+    listEl.innerHTML = "";
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var horizon = new Date(today.getTime() + 14 * 86400000);
+
+    var evs = state.events.filter(function (e) {
+      if (state.calScope === "country" && e.country !== state.country) return false;
+      var d = new Date(e.date);
+      return d >= today && d <= horizon;
+    }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+
+    if (!evs.length) { emptyEl.style.display = "block"; return; }
+    emptyEl.style.display = "none";
+
+    evs.forEach(function (e) {
+      var d = new Date(e.date); d.setHours(0, 0, 0, 0);
+      var diffDays = Math.round((d - today) / 86400000);
+      var item = document.createElement("div");
+      item.className = "upcoming-item";
+      var badge = document.createElement("span");
+      badge.className = "dday-badge" + (diffDays === 0 ? " today" : "");
+      badge.textContent = diffDays === 0 ? "D-DAY" : "D-" + diffDays;
+      var body = document.createElement("div");
+      var nameEl = document.createElement("div");
+      nameEl.className = "ind-name";
+      nameEl.textContent = "[" + e.country + "] " + e.indicator + (e.period ? " (" + e.period + ")" : "");
+      var metaEl = document.createElement("div");
+      metaEl.className = "meta";
+      metaEl.textContent = e.date + " · " + (e.source || "") + (e.note ? " · " + e.note : "");
+      body.appendChild(nameEl); body.appendChild(metaEl);
+      item.appendChild(badge); item.appendChild(body);
+      listEl.appendChild(item);
+    });
+  }
+
+  // ---- calendar: month grid ----
+  function shiftMonth(delta) {
+    var m = state.calCursor.month + delta;
+    var y = state.calCursor.year;
+    if (m < 0) { m = 11; y -= 1; }
+    if (m > 11) { m = 0; y += 1; }
+    state.calCursor = { year: y, month: m };
+    renderMonthCalendar();
+  }
+
+  var DOW = ["일", "월", "화", "수", "목", "금", "토"];
+  var MONTH_NAMES = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+
+  function renderMonthCalendar() {
+    var year = state.calCursor.year, month = state.calCursor.month;
+    document.getElementById("cal-month-label").textContent = year + "년 " + MONTH_NAMES[month];
+
+    var evsByDate = {};
+    state.events.forEach(function (e) {
+      if (state.calScope === "country" && e.country !== state.country) return;
+      (evsByDate[e.date] = evsByDate[e.date] || []).push(e);
+    });
+
+    var grid = document.getElementById("cal-grid");
+    grid.innerHTML = "";
+    DOW.forEach(function (d) {
+      var el = document.createElement("div");
+      el.className = "cal-dow";
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+
+    var first = new Date(year, month, 1);
+    var startOffset = first.getDay();
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var today = todayStr();
+
+    for (var i = 0; i < startOffset; i++) {
+      var pad = document.createElement("div");
+      pad.className = "cal-cell empty";
+      grid.appendChild(pad);
+    }
+    for (var day = 1; day <= daysInMonth; day++) {
+      var dateStr = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+      var cell = document.createElement("div");
+      cell.className = "cal-cell" + (dateStr === today ? " today" : "");
+      var dnum = document.createElement("div");
+      dnum.className = "cal-date";
+      dnum.textContent = day;
+      cell.appendChild(dnum);
+      (evsByDate[dateStr] || []).forEach(function (e) {
+        var tag = document.createElement("div");
+        tag.className = "cal-event";
+        tag.title = e.country + " " + e.indicator + (e.note ? " - " + e.note : "");
+        tag.textContent = e.country + " " + e.indicator;
+        cell.appendChild(tag);
+      });
+      grid.appendChild(cell);
+    }
+  }
+
+})();
+</script>
+</body>
+</html>
