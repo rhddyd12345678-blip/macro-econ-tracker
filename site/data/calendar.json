@@ -1,0 +1,317 @@
+{
+  "generated_at": "2026-09-17T00:53:59",
+  "events": [
+    {
+      "date": "2026-09-18",
+      "country": "일본",
+      "indicator": "정책금리",
+      "period": "2026-9-18",
+      "source": "日本銀行(金融政策決定会合 공식 일정)",
+      "note": "9/17-18 회의 결정일"
+    },
+    {
+      "date": "2026-09-18",
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-08",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-09-18",
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "period": "2026-08",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-09-30",
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "period": "2026-08",
+      "source": "FRED(BEA Personal Income and Outlays)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-02",
+      "country": "미국",
+      "indicator": "비농업고용",
+      "period": "2026-09",
+      "source": "FRED(BLS Employment Situation)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-02",
+      "country": "미국",
+      "indicator": "실업률",
+      "period": "2026-09",
+      "source": "FRED(BLS Employment Situation)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-13",
+      "country": "독일",
+      "indicator": "HICP 헤드라인",
+      "period": "2026-09",
+      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-13",
+      "country": "독일",
+      "indicator": "HICP 근원",
+      "period": "2026-09",
+      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-14",
+      "country": "미국",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-09",
+      "source": "FRED(BLS release calendar)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-14",
+      "country": "미국",
+      "indicator": "CPI 근원",
+      "period": "2026-09",
+      "source": "FRED(BLS release calendar)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-22",
+      "country": "한국",
+      "indicator": "기준금리",
+      "period": "2026-10-22",
+      "source": "한국은행(통화정책방향 결정회의 공식 일정)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-23",
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-09",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-23",
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "period": "2026-09",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-28",
+      "country": "미국",
+      "indicator": "정책금리(상단)",
+      "period": "2026-10-28",
+      "source": "Federal Reserve(FOMC 공식 일정)",
+      "note": "FOMC 10월 회의(10/27-28) 결정일"
+    },
+    {
+      "date": "2026-10-29",
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "period": "2026-09",
+      "source": "FRED(BEA Personal Income and Outlays)",
+      "note": ""
+    },
+    {
+      "date": "2026-10-29",
+      "country": "미국",
+      "indicator": "실질GDP 성장률",
+      "period": "2026-Q3",
+      "source": "FRED(BEA GDP release)",
+      "note": "속보치(advance estimate)"
+    },
+    {
+      "date": "2026-10-30",
+      "country": "일본",
+      "indicator": "정책금리",
+      "period": "2026-10-30",
+      "source": "日本銀行(金融政策決定会合 공식 일정)",
+      "note": "10/29-30 회의 결정일"
+    },
+    {
+      "date": "2026-11-06",
+      "country": "미국",
+      "indicator": "비농업고용",
+      "period": "2026-10",
+      "source": "FRED(BLS Employment Situation)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-06",
+      "country": "미국",
+      "indicator": "실업률",
+      "period": "2026-10",
+      "source": "FRED(BLS Employment Situation)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-10",
+      "country": "미국",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-10",
+      "source": "FRED(BLS release calendar)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-10",
+      "country": "미국",
+      "indicator": "CPI 근원",
+      "period": "2026-10",
+      "source": "FRED(BLS release calendar)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-11",
+      "country": "독일",
+      "indicator": "HICP 헤드라인",
+      "period": "2026-10",
+      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-11",
+      "country": "독일",
+      "indicator": "HICP 근원",
+      "period": "2026-10",
+      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-16",
+      "country": "일본",
+      "indicator": "실질GDP 성장률",
+      "period": "2026-Q3",
+      "source": "内閣府 ESRI(공표예정 공식 페이지)",
+      "note": "1次速報"
+    },
+    {
+      "date": "2026-11-20",
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-10",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-20",
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "period": "2026-10",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-25",
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "period": "2026-10",
+      "source": "FRED(BEA Personal Income and Outlays)",
+      "note": ""
+    },
+    {
+      "date": "2026-11-26",
+      "country": "한국",
+      "indicator": "기준금리",
+      "period": "2026-11-26",
+      "source": "한국은행(통화정책방향 결정회의 공식 일정)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-04",
+      "country": "미국",
+      "indicator": "비농업고용",
+      "period": "2026-11",
+      "source": "FRED(BLS Employment Situation)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-04",
+      "country": "미국",
+      "indicator": "실업률",
+      "period": "2026-11",
+      "source": "FRED(BLS Employment Situation)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-09",
+      "country": "미국",
+      "indicator": "정책금리(상단)",
+      "period": "2026-12-9",
+      "source": "Federal Reserve(FOMC 공식 일정)",
+      "note": "FOMC 12월 회의(12/8-9) 결정일"
+    },
+    {
+      "date": "2026-12-10",
+      "country": "미국",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-11",
+      "source": "FRED(BLS release calendar)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-10",
+      "country": "미국",
+      "indicator": "CPI 근원",
+      "period": "2026-11",
+      "source": "FRED(BLS release calendar)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-10",
+      "country": "독일",
+      "indicator": "HICP 헤드라인",
+      "period": "2026-11",
+      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-10",
+      "country": "독일",
+      "indicator": "HICP 근원",
+      "period": "2026-11",
+      "source": "Destatis(Veröffentlichungstermine, 최종결과)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-18",
+      "country": "일본",
+      "indicator": "정책금리",
+      "period": "2026-12-18",
+      "source": "日本銀行(金融政策決定会合 공식 일정)",
+      "note": "12/17-18 회의 결정일"
+    },
+    {
+      "date": "2026-12-18",
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "period": "2026-11",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-18",
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "period": "2026-11",
+      "source": "e-Stat(총무성 소비자물가지수 공표예정)",
+      "note": ""
+    },
+    {
+      "date": "2026-12-23",
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "period": "2026-11",
+      "source": "FRED(BEA Personal Income and Outlays)",
+      "note": ""
+    }
+  ]
+}

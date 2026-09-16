@@ -10,6 +10,7 @@
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -32,6 +33,9 @@ SHEET_LIST = "_목록"
 RAWDATA_SHEET_XML = "xl/worksheets/sheet2.xml"  # 워크북 내 로우데이터 시트의 실제 파일명
 INDICATORS_SHEET_XML = "xl/worksheets/sheet3.xml"  # 워크북 내 지표목록 시트의 실제 파일명
 GUIDE_SHEET_XML = "xl/worksheets/sheet1.xml"  # 워크북 내 안내 시트의 실제 파일명
+CALENDAR_SHEET_NAME = "발표일정"
+CALENDAR_SHEET_XML = "xl/worksheets/sheet5.xml"  # 새로 추가하는 발표일정 시트
+CALENDAR_HEADERS = ["예정일", "국가", "지표", "대상기간", "출처", "비고"]
 
 # NO_RELEASE_DATE_FRED_SERIES/PREFIXES에 해당하는 (국가, 지표) — 기존에 이미 수집된
 # 로우데이터 행의 발표일을 일괄로 비울 때 사용.
@@ -489,46 +493,47 @@ class EurostatClient:
 # 지표별 수집 로직
 # ---------------------------------------------------------------------------
 
-def collect_indicator(clients, cfg, today):
+def collect_indicator(clients, cfg, today, start):
     """반환: (rows, error_message_or_None, held_back)
 
     rows: [{date, value, release_date_or_None}]
     held_back: [{series_id, date, value, vintage}] — 반복값 의심으로 저장하지 않은 최신월
-    clients: {"fred": FredClient, "ecos": EcosClient, "estat": EstatClient}
+    clients: {"fred": FredClient, "ecos": EcosClient, "estat": EstatClient, "eurostat": EurostatClient}
+    start: 이 지표를 조회할 하한 날짜(증분 수집 시 재확인 구간 시작일, 신규 지표는 OBS_START)
     """
     fred_directive = parse_fred_directive(cfg["series_field"])
     if fred_directive is not None:
-        return _collect_fred(clients["fred"], fred_directive, cfg["freq"], today)
+        return _collect_fred(clients["fred"], fred_directive, cfg["freq"], today, start)
 
     ecos_directive = parse_ecos_directive(cfg["series_field"])
     if ecos_directive is not None:
-        return _collect_ecos(clients["ecos"], ecos_directive, cfg, today)
+        return _collect_ecos(clients["ecos"], ecos_directive, cfg, today, start)
 
     estat_directive = parse_estat_directive(cfg["series_field"])
     if estat_directive is not None:
-        return _collect_estat(clients["estat"], estat_directive, today)
+        return _collect_estat(clients["estat"], estat_directive, today, start)
 
     eurostat_directive = parse_eurostat_directive(cfg["series_field"])
     if eurostat_directive is not None:
-        return _collect_eurostat(clients["eurostat"], eurostat_directive, cfg, today)
+        return _collect_eurostat(clients["eurostat"], eurostat_directive, cfg, today, start)
 
     if cfg["series_field"] and cfg["series_field"].startswith(BOJ_MANUAL_PREFIX):
-        return _collect_boj_policy_rate(), None, []
+        return _collect_boj_policy_rate(start), None, []
 
     return None, "지원하지 않는 시리즈 출처 (시리즈 ID: %r)" % cfg["series_field"], []
 
 
-def _collect_fred(client, directive, freq, today):
+def _collect_fred(client, directive, freq, today, start):
     series_id = directive["series_id"]
     try:
         if freq == "수시":
-            return _collect_adhoc(client, series_id, today), None, []
+            return _collect_adhoc(client, series_id, today, start), None, []
         if directive["daily_to_monthly"]:
-            return _collect_daily_to_monthly(client, series_id, today), None, []
+            return _collect_daily_to_monthly(client, series_id, today, start), None, []
         if freq == "분기" and directive["qoq_from_level"]:
-            return _collect_fred_qoq(client, series_id, today), None, []
+            return _collect_fred_qoq(client, series_id, today, start), None, []
         units = "pc1" if directive["is_pc1"] else "lin"
-        rows, held_back = _collect_direct(client, series_id, units, today)
+        rows, held_back = _collect_direct(client, series_id, units, today, start)
         return rows, None, held_back
     except requests.HTTPError as e:
         return None, f"FRED API 오류: {e}", []
@@ -536,30 +541,30 @@ def _collect_fred(client, directive, freq, today):
         return None, f"수집 실패: {e}", []
 
 
-def _collect_ecos(client, directive, cfg, today):
+def _collect_ecos(client, directive, cfg, today, start):
     stat_code = directive["stat_code"]
     item_codes = directive["item_codes"]
     freq = cfg["freq"]
     category = cfg["category"]
     try:
         if freq == "수시":
-            return _collect_ecos_adhoc(client, stat_code, item_codes, today), None, []
+            return _collect_ecos_adhoc(client, stat_code, item_codes, today, start), None, []
         if category == "물가":
-            return _collect_ecos_yoy(client, stat_code, item_codes, today), None, []
+            return _collect_ecos_yoy(client, stat_code, item_codes, today, start), None, []
         if category == "성장":
-            return _collect_ecos_qoq(client, stat_code, item_codes, today), None, []
-        return _collect_ecos_level(client, stat_code, item_codes, today), None, []
+            return _collect_ecos_qoq(client, stat_code, item_codes, today, start), None, []
+        return _collect_ecos_level(client, stat_code, item_codes, today, start), None, []
     except requests.HTTPError as e:
         return None, f"ECOS API 오류: {e}", []
     except Exception as e:  # noqa: BLE001
         return None, f"수집 실패: {e}", []
 
 
-def _collect_direct(client, series_id, units, today):
+def _collect_direct(client, series_id, units, today, start):
     """월간(또는 pc1 변환) FRED 값을 그대로 저장. 최신 달 값이 직전 달과 완전히 같고
     ALFRED 게시일(vintage)도 같으면 최신 달은 반복값(placeholder)으로 의심해 저장하지
     않고 held_back에 기록한다."""
-    values = client.latest_observations(series_id, OBS_START, today, units=units)
+    values = client.latest_observations(series_id, start, today, units=units)
     if not values:
         return [], []
 
@@ -605,8 +610,8 @@ def _collect_direct(client, series_id, units, today):
     return rows, held_back
 
 
-def _collect_daily_to_monthly(client, series_id, today):
-    daily = client.latest_observations(series_id, OBS_START, today, units="lin")
+def _collect_daily_to_monthly(client, series_id, today, start):
+    daily = client.latest_observations(series_id, start, today, units="lin")
     if not daily:
         return []
     current_month = month_start(today)
@@ -625,10 +630,10 @@ def _collect_daily_to_monthly(client, series_id, today):
     return rows
 
 
-def _collect_fred_qoq(client, series_id, today):
+def _collect_fred_qoq(client, series_id, today, start):
     """분기 레벨 시리즈를 받아 전기비 %로 변환(한국 GDP와 동일 방식). 직접 계산한
     파생값이라 ALFRED vintage가 의미 없으므로 발표일은 항상 빈칸."""
-    target_start = quarter_start(OBS_START)
+    target_start = quarter_start(start)
     lookback_start = add_months(target_start, -3)
     values = client.latest_observations(series_id, lookback_start, today, units="lin")
     ordered = sorted(values.items())  # (date_str, value_str)
@@ -644,8 +649,11 @@ def _collect_fred_qoq(client, series_id, today):
     return rows
 
 
-def _collect_adhoc(client, series_id, today):
-    daily = client.latest_observations(series_id, OBS_START, today, units="lin")
+def _collect_adhoc(client, series_id, today, start):
+    """수시(정책금리) FRED 시리즈: 값이 바뀐 날짜만 기록. start 이전 이력도 함께 받아
+    start 시점에 우연히 '변경일'로 오인되지 않도록 한 뒤, start 이후 구간만 낸다."""
+    lookback_start = min(start - timedelta(days=400), OBS_START)
+    daily = client.latest_observations(series_id, lookback_start, today, units="lin")
     if not daily:
         return []
     ordered = sorted(daily.items())  # (date_str, value_str)
@@ -657,6 +665,8 @@ def _collect_adhoc(client, series_id, today):
         if prev_val is None or v != prev_val:
             segments.append((d_str, v))
         prev_val = v
+
+    segments = [(d_str, v) for d_str, v in segments if datetime.strptime(d_str, "%Y-%m-%d").date() >= start]
 
     seg_dates = {d for d, _ in segments}
     release_map = client.first_vintage_dates(series_id, seg_dates)
@@ -679,13 +689,13 @@ def _parse_iso_or_none(s):
     return datetime.strptime(s, "%Y-%m-%d").date()
 
 
-def _collect_ecos_yoy(client, stat_code, item_codes, today):
+def _collect_ecos_yoy(client, stat_code, item_codes, today, start):
     """월간 지수를 받아 전년동월비 %로 변환. ECOS는 발표일을 주지 않으므로 항상 빈칸."""
-    lookback_start = date(OBS_START.year - 1, OBS_START.month, 1)
+    lookback_start = add_months(start, -12)
     values = client.observations(stat_code, "M", lookback_start, today, item_codes)
     rows = []
     for d in sorted(values):
-        if d < OBS_START:
+        if d < start:
             continue
         prev = values.get(add_months(d, -12))
         if prev is None or prev == 0:
@@ -695,10 +705,10 @@ def _collect_ecos_yoy(client, stat_code, item_codes, today):
     return rows
 
 
-def _collect_ecos_qoq(client, stat_code, item_codes, today):
-    """분기 레벨을 받아 전기비 %로 변환. OBS_START가 속한 분기부터 포함(FRED 분기 시리즈와
+def _collect_ecos_qoq(client, stat_code, item_codes, today, start):
+    """분기 레벨을 받아 전기비 %로 변환. start가 속한 분기부터 포함(FRED 분기 시리즈와
     동일한 정렬 방식). ECOS는 발표일을 주지 않으므로 항상 빈칸."""
-    target_start = quarter_start(OBS_START)
+    target_start = quarter_start(start)
     lookback_start = add_months(target_start, -3)
     values = client.observations(stat_code, "Q", lookback_start, today, item_codes)
     ordered = sorted(values.items())
@@ -712,22 +722,21 @@ def _collect_ecos_qoq(client, stat_code, item_codes, today):
     return rows
 
 
-def _collect_ecos_level(client, stat_code, item_codes, today):
+def _collect_ecos_level(client, stat_code, item_codes, today, start):
     """레벨 값을 그대로 저장(취업자수/실업률 등). ECOS는 발표일을 주지 않으므로 항상 빈칸."""
-    values = client.observations(stat_code, "M", OBS_START, today, item_codes)
+    values = client.observations(stat_code, "M", start, today, item_codes)
     rows = []
     for d in sorted(values):
-        if d < OBS_START:
+        if d < start:
             continue
         rows.append({"date": d, "value": round(values[d], 2), "release_date": None})
     return rows
 
 
-def _collect_ecos_adhoc(client, stat_code, item_codes, today):
+def _collect_ecos_adhoc(client, stat_code, item_codes, today, start):
     """기준금리: 값이 바뀐 날짜만 기록. 기준일=발표일=금통위 결정일(변경 시작일)로 동일하게
-    저장. 목표 기간 이전의 변경 이력도 함께 받아, 목표 기간 첫 날이 우연히 '변경일'로
-    오인되지 않도록 한다."""
-    lookback_start = date(OBS_START.year - 2, OBS_START.month, OBS_START.day)
+    저장. start 이전의 변경 이력도 함께 받아, start가 우연히 '변경일'로 오인되지 않도록 한다."""
+    lookback_start = min(date(start.year - 2, start.month, start.day), OBS_START)
     daily = client.observations(stat_code, "D", lookback_start, today, item_codes)
     ordered = sorted(daily.items())
 
@@ -740,16 +749,16 @@ def _collect_ecos_adhoc(client, stat_code, item_codes, today):
 
     rows = []
     for d, v in segments:
-        if d < OBS_START:
+        if d < start:
             continue
         rows.append({"date": d, "value": round(v, 2), "release_date": d})
     return rows
 
 
-def _collect_estat(client, directive, today):
+def _collect_estat(client, directive, today, start):
     try:
         rows = _collect_estat_direct(
-            client, directive["stats_data_id"], directive["tab"], directive["cat01"], directive["area"], today
+            client, directive["stats_data_id"], directive["tab"], directive["cat01"], directive["area"], today, start
         )
         return rows, None, []
     except requests.HTTPError as e:
@@ -758,24 +767,24 @@ def _collect_estat(client, directive, today):
         return None, f"수집 실패: {e}", []
 
 
-def _collect_estat_direct(client, stats_data_id, tab, cat01, area, today):
+def _collect_estat_direct(client, stats_data_id, tab, cat01, area, today, start):
     """e-Stat이 이미 계산해 주는 값(전년동월비 등)을 그대로 저장. e-Stat은 발표일을
     제공하지 않으므로 항상 빈칸."""
-    values = client.observations(stats_data_id, tab, cat01, area, OBS_START, today)
+    values = client.observations(stats_data_id, tab, cat01, area, start, today)
     rows = []
     for d in sorted(values):
-        if d < OBS_START:
+        if d < start:
             continue
         rows.append({"date": d, "value": round(values[d], 2), "release_date": None})
     return rows
 
 
-def _collect_eurostat(client, directive, cfg, today):
+def _collect_eurostat(client, directive, cfg, today, start):
     dataset = directive["dataset"]
     params = directive["params"]
     cycle = "Q" if cfg["freq"] == "분기" else "M"
     try:
-        rows, held_back = _collect_eurostat_direct(client, dataset, params, cycle, today)
+        rows, held_back = _collect_eurostat_direct(client, dataset, params, cycle, today, start)
         return rows, None, held_back
     except requests.HTTPError as e:
         return None, f"Eurostat API 오류: {e}", []
@@ -783,16 +792,16 @@ def _collect_eurostat(client, directive, cfg, today):
         return None, f"수집 실패: {e}", []
 
 
-def _collect_eurostat_direct(client, dataset, params, cycle, today):
+def _collect_eurostat_direct(client, dataset, params, cycle, today, start):
     """Eurostat이 이미 계산해 주는 값(전년동월비·전기비 등)을 그대로 저장. Eurostat
     JSON-stat 응답에는 vintage/발표일이 없으므로 항상 빈칸. 같은 이유로 FRED처럼
     게시일 대조를 통한 반복값 확정 판정은 불가능하다 — 최신월이 직전월과 완전히
     같으면 저장은 하되(정상적인 flat 데이터일 수 있으므로 임의로 버리지 않음)
     held_back에 '검증 불가 반복값'으로만 표시해 보고서에서 확인할 수 있게 한다."""
     values = client.observations(dataset, params, cycle)
-    # 분기 시리즈는 OBS_START가 속한 분기(예: 2021-07-01, Q3)부터 포함(FRED/ECOS
-    # 분기 시리즈와 동일한 정렬 방식). 월간은 OBS_START 그대로.
-    start_bound = quarter_start(OBS_START) if cycle == "Q" else OBS_START
+    # 분기 시리즈는 start가 속한 분기부터 포함(FRED/ECOS 분기 시리즈와 동일한 정렬 방식).
+    # 월간은 start 그대로.
+    start_bound = quarter_start(start) if cycle == "Q" else start
     filtered = {d: v for d, v in values.items() if start_bound <= d <= today}
     dates_sorted = sorted(filtered.keys())
 
@@ -814,12 +823,12 @@ def _collect_eurostat_direct(client, dataset, params, cycle, today):
     return rows, held_back
 
 
-def _collect_boj_policy_rate():
+def _collect_boj_policy_rate(start):
     """일본은행 정책금리: BOJ 공표문을 대조해 수동으로 확정한 변경 이력(JAPAN_POLICY_RATE_CHANGES).
-    기준일=발표일=금융정책결정회의일."""
+    기준일=발표일=금융정책결정회의일. 새 결정이 있으면 JAPAN_POLICY_RATE_CHANGES를 직접 갱신해야 한다."""
     rows = []
     for d, v in JAPAN_POLICY_RATE_CHANGES:
-        if d < OBS_START:
+        if d < start:
             continue
         rows.append({"date": d, "value": v, "release_date": d})
     return rows
@@ -830,20 +839,42 @@ def _collect_boj_policy_rate():
 # ---------------------------------------------------------------------------
 
 def read_existing_rawdata(xlsx_path):
+    """반환: (existing_keys, next_row, values_by_indicator)
+
+    values_by_indicator: {(country, indicator): {date: value}} — 증분 수집의 시작일
+    계산과 수정 감지(값 대조)에 쓰인다.
+    """
     wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
     ws = wb[SHEET_RAWDATA]
     existing_keys = set()
+    values_by_indicator = defaultdict(dict)
     next_row = 2
     for row in ws.iter_rows(min_row=2, max_row=5000, values_only=True):
-        base_date, country, indicator = row[0], row[1], row[2]
+        base_date, country, indicator, value = row[0], row[1], row[2], row[3]
         if base_date is None:
             break
         if hasattr(base_date, "date"):
             base_date = base_date.date()
         existing_keys.add((base_date, country, indicator))
+        values_by_indicator[(country, indicator)][base_date] = value
         next_row += 1
     wb.close()
-    return existing_keys, next_row
+    return existing_keys, next_row, dict(values_by_indicator)
+
+
+def compute_indicator_start(freq, existing_dates):
+    """증분 수집 시작일을 정한다. 기존 데이터가 없으면 OBS_START(전체 백필).
+    월간/분기는 최근 3개(월/분기)를 재확인 구간으로 포함해 되돌아간다(수정 감지용).
+    수시(정책금리)는 재확인 구간 개념이 없어 마지막 기준일 그대로 반환 — 각 수시
+    수집 함수가 내부적으로 더 넓게 재조회해 변경 시점을 정확히 재판별한다."""
+    if not existing_dates:
+        return OBS_START
+    last_date = max(existing_dates)
+    if freq == "분기":
+        return add_months(last_date, -6)  # 최근 3개 분기(당월 포함) 재확인
+    if freq == "수시":
+        return last_date
+    return add_months(last_date, -2)  # 최근 3개월(당월 포함) 재확인
 
 
 def _build_row_xml(row_num, base_date, country, indicator, value, release_date, freq):
@@ -1130,10 +1161,183 @@ def insert_guide_note(xlsx_path):
 
 
 # ---------------------------------------------------------------------------
+# 발표일정 시트 (신규 시트 생성 + 행 추가/조회)
+# ---------------------------------------------------------------------------
+
+def create_calendar_sheet(xlsx_path):
+    """워크북에 '발표일정' 시트를 새로 추가한다(헤더 행만). 이미 있으면 아무것도
+    하지 않는다(멱등). 기존 시트(안내/로우데이터/지표목록/_목록)는 전혀 건드리지 않는다."""
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        names = zin.namelist()
+        if CALENDAR_SHEET_XML in names:
+            return False
+        contents = {n: zin.read(n) for n in names}
+
+    ct = contents["[Content_Types].xml"].decode("utf-8")
+    override = (
+        f'<Override PartName="/{CALENDAR_SHEET_XML[3:]}" '
+        'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+    )
+    ct = ct.replace("</Types>", override + "</Types>")
+    contents["[Content_Types].xml"] = ct.encode("utf-8")
+
+    rels = contents["xl/_rels/workbook.xml.rels"].decode("utf-8")
+    existing_rids = [int(m) for m in re.findall(r'Id="rId(\d+)"', rels)]
+    new_rid = max(existing_rids) + 1
+    new_rel = (
+        f'<Relationship Id="rId{new_rid}" '
+        'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
+        f'Target="worksheets/{CALENDAR_SHEET_XML.rsplit("/", 1)[-1]}"/>'
+    )
+    rels = rels.replace("</Relationships>", new_rel + "</Relationships>")
+    contents["xl/_rels/workbook.xml.rels"] = rels.encode("utf-8")
+
+    wbxml = contents["xl/workbook.xml"].decode("utf-8")
+    existing_sheet_ids = [int(m) for m in re.findall(r'sheetId="(\d+)"', wbxml)]
+    new_sheet_id = max(existing_sheet_ids) + 1
+    new_sheet_tag = f'<sheet name="{CALENDAR_SHEET_NAME}" sheetId="{new_sheet_id}" r:id="rId{new_rid}"/>'
+    wbxml = wbxml.replace("</sheets>", new_sheet_tag + "</sheets>")
+    contents["xl/workbook.xml"] = wbxml.encode("utf-8")
+
+    header_cells = "".join(
+        f'<c r="{col}1" s="5" t="inlineStr"><is><t>{escape(h)}</t></is></c>'
+        for col, h in zip("ABCDEF", CALENDAR_HEADERS)
+    )
+    sheet_xml = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        '<dimension ref="A1:F1"/>'
+        '<sheetViews><sheetView workbookViewId="0">'
+        '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>'
+        "</sheetView></sheetViews>"
+        '<sheetFormatPr baseColWidth="10" defaultColWidth="8.83203125" defaultRowHeight="17"/>'
+        "<cols>"
+        '<col min="1" max="1" width="12" customWidth="1"/>'
+        '<col min="2" max="2" width="10" customWidth="1"/>'
+        '<col min="3" max="3" width="22" customWidth="1"/>'
+        '<col min="4" max="4" width="12" customWidth="1"/>'
+        '<col min="5" max="5" width="16" customWidth="1"/>'
+        '<col min="6" max="6" width="34" customWidth="1"/>'
+        "</cols>"
+        f'<sheetData><row r="1" spans="1:6" ht="22" customHeight="1">{header_cells}</row></sheetData>'
+        "</worksheet>"
+    )
+    contents[CALENDAR_SHEET_XML] = sheet_xml.encode("utf-8")
+
+    fd, tmp_path = tempfile.mkstemp(suffix=".xlsx", dir=os.path.dirname(xlsx_path))
+    os.close(fd)
+    try:
+        with zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zout:
+            for n in names:
+                zout.writestr(n, contents[n])
+            zout.writestr(CALENDAR_SHEET_XML, contents[CALENDAR_SHEET_XML])
+        shutil.move(tmp_path, xlsx_path)
+    except Exception:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
+    return True
+
+
+def _row_cell_date(row_body, col, row_num):
+    m = re.search(r'<c r="%s%s"[^>]*><v>(\d+)</v></c>' % (col, row_num), row_body)
+    if not m:
+        return None
+    return EXCEL_EPOCH + timedelta(days=int(m.group(1)))
+
+
+def append_calendar_rows(xlsx_path, rows):
+    """rows: [(예정일: date, 국가, 지표, 대상기간, 출처, 비고)]. 이미 있는
+    (예정일,국가,지표,대상기간) 조합은 건너뛴다(멱등, 중복 방지)."""
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        sheet_xml = zin.read(CALENDAR_SHEET_XML).decode("utf-8")
+
+    existing = set()
+    last_row = 1
+    for m in re.finditer(r'<row r="(\d+)" spans="1:6"[^>]*>(.*?)</row>', sheet_xml):
+        row_num = int(m.group(1))
+        last_row = max(last_row, row_num)
+        if row_num == 1:
+            continue
+        body = m.group(2)
+        d = _row_cell_date(body, "A", row_num)
+        country = _row_cell_text(body, "B", row_num)
+        indicator = _row_cell_text(body, "C", row_num)
+        period = _row_cell_text(body, "D", row_num)
+        existing.add((d, country, indicator, period))
+
+    new_rows_xml = []
+    added = 0
+    row_num = last_row
+    for 예정일, 국가, 지표, 대상기간, 출처, 비고 in rows:
+        key = (예정일, 국가, 지표, 대상기간)
+        if key in existing:
+            continue
+        row_num += 1
+        cells = (
+            f'<c r="A{row_num}" s="6"><v>{to_excel_serial(예정일)}</v></c>'
+            f'<c r="B{row_num}" s="7" t="inlineStr"><is><t>{escape(국가)}</t></is></c>'
+            f'<c r="C{row_num}" s="7" t="inlineStr"><is><t>{escape(지표)}</t></is></c>'
+            f'<c r="D{row_num}" s="7" t="inlineStr"><is><t>{escape(대상기간)}</t></is></c>'
+            f'<c r="E{row_num}" s="7" t="inlineStr"><is><t>{escape(출처)}</t></is></c>'
+            f'<c r="F{row_num}" s="7" t="inlineStr"><is><t>{escape(비고 or "")}</t></is></c>'
+        )
+        new_rows_xml.append(f'<row r="{row_num}" spans="1:6">{cells}</row>')
+        existing.add(key)
+        added += 1
+
+    if not new_rows_xml:
+        return 0
+
+    sheet_xml = sheet_xml.replace("</sheetData>", "".join(new_rows_xml) + "</sheetData>")
+    sheet_xml = re.sub(r'<dimension ref="A1:F\d+"/>', f'<dimension ref="A1:F{row_num}"/>', sheet_xml)
+
+    _replace_sheet_xml(xlsx_path, CALENDAR_SHEET_XML, sheet_xml)
+    return added
+
+
+def read_calendar(xlsx_path):
+    """{(국가, 지표, 대상기간): 예정일} 반환. 시트가 없으면 빈 dict."""
+    wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+    if CALENDAR_SHEET_NAME not in wb.sheetnames:
+        wb.close()
+        return {}
+    ws = wb[CALENDAR_SHEET_NAME]
+    out = {}
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if row[0] is None:
+            continue
+        d = row[0].date() if hasattr(row[0], "date") else row[0]
+        out[(row[1], row[2], row[3])] = d
+    wb.close()
+    return out
+
+
+def target_period(d, freq):
+    if freq == "분기":
+        return f"{d.year}-Q{(d.month - 1) // 3 + 1}"
+    return f"{d.year}-{d.month:02d}"
+
+
+# ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
 
+# 발표일정을 조회할 수 있는 카테고리(통계 발표). 유가/금리(시장가격·정책금리)는
+# 스스로 발표일이 정해지거나(정책금리) 발표 개념이 없어(시장가격) 조회하지 않는다.
+CALENDAR_LOOKUP_CATEGORIES = {"물가", "고용", "성장"}
+
+LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+
+
 def main():
+    log_lines = []
+
+    def emit(msg=""):
+        print(msg)
+        log_lines.append(msg)
+
     load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
     fred_key = os.environ.get("FRED_API_KEY")
     if not fred_key:
@@ -1156,86 +1360,129 @@ def main():
         "eurostat": EurostatClient(),
     }
 
+    emit(f"=== 매크로 트래커 업데이트 실행: {today.isoformat()} ===\n")
+
     series_ids_updated = update_indicator_series_ids(
         XLSX_PATH,
         {**KOREA_SERIES_UPDATES, **JAPAN_SERIES_UPDATES, **GERMANY_SERIES_UPDATES, **FRANCE_SERIES_UPDATES},
     )
-    print(f"=== 지표목록 한국·일본·독일·프랑스 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
+    emit(f"=== 지표목록 한국·일본·독일·프랑스 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
 
     release_dates_cleared = clear_release_dates(XLSX_PATH, NO_RELEASE_DATE_INDICATOR_PAIRS)
-    print(f"=== OECD·IMF 경유 시리즈 기존 발표일 {'비움' if release_dates_cleared else '이미 빈 상태'} ===")
+    emit(f"=== OECD·IMF 경유 시리즈 기존 발표일 {'비움' if release_dates_cleared else '이미 빈 상태'} ===")
 
     guide_note_added = insert_guide_note(XLSX_PATH)
-    print(f"=== '안내' 시트 FRED 발표일 정책 안내문 {'추가함' if guide_note_added else '이미 있음'} ===\n")
+    emit(f"=== '안내' 시트 FRED 발표일 정책 안내문 {'추가함' if guide_note_added else '이미 있음'} ===")
+
+    calendar_created = create_calendar_sheet(XLSX_PATH)
+    emit(f"=== '발표일정' 시트 {'새로 생성함' if calendar_created else '이미 있음'} ===\n")
+
+    calendar = read_calendar(XLSX_PATH)
 
     all_indicators = load_indicator_config(XLSX_PATH)
     indicators = [i for i in all_indicators if i["country"] in TARGET_COUNTRIES]
-    print(f"'{SHEET_INDICATORS}' 시트에서 {len(indicators)}개 지표(대상 국가: {', '.join(sorted(TARGET_COUNTRIES))})를 확인했습니다.\n")
+    emit(f"'{SHEET_INDICATORS}' 시트에서 {len(indicators)}개 지표(대상 국가: {', '.join(sorted(TARGET_COUNTRIES))})를 확인했습니다.\n")
 
-    existing_keys, next_row = read_existing_rawdata(XLSX_PATH)
-    print(f"기존 '{SHEET_RAWDATA}' 행: {len(existing_keys)}개, 다음 입력 행: {next_row}\n")
+    existing_keys, next_row, values_by_indicator = read_existing_rawdata(XLSX_PATH)
+    emit(f"기존 '{SHEET_RAWDATA}' 행: {len(existing_keys)}개, 다음 입력 행: {next_row}\n")
 
     to_write = []
-    summary = []  # (indicator_label, rows_for_print)
+    summary = []  # (indicator_label, new_rows_for_print)
     failed = []
     all_held_back = []  # (indicator_label, held_back_dict)
+    revisions = []  # (indicator_label, date, old_value, new_value)
 
     for cfg in indicators:
         label = f"{cfg['country']} / {cfg['indicator']}"
-        rows, err, held_back = collect_indicator(clients, cfg, today)
+        existing_map = values_by_indicator.get((cfg["country"], cfg["indicator"]), {})
+        start = compute_indicator_start(cfg["freq"], existing_map)
+
+        rows, err, held_back = collect_indicator(clients, cfg, today, start)
         for hb in held_back:
             all_held_back.append((label, hb))
         if err:
             failed.append(f"{label}: {err}")
             continue
         if not rows:
-            failed.append(f"{label}: 수집된 값 없음")
-            continue
+            continue  # 재확인 구간에 신규/기존 데이터가 전혀 없을 수 있음(정상)
 
-        added = 0
+        new_rows = []
         for r in rows:
             key = (r["date"], cfg["country"], cfg["indicator"])
+            if r["date"] in existing_map:
+                old_value = existing_map[r["date"]]
+                if old_value is not None and abs(float(old_value) - float(r["value"])) > 1e-9:
+                    revisions.append((label, r["date"], old_value, r["value"]))
+                continue  # 기존 행은 절대 덮어쓰지 않음
             if key in existing_keys:
                 continue
-            to_write.append(
-                (r["date"], cfg["country"], cfg["indicator"], r["value"], r["release_date"], cfg["freq"])
-            )
-            existing_keys.add(key)
-            added += 1
 
-        summary.append((label, rows, added))
+            release_date = r["release_date"]
+            if release_date is None and cfg["category"] in CALENDAR_LOOKUP_CATEGORIES:
+                period = target_period(r["date"], cfg["freq"])
+                release_date = calendar.get((cfg["country"], cfg["indicator"], period))
+
+            to_write.append((r["date"], cfg["country"], cfg["indicator"], r["value"], release_date, cfg["freq"]))
+            existing_keys.add(key)
+            new_rows.append({**r, "release_date": release_date})
+
+        if new_rows:
+            summary.append((label, new_rows))
 
     if to_write:
         write_new_rows(XLSX_PATH, to_write, next_row)
 
     dropdown_updated = refresh_dropdown_ranges(XLSX_PATH)
-    print(f"=== 수집 결과: {len(to_write)}개 행 추가 ===")
-    print(f"=== B/C/F열 드롭다운(_목록 기준) {'갱신함' if dropdown_updated else '이미 최신 상태'} ===\n")
+    emit(f"=== 수집 결과: {len(to_write)}개 행 추가 ===")
+    emit(f"=== B/C/F열 드롭다운(_목록 기준) {'갱신함' if dropdown_updated else '이미 최신 상태'} ===\n")
 
-    for label, rows, added in summary:
-        print(f"[{label}] 신규 {added}행 / 전체 {len(rows)}개 관측치 중 최근 3개:")
-        for r in rows[-3:]:
-            rel = r["release_date"].isoformat() if r["release_date"] else "(발표일 없음)"
-            print(f"  {r['date'].isoformat()} | 값={r['value']} | 발표일={rel}")
-        print()
+    if summary:
+        emit("=== 지표별 추가 행 ===")
+        for label, new_rows in summary:
+            emit(f"[{label}] 신규 {len(new_rows)}행:")
+            for r in new_rows:
+                rel = r["release_date"].isoformat() if r["release_date"] else "(발표일 없음)"
+                emit(f"  {r['date'].isoformat()} | 값={r['value']} | 발표일={rel}")
+        emit("")
+    else:
+        emit("=== 신규로 추가된 행이 없습니다 (모든 지표가 최신 상태) ===\n")
+
+    if revisions:
+        emit("=== 수정 감지 (원자료 값이 바뀌었지만 기존 행은 덮어쓰지 않음) ===")
+        for label, d, old_v, new_v in revisions:
+            emit(f"  - {label} {d.isoformat()}: 기존={old_v} -> 원자료 최신={new_v}")
+        emit("")
 
     if failed:
-        print("=== 수집하지 못한 지표 ===")
+        emit("=== 수집하지 못한 지표 ===")
         for f in failed:
-            print(f"  - {f}")
+            emit(f"  - {f}")
     else:
-        print("모든 대상 지표를 수집했습니다.")
+        emit("모든 대상 지표를 확인했습니다.")
 
     suppressed = [(l, hb) for l, hb in all_held_back if hb.get("suppressed")]
     noted = [(l, hb) for l, hb in all_held_back if not hb.get("suppressed")]
     if suppressed:
-        print("\n=== 반복값 의심으로 보류 (직전 달과 값·FRED 게시일이 모두 동일해 저장하지 않음) ===")
+        emit("\n=== 반복값 의심으로 보류 (직전 달과 값·FRED 게시일이 모두 동일해 저장하지 않음) ===")
         for label, hb in suppressed:
-            print(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: 값={hb['value']}, 게시일={hb['vintage']}")
+            emit(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: 값={hb['value']}, 게시일={hb['vintage']}")
     if noted:
-        print("\n=== 반복값 발견(검증 불가, 저장은 함 — Eurostat은 게시일 정보가 없어 확정 판정 불가) ===")
+        emit("\n=== 반복값 발견(검증 불가, 저장은 함 — Eurostat은 게시일 정보가 없어 확정 판정 불가) ===")
         for label, hb in noted:
-            print(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: 값={hb['value']}")
+            emit(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: 값={hb['value']}")
+
+    os.makedirs(LOG_DIR, exist_ok=True)
+    log_path = os.path.join(LOG_DIR, f"update_{today.strftime('%Y%m%d')}.txt")
+    with open(log_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(log_lines) + "\n")
+    print(f"\n(실행 로그 저장: {log_path})")
+
+    export_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "export.py")
+    if os.path.exists(export_path):
+        print("\n=== export.py 실행 ===")
+        result = subprocess.run([sys.executable, export_path])
+        if result.returncode != 0:
+            print("경고: export.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
 
 
 if __name__ == "__main__":
