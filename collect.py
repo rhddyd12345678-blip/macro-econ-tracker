@@ -30,15 +30,29 @@ SHEET_INDICATORS = "지표목록"
 SHEET_RAWDATA = "로우데이터"
 SHEET_LIST = "_목록"
 RAWDATA_SHEET_XML = "xl/worksheets/sheet2.xml"  # 워크북 내 로우데이터 시트의 실제 파일명
+INDICATORS_SHEET_XML = "xl/worksheets/sheet3.xml"  # 워크북 내 지표목록 시트의 실제 파일명
 
 # 로우데이터 B/C/F열 드롭다운이 참조하는 _목록 열: 국가(A)/지표(C)/주기(B)
 LIST_COL_FOR_DROPDOWN = {"B": "A", "C": "C", "F": "B"}
 
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
+ECOS_BASE = "https://ecos.bok.or.kr/api"
 OBS_START = date(2021, 9, 1)
 
-# 1단계 수집 대상 국가. 이후 단계에서 다른 국가(e-Stat, ECOS, Eurostat 등)를 추가할 때 확장.
-TARGET_COUNTRIES = {"미국"}
+# 2단계 수집 대상 국가에 한국 추가. 이후 단계에서 다른 국가(e-Stat, Eurostat 등)를 추가할 때 확장.
+TARGET_COUNTRIES = {"미국", "한국"}
+
+# 지표목록 시트 한국 행의 '시리즈 ID' 칸(G열)에 채워 넣을 ECOS 코드.
+# 행 번호는 지표목록 시트의 실제 위치(1단계 조사로 확정: 30~34, 36행).
+KOREA_SERIES_UPDATES = {
+    30: "ECOS: 901Y009/0 (전년동월비 계산)",  # CPI 헤드라인
+    31: "ECOS: 901Y010/QB (전년동월비 계산)",  # CPI 근원 (농산물 및 석유류 제외지수)
+    32: "ECOS: 901Y027/I61BA+I28A (원계열)",  # 취업자수
+    33: "ECOS: 901Y027/I61BC+I28B (계절조정)",  # 실업률
+    34: "ECOS: 200Y108/10601 (전기비 계산)",  # 실질GDP 성장률
+    36: "ECOS: 722Y001/0101000 (변경일만 기록)",  # 기준금리
+}
+KOREA_SERIES_PLACEHOLDER = "ECOS (확인 필요)"
 
 EXCEL_EPOCH = date(1899, 12, 30)
 
@@ -54,6 +68,11 @@ def month_start(d):
 def quarter_start(d):
     q_month = ((d.month - 1) // 3) * 3 + 1
     return date(d.year, q_month, 1)
+
+
+def add_months(d, n):
+    total = d.year * 12 + (d.month - 1) + n
+    return date(total // 12, total % 12 + 1, 1)
 
 
 # ---------------------------------------------------------------------------
@@ -102,6 +121,18 @@ def parse_fred_directive(series_field):
         "is_pc1": "units=pc1" in series_field,
         "daily_to_monthly": "일간" in series_field and "월평균" in series_field,
     }
+
+
+ECOS_FIELD_RE = re.compile(r"ECOS:\s*([A-Za-z0-9]+)/([A-Za-z0-9+]+)")
+
+
+def parse_ecos_directive(series_field):
+    if not series_field:
+        return None
+    m = ECOS_FIELD_RE.search(series_field)
+    if not m:
+        return None
+    return {"stat_code": m.group(1), "item_codes": m.group(2).split("+")}
 
 
 # ---------------------------------------------------------------------------
@@ -208,21 +239,83 @@ def _yyyymmdd_to_iso(s):
 
 
 # ---------------------------------------------------------------------------
+# ECOS API
+# ---------------------------------------------------------------------------
+
+def _ecos_date(d, cycle):
+    if cycle == "D":
+        return f"{d.year:04d}{d.month:02d}{d.day:02d}"
+    if cycle == "M":
+        return f"{d.year:04d}{d.month:02d}"
+    if cycle == "Q":
+        return f"{d.year:04d}Q{(d.month - 1) // 3 + 1}"
+    raise ValueError(f"지원하지 않는 ECOS 주기: {cycle}")
+
+
+def _ecos_parse_time(t, cycle):
+    if cycle == "D":
+        return date(int(t[0:4]), int(t[4:6]), int(t[6:8]))
+    if cycle == "M":
+        return date(int(t[0:4]), int(t[4:6]), 1)
+    if cycle == "Q":
+        y, q = int(t[0:4]), int(t[5])
+        return date(y, (q - 1) * 3 + 1, 1)
+    raise ValueError(f"지원하지 않는 ECOS 주기: {cycle}")
+
+
+class EcosClient:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.session = requests.Session()
+
+    def observations(self, stat_code, cycle, start, end, item_codes, count=6000):
+        """{date: float} 반환. ECOS는 vintage/발표일 정보를 제공하지 않는다."""
+        parts = "/".join(item_codes)
+        url = (
+            f"{ECOS_BASE}/StatisticSearch/{self.api_key}/json/kr/1/{count}/"
+            f"{stat_code}/{cycle}/{_ecos_date(start, cycle)}/{_ecos_date(end, cycle)}/{parts}"
+        )
+        resp = self.session.get(url, timeout=30)
+        time.sleep(0.1)
+        resp.raise_for_status()
+        payload = resp.json()
+        if "StatisticSearch" not in payload:
+            err = payload.get("RESULT", payload)
+            raise RuntimeError(f"ECOS API 오류: {err}")
+        rows = payload["StatisticSearch"].get("row", [])
+        out = {}
+        for row in rows:
+            try:
+                v = float(row["DATA_VALUE"])
+            except (TypeError, ValueError):
+                continue
+            out[_ecos_parse_time(row["TIME"], cycle)] = v
+        return out
+
+
+# ---------------------------------------------------------------------------
 # 지표별 수집 로직
 # ---------------------------------------------------------------------------
 
-def collect_indicator(client, cfg, today):
+def collect_indicator(clients, cfg, today):
     """반환: (rows, error_message_or_None)
 
     rows: [{date, value, release_date_or_None}]
+    clients: {"fred": FredClient, "ecos": EcosClient}
     """
-    directive = parse_fred_directive(cfg["series_field"])
-    if directive is None:
-        return None, "FRED 시리즈 매핑 없음 (출처: %r)" % cfg["series_field"]
+    fred_directive = parse_fred_directive(cfg["series_field"])
+    if fred_directive is not None:
+        return _collect_fred(clients["fred"], fred_directive, cfg["freq"], today)
 
+    ecos_directive = parse_ecos_directive(cfg["series_field"])
+    if ecos_directive is not None:
+        return _collect_ecos(clients["ecos"], ecos_directive, cfg, today)
+
+    return None, "지원하지 않는 시리즈 출처 (시리즈 ID: %r)" % cfg["series_field"]
+
+
+def _collect_fred(client, directive, freq, today):
     series_id = directive["series_id"]
-    freq = cfg["freq"]
-
     try:
         if freq == "수시":
             return _collect_adhoc(client, series_id, today), None
@@ -232,6 +325,25 @@ def collect_indicator(client, cfg, today):
         return _collect_direct(client, series_id, units, today), None
     except requests.HTTPError as e:
         return None, f"FRED API 오류: {e}"
+    except Exception as e:  # noqa: BLE001
+        return None, f"수집 실패: {e}"
+
+
+def _collect_ecos(client, directive, cfg, today):
+    stat_code = directive["stat_code"]
+    item_codes = directive["item_codes"]
+    freq = cfg["freq"]
+    category = cfg["category"]
+    try:
+        if freq == "수시":
+            return _collect_ecos_adhoc(client, stat_code, item_codes, today), None
+        if category == "물가":
+            return _collect_ecos_yoy(client, stat_code, item_codes, today), None
+        if category == "성장":
+            return _collect_ecos_qoq(client, stat_code, item_codes, today), None
+        return _collect_ecos_level(client, stat_code, item_codes, today), None
+    except requests.HTTPError as e:
+        return None, f"ECOS API 오류: {e}"
     except Exception as e:  # noqa: BLE001
         return None, f"수집 실패: {e}"
 
@@ -306,6 +418,73 @@ def _parse_iso_or_none(s):
     if not s:
         return None
     return datetime.strptime(s, "%Y-%m-%d").date()
+
+
+def _collect_ecos_yoy(client, stat_code, item_codes, today):
+    """월간 지수를 받아 전년동월비 %로 변환. ECOS는 발표일을 주지 않으므로 항상 빈칸."""
+    lookback_start = date(OBS_START.year - 1, OBS_START.month, 1)
+    values = client.observations(stat_code, "M", lookback_start, today, item_codes)
+    rows = []
+    for d in sorted(values):
+        if d < OBS_START:
+            continue
+        prev = values.get(add_months(d, -12))
+        if prev is None or prev == 0:
+            continue
+        yoy = (values[d] / prev - 1) * 100
+        rows.append({"date": d, "value": round(yoy, 2), "release_date": None})
+    return rows
+
+
+def _collect_ecos_qoq(client, stat_code, item_codes, today):
+    """분기 레벨을 받아 전기비 %로 변환. OBS_START가 속한 분기부터 포함(FRED 분기 시리즈와
+    동일한 정렬 방식). ECOS는 발표일을 주지 않으므로 항상 빈칸."""
+    target_start = quarter_start(OBS_START)
+    lookback_start = add_months(target_start, -3)
+    values = client.observations(stat_code, "Q", lookback_start, today, item_codes)
+    ordered = sorted(values.items())
+    rows = []
+    prev_v = None
+    for d, v in ordered:
+        if prev_v is not None and d >= target_start:
+            qoq = (v / prev_v - 1) * 100
+            rows.append({"date": d, "value": round(qoq, 2), "release_date": None})
+        prev_v = v
+    return rows
+
+
+def _collect_ecos_level(client, stat_code, item_codes, today):
+    """레벨 값을 그대로 저장(취업자수/실업률 등). ECOS는 발표일을 주지 않으므로 항상 빈칸."""
+    values = client.observations(stat_code, "M", OBS_START, today, item_codes)
+    rows = []
+    for d in sorted(values):
+        if d < OBS_START:
+            continue
+        rows.append({"date": d, "value": round(values[d], 2), "release_date": None})
+    return rows
+
+
+def _collect_ecos_adhoc(client, stat_code, item_codes, today):
+    """기준금리: 값이 바뀐 날짜만 기록. 기준일=발표일=금통위 결정일(변경 시작일)로 동일하게
+    저장. 목표 기간 이전의 변경 이력도 함께 받아, 목표 기간 첫 날이 우연히 '변경일'로
+    오인되지 않도록 한다."""
+    lookback_start = date(OBS_START.year - 2, OBS_START.month, OBS_START.day)
+    daily = client.observations(stat_code, "D", lookback_start, today, item_codes)
+    ordered = sorted(daily.items())
+
+    segments = []
+    prev_val = None
+    for d, v in ordered:
+        if prev_val is None or v != prev_val:
+            segments.append((d, v))
+        prev_val = v
+
+    rows = []
+    for d, v in segments:
+        if d < OBS_START:
+            continue
+        rows.append({"date": d, "value": round(v, 2), "release_date": d})
+    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -463,19 +642,52 @@ def refresh_dropdown_ranges(xlsx_path):
     return True
 
 
+def update_korea_series_ids(xlsx_path):
+    """지표목록 시트 한국 행의 '시리즈 ID'(G열)에 확정된 ECOS 코드를 적는다.
+    KOREA_SERIES_UPDATES에 정의된 행만 건드리고, 이미 갱신된 행은 건너뛴다."""
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        sheet_xml = zin.read(INDICATORS_SHEET_XML).decode("utf-8")
+
+    changed = False
+    for row_num, new_text in KOREA_SERIES_UPDATES.items():
+        new_cell = f'<c r="G{row_num}" s="8" t="inlineStr"><is><t>{escape(new_text)}</t></is></c>'
+        if new_cell in sheet_xml:
+            continue  # 이미 갱신됨
+        old_cell = f'<c r="G{row_num}" s="9" t="s"><v>119</v></c>'
+        if old_cell not in sheet_xml:
+            raise RuntimeError(
+                f"지표목록 {row_num}행 G열이 예상한 '{KOREA_SERIES_PLACEHOLDER}' 상태가 아닙니다. 수동 확인이 필요합니다."
+            )
+        sheet_xml = sheet_xml.replace(old_cell, new_cell, 1)
+        changed = True
+
+    if not changed:
+        return False
+
+    _replace_sheet_xml(xlsx_path, INDICATORS_SHEET_XML, sheet_xml)
+    return True
+
+
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
 
 def main():
     load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
-    api_key = os.environ.get("FRED_API_KEY")
-    if not api_key:
+    fred_key = os.environ.get("FRED_API_KEY")
+    if not fred_key:
         print("오류: .env 파일에 FRED_API_KEY가 설정되어 있지 않습니다.", file=sys.stderr)
+        sys.exit(1)
+    ecos_key = os.environ.get("ECOS_API_KEY")
+    if not ecos_key:
+        print("오류: .env 파일에 ECOS_API_KEY가 설정되어 있지 않습니다.", file=sys.stderr)
         sys.exit(1)
 
     today = date.today()
-    client = FredClient(api_key)
+    clients = {"fred": FredClient(fred_key), "ecos": EcosClient(ecos_key)}
+
+    series_ids_updated = update_korea_series_ids(XLSX_PATH)
+    print(f"=== 지표목록 한국 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
 
     all_indicators = load_indicator_config(XLSX_PATH)
     indicators = [i for i in all_indicators if i["country"] in TARGET_COUNTRIES]
@@ -490,7 +702,7 @@ def main():
 
     for cfg in indicators:
         label = f"{cfg['country']} / {cfg['indicator']}"
-        rows, err = collect_indicator(client, cfg, today)
+        rows, err = collect_indicator(clients, cfg, today)
         if err:
             failed.append(f"{label}: {err}")
             continue
