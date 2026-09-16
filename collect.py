@@ -1454,18 +1454,20 @@ def main():
         print(msg)
         log_lines.append(msg)
 
+    # .env 파일이 있으면 읽어들이고(로컬 실행용), 없으면 조용히 넘어가 이미
+    # 설정된 환경변수(예: GitHub Actions Secrets)를 그대로 쓴다.
     load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
     fred_key = os.environ.get("FRED_API_KEY")
     if not fred_key:
-        print("오류: .env 파일에 FRED_API_KEY가 설정되어 있지 않습니다.", file=sys.stderr)
+        print("오류: FRED_API_KEY가 설정되어 있지 않습니다 (.env 파일 또는 환경변수/Secrets 확인).", file=sys.stderr)
         sys.exit(1)
     ecos_key = os.environ.get("ECOS_API_KEY")
     if not ecos_key:
-        print("오류: .env 파일에 ECOS_API_KEY가 설정되어 있지 않습니다.", file=sys.stderr)
+        print("오류: ECOS_API_KEY가 설정되어 있지 않습니다 (.env 파일 또는 환경변수/Secrets 확인).", file=sys.stderr)
         sys.exit(1)
     estat_key = os.environ.get("ESTAT_APP_ID")
     if not estat_key:
-        print("오류: .env 파일에 ESTAT_APP_ID가 설정되어 있지 않습니다.", file=sys.stderr)
+        print("오류: ESTAT_APP_ID가 설정되어 있지 않습니다 (.env 파일 또는 환경변수/Secrets 확인).", file=sys.stderr)
         sys.exit(1)
 
     today = date.today()
