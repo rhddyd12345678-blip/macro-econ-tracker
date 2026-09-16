@@ -51,6 +51,7 @@ LIST_COL_FOR_DROPDOWN = {"B": "A", "C": "C", "F": "B"}
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
 ECOS_BASE = "https://ecos.bok.or.kr/api"
 ESTAT_BASE = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
+EUROSTAT_BASE = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
 OBS_START = date(2021, 9, 1)
 
 # OECD/IMF 경유 FRED 시리즈: FRED 반영일이 실제 발표일보다 늦어 ALFRED vintage를
@@ -65,8 +66,8 @@ def _fred_release_date_supported(series_id):
     return not series_id.startswith(NO_RELEASE_DATE_FRED_PREFIXES)
 
 
-# 3단계 수집 대상 국가에 일본 추가. 이후 단계에서 다른 국가(Eurostat 등)를 추가할 때 확장.
-TARGET_COUNTRIES = {"미국", "한국", "일본"}
+# 4단계 수집 대상 국가에 독일·프랑스 추가.
+TARGET_COUNTRIES = {"미국", "한국", "일본", "독일", "프랑스"}
 
 # 지표목록 시트 한국/일본 행의 '시리즈 ID' 칸(G열)에 채워 넣을 확정 코드.
 # 행 번호는 지표목록 시트의 실제 위치(1~3단계 조사로 확정: 한국 30~34·36행, 일본 11~14·16행).
@@ -98,6 +99,25 @@ JAPAN_POLICY_RATE_CHANGES = [
     (date(2025, 12, 19), 0.75),
     (date(2026, 6, 16), 1.00),
 ]
+
+# HICP는 2026-01부터 ECOICOP 버전2(2025=100) 분류로 전환되며, prc_hicp_minr가 과거
+# 시계열도 새 분류로 재계산해 제공한다(1996-01~). 4단계 사전 검증(2021-09~2025-12,
+# 헤드라인·근원 모두 최대 diff 0.1%p, 문턱 0.3%p 이내)을 통과해 이 데이터셋 단일
+# 소스로만 전체 기간을 수집한다(옛 prc_hicp_manr와 잇지 않음).
+GERMANY_SERIES_UPDATES = {
+    18: "EUROSTAT: prc_hicp_minr?geo=DE&unit=RCH_A&coicop18=TOTAL (ECOICOP v2, 전년동월비 직접 제공)",  # HICP 헤드라인
+    19: "EUROSTAT: prc_hicp_minr?geo=DE&unit=RCH_A&coicop18=TOT_X_NRG_FOOD (ECOICOP v2, 에너지·식품·주류·담배 제외)",  # HICP 근원
+    20: "EUROSTAT: une_rt_m?geo=DE&s_adj=SA&sex=T&age=TOTAL&unit=PC_ACT",  # 실업률
+    21: "EUROSTAT: namq_10_gdp?geo=DE&na_item=B1GQ&unit=CLV_PCH_PRE&s_adj=SCA (전기비 직접 제공)",  # 실질GDP 성장률
+    23: "EUROSTAT: irt_lt_mcby_m?geo=DE",  # 국채10년
+}
+FRANCE_SERIES_UPDATES = {
+    24: "EUROSTAT: prc_hicp_minr?geo=FR&unit=RCH_A&coicop18=TOTAL (ECOICOP v2, 전년동월비 직접 제공)",  # HICP 헤드라인
+    25: "EUROSTAT: prc_hicp_minr?geo=FR&unit=RCH_A&coicop18=TOT_X_NRG_FOOD (ECOICOP v2, 에너지·식품·주류·담배 제외)",  # HICP 근원
+    26: "EUROSTAT: une_rt_m?geo=FR&s_adj=SA&sex=T&age=TOTAL&unit=PC_ACT",  # 실업률
+    27: "EUROSTAT: namq_10_gdp?geo=FR&na_item=B1GQ&unit=CLV_PCH_PRE&s_adj=SCA (전기비 직접 제공)",  # 실질GDP 성장률
+    29: "EUROSTAT: irt_lt_mcby_m?geo=FR",  # 국채10년
+}
 
 EXCEL_EPOCH = date(1899, 12, 30)
 
@@ -191,6 +211,20 @@ def parse_estat_directive(series_field):
     if not m:
         return None
     return {"stats_data_id": m.group(1), "tab": m.group(2), "cat01": m.group(3), "area": m.group(4)}
+
+
+EUROSTAT_FIELD_RE = re.compile(r"EUROSTAT:\s*(\w+)\?(\S+)")
+
+
+def parse_eurostat_directive(series_field):
+    if not series_field:
+        return None
+    m = EUROSTAT_FIELD_RE.search(series_field)
+    if not m:
+        return None
+    from urllib.parse import parse_qsl
+
+    return {"dataset": m.group(1), "params": dict(parse_qsl(m.group(2)))}
 
 
 BOJ_MANUAL_PREFIX = "BOJ 공표자료"
@@ -401,6 +435,57 @@ class EstatClient:
 
 
 # ---------------------------------------------------------------------------
+# Eurostat API
+# ---------------------------------------------------------------------------
+
+def _eurostat_parse_time(t, cycle):
+    if cycle == "Q":
+        y, q = t.split("-Q")
+        return date(int(y), (int(q) - 1) * 3 + 1, 1)
+    y, m = t.split("-")
+    return date(int(y), int(m), 1)
+
+
+class EurostatClient:
+    def __init__(self, max_retries=3):
+        self.session = requests.Session()
+        self.max_retries = max_retries
+
+    def _get(self, dataset, params):
+        url = f"{EUROSTAT_BASE}/{dataset}"
+        last_exc = None
+        for attempt in range(self.max_retries):
+            try:
+                resp = self.session.get(url, params={**params, "format": "JSON", "lang": "EN"}, timeout=30)
+                resp.raise_for_status()
+                return resp
+            except requests.RequestException as e:  # noqa: PERF203
+                last_exc = e
+                time.sleep(1 + attempt)
+        raise last_exc
+
+    def observations(self, dataset, params, cycle):
+        """{date: float} 반환. Eurostat JSON-stat 응답에는 vintage/발표일 정보가 없다.
+        API의 startPeriod/sinceTimePeriod 필터가 불안정해 전체 시계열을 받은 뒤
+        클라이언트에서 기간을 자른다."""
+        resp = self._get(dataset, params)
+        payload = resp.json()
+        if "dimension" not in payload or "time" not in payload["dimension"]:
+            err = payload.get("error", payload)
+            raise RuntimeError(f"Eurostat API 오류: {err}")
+        time_index = payload["dimension"]["time"]["category"]["index"]
+        pos_to_time = {v: k for k, v in time_index.items()}
+        out = {}
+        for k, v in payload.get("value", {}).items():
+            t = pos_to_time[int(k)]
+            try:
+                out[_eurostat_parse_time(t, cycle)] = float(v)
+            except (TypeError, ValueError):
+                continue
+        return out
+
+
+# ---------------------------------------------------------------------------
 # 지표별 수집 로직
 # ---------------------------------------------------------------------------
 
@@ -422,6 +507,10 @@ def collect_indicator(clients, cfg, today):
     estat_directive = parse_estat_directive(cfg["series_field"])
     if estat_directive is not None:
         return _collect_estat(clients["estat"], estat_directive, today)
+
+    eurostat_directive = parse_eurostat_directive(cfg["series_field"])
+    if eurostat_directive is not None:
+        return _collect_eurostat(clients["eurostat"], eurostat_directive, cfg, today)
 
     if cfg["series_field"] and cfg["series_field"].startswith(BOJ_MANUAL_PREFIX):
         return _collect_boj_policy_rate(), None, []
@@ -497,6 +586,7 @@ def _collect_direct(client, series_id, units, today):
                     "date": datetime.strptime(latest, "%Y-%m-%d").date(),
                     "value": float(values[latest]),
                     "vintage": latest_vintage,
+                    "suppressed": True,
                 }
             )
 
@@ -678,6 +768,50 @@ def _collect_estat_direct(client, stats_data_id, tab, cat01, area, today):
             continue
         rows.append({"date": d, "value": round(values[d], 2), "release_date": None})
     return rows
+
+
+def _collect_eurostat(client, directive, cfg, today):
+    dataset = directive["dataset"]
+    params = directive["params"]
+    cycle = "Q" if cfg["freq"] == "분기" else "M"
+    try:
+        rows, held_back = _collect_eurostat_direct(client, dataset, params, cycle, today)
+        return rows, None, held_back
+    except requests.HTTPError as e:
+        return None, f"Eurostat API 오류: {e}", []
+    except Exception as e:  # noqa: BLE001
+        return None, f"수집 실패: {e}", []
+
+
+def _collect_eurostat_direct(client, dataset, params, cycle, today):
+    """Eurostat이 이미 계산해 주는 값(전년동월비·전기비 등)을 그대로 저장. Eurostat
+    JSON-stat 응답에는 vintage/발표일이 없으므로 항상 빈칸. 같은 이유로 FRED처럼
+    게시일 대조를 통한 반복값 확정 판정은 불가능하다 — 최신월이 직전월과 완전히
+    같으면 저장은 하되(정상적인 flat 데이터일 수 있으므로 임의로 버리지 않음)
+    held_back에 '검증 불가 반복값'으로만 표시해 보고서에서 확인할 수 있게 한다."""
+    values = client.observations(dataset, params, cycle)
+    # 분기 시리즈는 OBS_START가 속한 분기(예: 2021-07-01, Q3)부터 포함(FRED/ECOS
+    # 분기 시리즈와 동일한 정렬 방식). 월간은 OBS_START 그대로.
+    start_bound = quarter_start(OBS_START) if cycle == "Q" else OBS_START
+    filtered = {d: v for d, v in values.items() if start_bound <= d <= today}
+    dates_sorted = sorted(filtered.keys())
+
+    held_back = []
+    if cycle == "M" and len(dates_sorted) >= 2:
+        latest, prev = dates_sorted[-1], dates_sorted[-2]
+        if filtered[latest] == filtered[prev]:
+            held_back.append(
+                {
+                    "series_id": f"{dataset}?{params.get('geo', '')}",
+                    "date": latest,
+                    "value": filtered[latest],
+                    "vintage": None,
+                    "suppressed": False,
+                }
+            )
+
+    rows = [{"date": d, "value": round(filtered[d], 2), "release_date": None} for d in dates_sorted]
+    return rows, held_back
 
 
 def _collect_boj_policy_rate():
@@ -1015,10 +1149,18 @@ def main():
         sys.exit(1)
 
     today = date.today()
-    clients = {"fred": FredClient(fred_key), "ecos": EcosClient(ecos_key), "estat": EstatClient(estat_key)}
+    clients = {
+        "fred": FredClient(fred_key),
+        "ecos": EcosClient(ecos_key),
+        "estat": EstatClient(estat_key),
+        "eurostat": EurostatClient(),
+    }
 
-    series_ids_updated = update_indicator_series_ids(XLSX_PATH, {**KOREA_SERIES_UPDATES, **JAPAN_SERIES_UPDATES})
-    print(f"=== 지표목록 한국·일본 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
+    series_ids_updated = update_indicator_series_ids(
+        XLSX_PATH,
+        {**KOREA_SERIES_UPDATES, **JAPAN_SERIES_UPDATES, **GERMANY_SERIES_UPDATES, **FRANCE_SERIES_UPDATES},
+    )
+    print(f"=== 지표목록 한국·일본·독일·프랑스 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
 
     release_dates_cleared = clear_release_dates(XLSX_PATH, NO_RELEASE_DATE_INDICATOR_PAIRS)
     print(f"=== OECD·IMF 경유 시리즈 기존 발표일 {'비움' if release_dates_cleared else '이미 빈 상태'} ===")
@@ -1084,10 +1226,16 @@ def main():
     else:
         print("모든 대상 지표를 수집했습니다.")
 
-    if all_held_back:
+    suppressed = [(l, hb) for l, hb in all_held_back if hb.get("suppressed")]
+    noted = [(l, hb) for l, hb in all_held_back if not hb.get("suppressed")]
+    if suppressed:
         print("\n=== 반복값 의심으로 보류 (직전 달과 값·FRED 게시일이 모두 동일해 저장하지 않음) ===")
-        for label, hb in all_held_back:
+        for label, hb in suppressed:
             print(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: 값={hb['value']}, 게시일={hb['vintage']}")
+    if noted:
+        print("\n=== 반복값 발견(검증 불가, 저장은 함 — Eurostat은 게시일 정보가 없어 확정 판정 불가) ===")
+        for label, hb in noted:
+            print(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: 값={hb['value']}")
 
 
 if __name__ == "__main__":
