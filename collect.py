@@ -37,13 +37,14 @@ LIST_COL_FOR_DROPDOWN = {"B": "A", "C": "C", "F": "B"}
 
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
 ECOS_BASE = "https://ecos.bok.or.kr/api"
+ESTAT_BASE = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
 OBS_START = date(2021, 9, 1)
 
-# 2단계 수집 대상 국가에 한국 추가. 이후 단계에서 다른 국가(e-Stat, Eurostat 등)를 추가할 때 확장.
-TARGET_COUNTRIES = {"미국", "한국"}
+# 3단계 수집 대상 국가에 일본 추가. 이후 단계에서 다른 국가(Eurostat 등)를 추가할 때 확장.
+TARGET_COUNTRIES = {"미국", "한국", "일본"}
 
-# 지표목록 시트 한국 행의 '시리즈 ID' 칸(G열)에 채워 넣을 ECOS 코드.
-# 행 번호는 지표목록 시트의 실제 위치(1단계 조사로 확정: 30~34, 36행).
+# 지표목록 시트 한국/일본 행의 '시리즈 ID' 칸(G열)에 채워 넣을 확정 코드.
+# 행 번호는 지표목록 시트의 실제 위치(1~3단계 조사로 확정: 한국 30~34·36행, 일본 11~14·16행).
 KOREA_SERIES_UPDATES = {
     30: "ECOS: 901Y009/0 (전년동월비 계산)",  # CPI 헤드라인
     31: "ECOS: 901Y010/QB (전년동월비 계산)",  # CPI 근원 (농산물 및 석유류 제외지수)
@@ -52,7 +53,26 @@ KOREA_SERIES_UPDATES = {
     34: "ECOS: 200Y108/10601 (전기비 계산)",  # 실질GDP 성장률
     36: "ECOS: 722Y001/0101000 (변경일만 기록)",  # 기준금리
 }
-KOREA_SERIES_PLACEHOLDER = "ECOS (확인 필요)"
+JAPAN_SERIES_UPDATES = {
+    11: "ESTAT: 0004052037/tab3/cat0001/area00000 (전년동월비, e-Stat 제공값)",  # CPI 헤드라인
+    12: "ESTAT: 0004052037/tab3/cat0161/area00000 (전년동월비, e-Stat 제공값)",  # CPI 근원
+    13: "FRED: LRUNTTTTJPM156S",  # 실업률 (계절조정, OECD 경유)
+    14: "FRED: JPNRGDPEXP (전기비 계산)",  # 실질GDP 성장률
+    16: (
+        "BOJ 공표자료 (수동 확정: 2021-09-01=-0.10%, 2024-03-19=0.10%, "
+        "2024-07-31=0.25%, 2025-01-24=0.50%, 2025-12-19=0.75%, 2026-06-16=1.00%)"
+    ),  # 정책금리
+}
+
+# 일본은행 정책금리 변경 이력(BOJ 공표문 원문 대조로 확정, 2021-09~현재). 기준일=발표일=결정일.
+JAPAN_POLICY_RATE_CHANGES = [
+    (date(2021, 9, 1), -0.10),
+    (date(2024, 3, 19), 0.10),
+    (date(2024, 7, 31), 0.25),
+    (date(2025, 1, 24), 0.50),
+    (date(2025, 12, 19), 0.75),
+    (date(2026, 6, 16), 1.00),
+]
 
 EXCEL_EPOCH = date(1899, 12, 30)
 
@@ -120,6 +140,7 @@ def parse_fred_directive(series_field):
         "series_id": m.group(1),
         "is_pc1": "units=pc1" in series_field,
         "daily_to_monthly": "일간" in series_field and "월평균" in series_field,
+        "qoq_from_level": "전기비" in series_field and "계산" in series_field,
     }
 
 
@@ -133,6 +154,21 @@ def parse_ecos_directive(series_field):
     if not m:
         return None
     return {"stat_code": m.group(1), "item_codes": m.group(2).split("+")}
+
+
+ESTAT_FIELD_RE = re.compile(r"ESTAT:\s*(\w+)/tab(\w+)/cat(\w+)/area(\w+)")
+
+
+def parse_estat_directive(series_field):
+    if not series_field:
+        return None
+    m = ESTAT_FIELD_RE.search(series_field)
+    if not m:
+        return None
+    return {"stats_data_id": m.group(1), "tab": m.group(2), "cat01": m.group(3), "area": m.group(4)}
+
+
+BOJ_MANUAL_PREFIX = "BOJ 공표자료"
 
 
 # ---------------------------------------------------------------------------
@@ -294,6 +330,52 @@ class EcosClient:
 
 
 # ---------------------------------------------------------------------------
+# e-Stat API
+# ---------------------------------------------------------------------------
+
+def _estat_time_code(d):
+    return f"{d.year:04d}00{d.month:02d}{d.month:02d}"
+
+
+class EstatClient:
+    def __init__(self, app_id):
+        self.app_id = app_id
+        self.session = requests.Session()
+
+    def observations(self, stats_data_id, tab, cat01, area, start, end):
+        """{date: float} 반환(월간). e-Stat은 vintage/발표일 정보를 제공하지 않는다."""
+        params = {
+            "appId": self.app_id,
+            "statsDataId": stats_data_id,
+            "cdTab": tab,
+            "cdCat01": cat01,
+            "cdArea": area,
+            "cdTimeFrom": _estat_time_code(start),
+            "cdTimeTo": _estat_time_code(end),
+        }
+        resp = self.session.get(ESTAT_BASE, params=params, timeout=30)
+        time.sleep(0.1)
+        resp.raise_for_status()
+        payload = resp.json()
+        stat_data = payload.get("GET_STATS_DATA", {}).get("STATISTICAL_DATA")
+        if stat_data is None:
+            err = payload.get("GET_STATS_DATA", {}).get("RESULT", payload)
+            raise RuntimeError(f"e-Stat API 오류: {err}")
+        values = stat_data.get("DATA_INF", {}).get("VALUE", [])
+        if isinstance(values, dict):
+            values = [values]
+        out = {}
+        for v in values:
+            t = v["@time"]
+            d = date(int(t[0:4]), int(t[6:8]), 1)
+            try:
+                out[d] = float(v["$"])
+            except (TypeError, ValueError):
+                continue
+        return out
+
+
+# ---------------------------------------------------------------------------
 # 지표별 수집 로직
 # ---------------------------------------------------------------------------
 
@@ -301,7 +383,7 @@ def collect_indicator(clients, cfg, today):
     """반환: (rows, error_message_or_None)
 
     rows: [{date, value, release_date_or_None}]
-    clients: {"fred": FredClient, "ecos": EcosClient}
+    clients: {"fred": FredClient, "ecos": EcosClient, "estat": EstatClient}
     """
     fred_directive = parse_fred_directive(cfg["series_field"])
     if fred_directive is not None:
@@ -310,6 +392,13 @@ def collect_indicator(clients, cfg, today):
     ecos_directive = parse_ecos_directive(cfg["series_field"])
     if ecos_directive is not None:
         return _collect_ecos(clients["ecos"], ecos_directive, cfg, today)
+
+    estat_directive = parse_estat_directive(cfg["series_field"])
+    if estat_directive is not None:
+        return _collect_estat(clients["estat"], estat_directive, today)
+
+    if cfg["series_field"] and cfg["series_field"].startswith(BOJ_MANUAL_PREFIX):
+        return _collect_boj_policy_rate(), None
 
     return None, "지원하지 않는 시리즈 출처 (시리즈 ID: %r)" % cfg["series_field"]
 
@@ -321,6 +410,8 @@ def _collect_fred(client, directive, freq, today):
             return _collect_adhoc(client, series_id, today), None
         if directive["daily_to_monthly"]:
             return _collect_daily_to_monthly(client, series_id, today), None
+        if freq == "분기" and directive["qoq_from_level"]:
+            return _collect_fred_qoq(client, series_id, today), None
         units = "pc1" if directive["is_pc1"] else "lin"
         return _collect_direct(client, series_id, units, today), None
     except requests.HTTPError as e:
@@ -382,6 +473,25 @@ def _collect_daily_to_monthly(client, series_id, today):
     for ms in sorted(buckets.keys()):
         avg = sum(buckets[ms]) / len(buckets[ms])
         rows.append({"date": ms, "value": round(avg, 2), "release_date": None})
+    return rows
+
+
+def _collect_fred_qoq(client, series_id, today):
+    """분기 레벨 시리즈를 받아 전기비 %로 변환(한국 GDP와 동일 방식). 직접 계산한
+    파생값이라 ALFRED vintage가 의미 없으므로 발표일은 항상 빈칸."""
+    target_start = quarter_start(OBS_START)
+    lookback_start = add_months(target_start, -3)
+    values = client.latest_observations(series_id, lookback_start, today, units="lin")
+    ordered = sorted(values.items())  # (date_str, value_str)
+    rows = []
+    prev_v = None
+    for d_str, v_str in ordered:
+        d = datetime.strptime(d_str, "%Y-%m-%d").date()
+        v = float(v_str)
+        if prev_v is not None and d >= target_start:
+            qoq = (v / prev_v - 1) * 100
+            rows.append({"date": d, "value": round(qoq, 2), "release_date": None})
+        prev_v = v
     return rows
 
 
@@ -484,6 +594,40 @@ def _collect_ecos_adhoc(client, stat_code, item_codes, today):
         if d < OBS_START:
             continue
         rows.append({"date": d, "value": round(v, 2), "release_date": d})
+    return rows
+
+
+def _collect_estat(client, directive, today):
+    try:
+        return _collect_estat_direct(
+            client, directive["stats_data_id"], directive["tab"], directive["cat01"], directive["area"], today
+        ), None
+    except requests.HTTPError as e:
+        return None, f"e-Stat API 오류: {e}"
+    except Exception as e:  # noqa: BLE001
+        return None, f"수집 실패: {e}"
+
+
+def _collect_estat_direct(client, stats_data_id, tab, cat01, area, today):
+    """e-Stat이 이미 계산해 주는 값(전년동월비 등)을 그대로 저장. e-Stat은 발표일을
+    제공하지 않으므로 항상 빈칸."""
+    values = client.observations(stats_data_id, tab, cat01, area, OBS_START, today)
+    rows = []
+    for d in sorted(values):
+        if d < OBS_START:
+            continue
+        rows.append({"date": d, "value": round(values[d], 2), "release_date": None})
+    return rows
+
+
+def _collect_boj_policy_rate():
+    """일본은행 정책금리: BOJ 공표문을 대조해 수동으로 확정한 변경 이력(JAPAN_POLICY_RATE_CHANGES).
+    기준일=발표일=금융정책결정회의일."""
+    rows = []
+    for d, v in JAPAN_POLICY_RATE_CHANGES:
+        if d < OBS_START:
+            continue
+        rows.append({"date": d, "value": v, "release_date": d})
     return rows
 
 
@@ -642,23 +786,23 @@ def refresh_dropdown_ranges(xlsx_path):
     return True
 
 
-def update_korea_series_ids(xlsx_path):
-    """지표목록 시트 한국 행의 '시리즈 ID'(G열)에 확정된 ECOS 코드를 적는다.
-    KOREA_SERIES_UPDATES에 정의된 행만 건드리고, 이미 갱신된 행은 건너뛴다."""
+def update_indicator_series_ids(xlsx_path, updates):
+    """지표목록 시트 특정 행들의 '시리즈 ID'(G열)에 확정된 코드를 적는다. updates에
+    정의된 행만 건드리고, 이미 갱신된 행은 건너뛴다. 행마다 기존 placeholder 텍스트가
+    달라도(공유 문자열/스타일 무관) 정규식으로 G열 셀 하나만 정확히 찾아 통째로 교체한다."""
     with zipfile.ZipFile(xlsx_path, "r") as zin:
         sheet_xml = zin.read(INDICATORS_SHEET_XML).decode("utf-8")
 
     changed = False
-    for row_num, new_text in KOREA_SERIES_UPDATES.items():
+    for row_num, new_text in updates.items():
         new_cell = f'<c r="G{row_num}" s="8" t="inlineStr"><is><t>{escape(new_text)}</t></is></c>'
         if new_cell in sheet_xml:
             continue  # 이미 갱신됨
-        old_cell = f'<c r="G{row_num}" s="9" t="s"><v>119</v></c>'
-        if old_cell not in sheet_xml:
-            raise RuntimeError(
-                f"지표목록 {row_num}행 G열이 예상한 '{KOREA_SERIES_PLACEHOLDER}' 상태가 아닙니다. 수동 확인이 필요합니다."
-            )
-        sheet_xml = sheet_xml.replace(old_cell, new_cell, 1)
+        cell_re = re.compile(r'<c r="G%d"(?:[^>]*?/>|[^>]*>.*?</c>)' % row_num)
+        new_sheet_xml, n = cell_re.subn(new_cell, sheet_xml, count=1)
+        if n != 1:
+            raise RuntimeError(f"지표목록 G{row_num} 셀을 찾지 못했습니다. 수동 확인이 필요합니다.")
+        sheet_xml = new_sheet_xml
         changed = True
 
     if not changed:
@@ -682,12 +826,16 @@ def main():
     if not ecos_key:
         print("오류: .env 파일에 ECOS_API_KEY가 설정되어 있지 않습니다.", file=sys.stderr)
         sys.exit(1)
+    estat_key = os.environ.get("ESTAT_APP_ID")
+    if not estat_key:
+        print("오류: .env 파일에 ESTAT_APP_ID가 설정되어 있지 않습니다.", file=sys.stderr)
+        sys.exit(1)
 
     today = date.today()
-    clients = {"fred": FredClient(fred_key), "ecos": EcosClient(ecos_key)}
+    clients = {"fred": FredClient(fred_key), "ecos": EcosClient(ecos_key), "estat": EstatClient(estat_key)}
 
-    series_ids_updated = update_korea_series_ids(XLSX_PATH)
-    print(f"=== 지표목록 한국 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
+    series_ids_updated = update_indicator_series_ids(XLSX_PATH, {**KOREA_SERIES_UPDATES, **JAPAN_SERIES_UPDATES})
+    print(f"=== 지표목록 한국·일본 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
 
     all_indicators = load_indicator_config(XLSX_PATH)
     indicators = [i for i in all_indicators if i["country"] in TARGET_COUNTRIES]
