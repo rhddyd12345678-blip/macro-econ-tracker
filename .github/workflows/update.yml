@@ -1,0 +1,57 @@
+name: 매크로 지표 자동 업데이트
+
+on:
+  schedule:
+    - cron: "0 22 * * *"  # UTC 22:00 = KST 07:00
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      - name: collect.py 실행 (export.py 자동 연결)
+        id: collect
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
+          ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
+        run: python3 collect.py | tee /tmp/collect_output.log
+
+      - name: 변경 여부 확인
+        id: diff
+        run: |
+          if git diff --quiet -- 매크로_트래커_로우데이터.xlsx site/data; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 추가된 행 수 추출
+        id: rows
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          n=$(grep -oE '=== 수집 결과: [0-9]+개 행 추가 ===' /tmp/collect_output.log | grep -oE '[0-9]+' || echo "0")
+          echo "count=$n" >> "$GITHUB_OUTPUT"
+
+      - name: 커밋 및 푸시
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add 매크로_트래커_로우데이터.xlsx site/data
+          git commit -m "chore: 매크로 지표 자동 업데이트 $(date -u +%Y-%m-%d) (신규 ${{ steps.rows.outputs.count }}행)"
+          git push

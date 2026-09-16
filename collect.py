@@ -1614,6 +1614,10 @@ def main():
         if result.returncode != 0:
             print("경고: export.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
 
+    if indicators and len(failed) == len(indicators):
+        print(f"\n오류: 대상 지표 {len(indicators)}개가 전부 수집 실패했습니다.", file=sys.stderr)
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
