@@ -17,7 +17,7 @@ import warnings
 import zipfile
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape, unescape
 
 import requests
 from dotenv import load_dotenv
@@ -31,6 +31,19 @@ SHEET_RAWDATA = "로우데이터"
 SHEET_LIST = "_목록"
 RAWDATA_SHEET_XML = "xl/worksheets/sheet2.xml"  # 워크북 내 로우데이터 시트의 실제 파일명
 INDICATORS_SHEET_XML = "xl/worksheets/sheet3.xml"  # 워크북 내 지표목록 시트의 실제 파일명
+GUIDE_SHEET_XML = "xl/worksheets/sheet1.xml"  # 워크북 내 안내 시트의 실제 파일명
+
+# NO_RELEASE_DATE_FRED_SERIES/PREFIXES에 해당하는 (국가, 지표) — 기존에 이미 수집된
+# 로우데이터 행의 발표일을 일괄로 비울 때 사용.
+NO_RELEASE_DATE_INDICATOR_PAIRS = {
+    ("일본", "실업률"),
+    ("한국", "국채10년"),
+    ("일본", "국채10년"),
+    ("한국", "두바이유"),
+    ("일본", "두바이유"),
+}
+
+GUIDE_NOTE_TEXT = "OECD·IMF 경유 FRED 시리즈는 FRED 반영일이 실제 발표일보다 늦어 발표일을 기록하지 않음"
 
 # 로우데이터 B/C/F열 드롭다운이 참조하는 _목록 열: 국가(A)/지표(C)/주기(B)
 LIST_COL_FOR_DROPDOWN = {"B": "A", "C": "C", "F": "B"}
@@ -39,6 +52,18 @@ FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
 ECOS_BASE = "https://ecos.bok.or.kr/api"
 ESTAT_BASE = "https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
 OBS_START = date(2021, 9, 1)
+
+# OECD/IMF 경유 FRED 시리즈: FRED 반영일이 실제 발표일보다 늦어 ALFRED vintage를
+# 신뢰할 수 없으므로 발표일을 조회하지 않고 항상 빈칸으로 저장한다.
+NO_RELEASE_DATE_FRED_SERIES = {"LRUNTTTTJPM156S", "POILDUBUSDM"}
+NO_RELEASE_DATE_FRED_PREFIXES = ("IRLTLT01",)
+
+
+def _fred_release_date_supported(series_id):
+    if series_id in NO_RELEASE_DATE_FRED_SERIES:
+        return False
+    return not series_id.startswith(NO_RELEASE_DATE_FRED_PREFIXES)
+
 
 # 3단계 수집 대상 국가에 일본 추가. 이후 단계에서 다른 국가(Eurostat 등)를 추가할 때 확장.
 TARGET_COUNTRIES = {"미국", "한국", "일본"}
@@ -443,7 +468,10 @@ def _collect_direct(client, series_id, units, today):
     values = client.latest_observations(series_id, OBS_START, today, units=units)
     if not values:
         return []
-    release_map = client.first_vintage_dates(series_id, set(values.keys()))
+    if _fred_release_date_supported(series_id):
+        release_map = client.first_vintage_dates(series_id, set(values.keys()))
+    else:
+        release_map = {}
     rows = []
     for d_str, v_str in sorted(values.items()):
         rows.append(
@@ -812,6 +840,129 @@ def update_indicator_series_ids(xlsx_path, updates):
     return True
 
 
+_ROW_BLOCK_RE = re.compile(r'<row r="(\d+)" spans="1:6">(.*?)</row>')
+
+
+def _row_cell_text(row_body, col, row_num):
+    m = re.search(r'<c r="%s%s"[^>]*t="inlineStr"><is><t>(.*?)</t></is></c>' % (col, row_num), row_body)
+    return unescape(m.group(1)) if m else None
+
+
+def clear_release_dates(xlsx_path, pairs):
+    """로우데이터 시트에서 (국가, 지표)가 pairs에 속하는 기존 행들의 발표일(E열)을
+    비운다. 이미 비어 있는 행은 건드리지 않는다."""
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        sheet_xml = zin.read(RAWDATA_SHEET_XML).decode("utf-8")
+
+    changed = False
+
+    def _process_row(m):
+        nonlocal changed
+        row_num, body = m.group(1), m.group(2)
+        country = _row_cell_text(body, "B", row_num)
+        indicator = _row_cell_text(body, "C", row_num)
+        if (country, indicator) not in pairs:
+            return m.group(0)
+        blank_cell = f'<c r="E{row_num}" s="6"/>'
+        e_cell_re = re.compile(r'<c r="E%s"[^>]*(?:/>|>.*?</c>)' % row_num)
+        e_match = e_cell_re.search(body)
+        if not e_match or e_match.group(0) == blank_cell:
+            return m.group(0)  # 발표일 셀이 없거나 이미 빈 상태
+        new_body = e_cell_re.sub(blank_cell, body, count=1)
+        changed = True
+        return f'<row r="{row_num}" spans="1:6">{new_body}</row>'
+
+    new_sheet_xml = _ROW_BLOCK_RE.sub(_process_row, sheet_xml)
+
+    if not changed:
+        return False
+
+    _replace_sheet_xml(xlsx_path, RAWDATA_SHEET_XML, new_sheet_xml)
+    return True
+
+
+def delete_rawdata_rows(xlsx_path, keys_to_delete):
+    """로우데이터 시트에서 (기준일, 국가, 지표)가 keys_to_delete에 속하는 행을 제거하고
+    뒤따르는 행들을 한 칸씩 앞으로 당긴다(중간에 빈 행이 남지 않도록). 데이터 오류로
+    잘못 수집된 값을 정정할 때 사용하는 일회성 유틸리티."""
+    wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+    ws = wb[SHEET_RAWDATA]
+    kept, removed = [], []
+    for row in ws.iter_rows(min_row=2, max_row=5000, values_only=True):
+        if row[0] is None:
+            break
+        base_date = row[0].date() if hasattr(row[0], "date") else row[0]
+        release_date = row[4].date() if hasattr(row[4], "date") else row[4]
+        rec = (base_date, row[1], row[2], row[3], release_date, row[5])
+        (removed if (base_date, row[1], row[2]) in keys_to_delete else kept).append(rec)
+    wb.close()
+
+    if not removed:
+        return []
+
+    last_row = 1 + len(kept) + len(removed)
+
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        sheet_xml = zin.read(RAWDATA_SHEET_XML).decode("utf-8")
+
+    def _rebuild(m):
+        row_num = int(m.group(1))
+        if row_num < 2 or row_num > last_row:
+            return m.group(0)
+        idx = row_num - 2
+        if idx < len(kept):
+            return _build_row_xml(row_num, *kept[idx])
+        return _empty_row_template(row_num)
+
+    new_sheet_xml = _ROW_BLOCK_RE.sub(_rebuild, sheet_xml)
+    _replace_sheet_xml(xlsx_path, RAWDATA_SHEET_XML, new_sheet_xml)
+    return removed
+
+
+def insert_guide_note(xlsx_path):
+    """'안내' 시트의 '수정치' 항목(입력 규칙 목록) 바로 아래에 FRED 발표일 정책
+    한 줄을 새 행으로 삽입한다. 이미 삽입돼 있으면 아무것도 하지 않는다(멱등)."""
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        sheet_xml = zin.read(GUIDE_SHEET_XML).decode("utf-8")
+        shared = zin.read("xl/sharedStrings.xml").decode("utf-8")
+
+    if GUIDE_NOTE_TEXT in sheet_xml:
+        return False
+
+    m = re.search(r'<row r="19"[^>]*>.*?</row>', sheet_xml)
+    a19 = re.search(r'<c r="A19"[^>]*t="s"><v>(\d+)</v></c>', m.group(0)) if m else None
+    a19_text = None
+    if a19:
+        strings = re.findall(r"<si><t[^>]*>(.*?)</t></si>", shared, re.S)
+        idx = int(a19.group(1))
+        if idx < len(strings):
+            a19_text = unescape(strings[idx])
+    if a19_text != "수정치":
+        raise RuntimeError("'안내' 시트 19행이 예상한 '수정치' 항목이 아닙니다. 수동 확인이 필요합니다.")
+
+    # 20~22행을 21~23행으로 한 칸씩 밀어낸다(뒤에서부터 치환해야 충돌하지 않는다).
+    for old_row in (22, 21, 20):
+        new_row = old_row + 1
+        old_block = re.search(r'<row r="%d"[^>]*>.*?</row>' % old_row, sheet_xml).group(0)
+        shifted = old_block.replace(f'r="{old_row}"', f'r="{new_row}"', 1)
+        shifted = re.sub(r'r="([A-Z]+)%d"' % old_row, r'r="\g<1>%d"' % new_row, shifted)
+        sheet_xml = sheet_xml.replace(old_block, shifted, 1)
+
+    new_row_xml = (
+        '<row r="20" spans="1:2">'
+        f'<c r="A20" s="3" t="inlineStr"><is><t>{escape("FRED 발표일")}</t></is></c>'
+        f'<c r="B20" s="2" t="inlineStr"><is><t>{escape(GUIDE_NOTE_TEXT)}</t></is></c>'
+        "</row>"
+    )
+    anchor = re.search(r'<row r="19"[^>]*>.*?</row>', sheet_xml).group(0)
+    sheet_xml = sheet_xml.replace(anchor, anchor + new_row_xml, 1)
+
+    sheet_xml = sheet_xml.replace('<dimension ref="A1:B22"/>', '<dimension ref="A1:B23"/>', 1)
+
+    _replace_sheet_xml(xlsx_path, GUIDE_SHEET_XML, sheet_xml)
+    return True
+
+
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
@@ -836,6 +987,12 @@ def main():
 
     series_ids_updated = update_indicator_series_ids(XLSX_PATH, {**KOREA_SERIES_UPDATES, **JAPAN_SERIES_UPDATES})
     print(f"=== 지표목록 한국·일본 행 시리즈 ID {'갱신함' if series_ids_updated else '이미 최신 상태'} ===\n")
+
+    release_dates_cleared = clear_release_dates(XLSX_PATH, NO_RELEASE_DATE_INDICATOR_PAIRS)
+    print(f"=== OECD·IMF 경유 시리즈 기존 발표일 {'비움' if release_dates_cleared else '이미 빈 상태'} ===")
+
+    guide_note_added = insert_guide_note(XLSX_PATH)
+    print(f"=== '안내' 시트 FRED 발표일 정책 안내문 {'추가함' if guide_note_added else '이미 있음'} ===\n")
 
     all_indicators = load_indicator_config(XLSX_PATH)
     indicators = [i for i in all_indicators if i["country"] in TARGET_COUNTRIES]
