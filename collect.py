@@ -650,9 +650,21 @@ def _collect_fred_qoq(client, series_id, today, start):
     return rows
 
 
+def _prev_business_day(d):
+    """FRED의 정책금리 시리즈(예: DFEDTARU)는 '적용일'(FOMC 결정 다음 영업일)부터
+    새 값을 보여준다. FOMC는 항상 화/수 또는 수/목 이틀 회의 후 둘째 날 발표하므로,
+    적용일 바로 앞 영업일이 곧 실제 결정(발표)일이다."""
+    prev = d - timedelta(days=1)
+    while prev.weekday() >= 5:  # 5=토, 6=일
+        prev -= timedelta(days=1)
+    return prev
+
+
 def _collect_adhoc(client, series_id, today, start):
     """수시(정책금리) FRED 시리즈: 값이 바뀐 날짜만 기록. start 이전 이력도 함께 받아
-    start 시점에 우연히 '변경일'로 오인되지 않도록 한 뒤, start 이후 구간만 낸다."""
+    start 시점에 우연히 '변경일'로 오인되지 않도록 한 뒤, start 이후 구간만 낸다.
+    FRED 시리즈의 날짜는 '적용일'이므로 실제 FOMC 결정일(=발표일, 같은 날 오후
+    발표)로 하루(영업일 기준) 당겨서 저장한다."""
     lookback_start = min(start - timedelta(days=400), OBS_START)
     daily = client.latest_observations(series_id, lookback_start, today, units="lin")
     if not daily:
@@ -669,16 +681,15 @@ def _collect_adhoc(client, series_id, today, start):
 
     segments = [(d_str, v) for d_str, v in segments if datetime.strptime(d_str, "%Y-%m-%d").date() >= start]
 
-    seg_dates = {d for d, _ in segments}
-    release_map = client.first_vintage_dates(series_id, seg_dates)
-
     rows = []
     for d_str, v in segments:
+        effective_date = datetime.strptime(d_str, "%Y-%m-%d").date()
+        decision_date = _prev_business_day(effective_date)
         rows.append(
             {
-                "date": datetime.strptime(d_str, "%Y-%m-%d").date(),
+                "date": decision_date,
                 "value": round(v, 2),
-                "release_date": _parse_iso_or_none(release_map.get(d_str)),
+                "release_date": decision_date,
             }
         )
     return rows
@@ -1068,6 +1079,45 @@ def clear_release_dates(xlsx_path, pairs):
             return m.group(0)  # 발표일 셀이 없거나 이미 빈 상태
         new_body = e_cell_re.sub(blank_cell, body, count=1)
         changed = True
+        return f'<row r="{row_num}" spans="1:6">{new_body}</row>'
+
+    new_sheet_xml = _ROW_BLOCK_RE.sub(_process_row, sheet_xml)
+
+    if not changed:
+        return False
+
+    _replace_sheet_xml(xlsx_path, RAWDATA_SHEET_XML, new_sheet_xml)
+    return True
+
+
+def update_rawdata_dates(xlsx_path, row_date_updates):
+    """로우데이터 특정 행 번호들의 기준일(A열)·발표일(E열)을 지정한 날짜로 고쳐
+    쓴다. row_date_updates: {row_num: (new_base_date, new_release_date_or_None)}.
+    값(D열)·국가(B열)·지표(C열)·주기(F열)는 건드리지 않는다."""
+    with zipfile.ZipFile(xlsx_path, "r") as zin:
+        sheet_xml = zin.read(RAWDATA_SHEET_XML).decode("utf-8")
+
+    changed = False
+
+    def _process_row(m):
+        nonlocal changed
+        row_num, body = m.group(1), m.group(2)
+        upd = row_date_updates.get(int(row_num))
+        if upd is None:
+            return m.group(0)
+        new_base_date, new_release_date = upd
+        a_re = re.compile(r'<c r="A%s"[^/>]*/>|<c r="A%s"[^>]*>.*?</c>' % (row_num, row_num))
+        e_re = re.compile(r'<c r="E%s"[^/>]*/>|<c r="E%s"[^>]*>.*?</c>' % (row_num, row_num))
+        new_a = f'<c r="A{row_num}" s="6"><v>{to_excel_serial(new_base_date)}</v></c>'
+        new_e = (
+            f'<c r="E{row_num}" s="6"><v>{to_excel_serial(new_release_date)}</v></c>'
+            if new_release_date is not None
+            else f'<c r="E{row_num}" s="6"/>'
+        )
+        new_body = a_re.sub(new_a, body, count=1)
+        new_body = e_re.sub(new_e, new_body, count=1)
+        if new_body != body:
+            changed = True
         return f'<row r="{row_num}" spans="1:6">{new_body}</row>'
 
     new_sheet_xml = _ROW_BLOCK_RE.sub(_process_row, sheet_xml)

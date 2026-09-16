@@ -522,12 +522,14 @@
     return { card: card, stats: stats, canvas: canvas };
   }
 
-  function renderStats(statsEl, points, digits, unit) {
+  function renderStats(statsEl, points, digits, unit, labels) {
     statsEl.innerHTML = "";
     if (!points.length) {
       statsEl.textContent = "데이터 없음";
       return;
     }
+    var dateLabel = (labels && labels.date) || "기준일";
+    var changeLabel = (labels && labels.change) || "전기 대비";
     var last = points[points.length - 1];
     var prev = points.length > 1 ? points[points.length - 2] : null;
     var change = prev ? last.y - prev.y : null;
@@ -543,11 +545,11 @@
       return d;
     }
     statsEl.appendChild(block("최신값", fmtNum(last.y, digits) + (unit ? "" : "")));
-    statsEl.appendChild(block("기준일", last.x));
+    statsEl.appendChild(block(dateLabel, last.x));
     if (change !== null) {
       var cls = change > 0 ? "change-pos" : change < 0 ? "change-neg" : "";
       var sign = change > 0 ? "+" : "";
-      statsEl.appendChild(block("전기 대비", "<span class='" + cls + "'>" + sign + fmtNum(change, digits) + "</span>"));
+      statsEl.appendChild(block(changeLabel, "<span class='" + cls + "'>" + sign + fmtNum(change, digits) + "</span>"));
     }
   }
 
@@ -764,7 +766,8 @@
       });
     }
 
-    renderStats(c.stats, statsPoints || [], 2, unit);
+    var statLabels = policyInd ? { date: "최근 변경일", change: "직전 변경폭" } : null;
+    renderStats(c.stats, statsPoints || [], 2, unit, statLabels);
 
     if (!datasets.some(function (d) { return d.data.length; })) {
       c.canvas.replaceWith(emptyMsg());

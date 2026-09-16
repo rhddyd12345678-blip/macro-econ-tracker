@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T01:45:38",
+  "generated_at": "2026-09-17T01:58:27",
   "indicators": [
     {
       "country": "미국",
@@ -3308,139 +3308,139 @@
       "freq": "수시"
     },
     {
-      "date": "2022-03-17",
+      "date": "2022-03-16",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 0.5,
-      "release_date": "2022-03-18",
+      "release_date": "2022-03-16",
       "freq": "수시"
     },
     {
-      "date": "2022-05-05",
+      "date": "2022-05-04",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 1.0,
-      "release_date": "2022-05-06",
+      "release_date": "2022-05-04",
       "freq": "수시"
     },
     {
-      "date": "2022-06-16",
+      "date": "2022-06-15",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 1.75,
-      "release_date": "2022-06-16",
+      "release_date": "2022-06-15",
       "freq": "수시"
     },
     {
-      "date": "2022-07-28",
+      "date": "2022-07-27",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 2.5,
-      "release_date": "2022-07-28",
+      "release_date": "2022-07-27",
       "freq": "수시"
     },
     {
-      "date": "2022-09-22",
+      "date": "2022-09-21",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 3.25,
-      "release_date": "2022-09-22",
+      "release_date": "2022-09-21",
       "freq": "수시"
     },
     {
-      "date": "2022-11-03",
+      "date": "2022-11-02",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 4.0,
-      "release_date": "2022-11-03",
+      "release_date": "2022-11-02",
       "freq": "수시"
     },
     {
-      "date": "2022-12-15",
+      "date": "2022-12-14",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 4.5,
-      "release_date": "2022-12-15",
+      "release_date": "2022-12-14",
       "freq": "수시"
     },
     {
-      "date": "2023-02-02",
+      "date": "2023-02-01",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 4.75,
-      "release_date": "2023-02-02",
+      "release_date": "2023-02-01",
       "freq": "수시"
     },
     {
-      "date": "2023-03-23",
+      "date": "2023-03-22",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 5.0,
-      "release_date": "2023-03-23",
+      "release_date": "2023-03-22",
       "freq": "수시"
     },
     {
-      "date": "2023-05-04",
+      "date": "2023-05-03",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 5.25,
-      "release_date": "2023-05-04",
+      "release_date": "2023-05-03",
       "freq": "수시"
     },
     {
-      "date": "2023-07-27",
+      "date": "2023-07-26",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 5.5,
-      "release_date": "2023-07-27",
+      "release_date": "2023-07-26",
       "freq": "수시"
     },
     {
-      "date": "2024-09-19",
+      "date": "2024-09-18",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 5.0,
-      "release_date": "2024-09-19",
+      "release_date": "2024-09-18",
       "freq": "수시"
     },
     {
-      "date": "2024-11-08",
+      "date": "2024-11-07",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 4.75,
-      "release_date": "2024-11-08",
+      "release_date": "2024-11-07",
       "freq": "수시"
     },
     {
-      "date": "2024-12-19",
+      "date": "2024-12-18",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 4.5,
-      "release_date": "2024-12-19",
+      "release_date": "2024-12-18",
       "freq": "수시"
     },
     {
-      "date": "2025-09-18",
+      "date": "2025-09-17",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 4.25,
-      "release_date": "2025-09-18",
+      "release_date": "2025-09-17",
       "freq": "수시"
     },
     {
-      "date": "2025-10-30",
+      "date": "2025-10-29",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 4.0,
-      "release_date": "2025-10-30",
+      "release_date": "2025-10-29",
       "freq": "수시"
     },
     {
-      "date": "2025-12-11",
+      "date": "2025-12-10",
       "country": "미국",
       "indicator": "정책금리(상단)",
       "value": 3.75,
-      "release_date": "2025-12-11",
+      "release_date": "2025-12-10",
       "freq": "수시"
     },
     {
