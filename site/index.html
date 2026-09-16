@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>매크로 트래커</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <style>
   :root {
     --bg: #f5f6f8;
@@ -251,6 +252,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .cal-event.past {
+    opacity: 0.45;
+    background: color-mix(in srgb, var(--muted) 15%, var(--card-bg));
+  }
 
   footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
 
@@ -365,6 +370,15 @@
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
     state.recent = recent.entries || recent.events || [];
+    // 로우데이터에 실제로 기록된 발표일(release_date가 있는 관측치) -> 달력에 "지난 발표"로 표시
+    state.pastReleases = state.observations
+      .filter(function (o) { return !!o.release_date; })
+      .map(function (o) {
+        return {
+          date: o.release_date, country: o.country, indicator: o.indicator,
+          period: o.date, source: "로우데이터(실제 발표일)", note: null
+        };
+      });
     document.getElementById("generated-at").textContent =
       "지표 " + state.indicators.length + "개 · 관측치 " + state.observations.length + "개 · 생성: " +
       (data.generated_at || "-").slice(0, 16).replace("T", " ");
@@ -444,12 +458,6 @@
     var ny = Math.floor(total / 12), nm = (total % 12) + 1;
     return ny + "-" + String(nm).padStart(2, "0") + "-01";
   }
-  function unionSortedLabels(seriesArr) {
-    var set = {};
-    seriesArr.forEach(function (s) { s.forEach(function (o) { set[o.date] = true; }); });
-    return Object.keys(set).sort();
-  }
-
   // ---- chart rendering ----
   function destroyCharts() {
     state.charts.forEach(function (c) { c.destroy(); });
@@ -587,7 +595,7 @@
         pointBorderColor: styling.border,
         borderWidth: 2,
         tension: 0.15,
-        spanGaps: true
+        spanGaps: false
       });
     });
 
@@ -598,10 +606,9 @@
       return;
     }
 
-    var labels = unionSortedLabels(datasets.map(function (d) { return d.data; }));
     var chart = new Chart(c.canvas.getContext("2d"), {
       type: "line",
-      data: { labels: labels, datasets: datasets },
+      data: { datasets: datasets },
       options: baseOptions(unit, { legend: inds.length > 1 })
     });
     state.charts.push(chart);
@@ -631,11 +638,10 @@
     }
 
     var colors = points.map(function (p) { return p.y >= 0 ? cssVar("--pos") : cssVar("--neg"); });
-    var labels = points.map(function (p) { return p.x; });
     var chart = new Chart(c.canvas.getContext("2d"), {
       type: "bar",
-      data: { labels: labels, datasets: [{ label: "전년동월대비 증감", data: points, backgroundColor: colors }] },
-      options: baseOptions("천 명", { legend: false })
+      data: { datasets: [{ label: "전년동월대비 증감", data: points, backgroundColor: colors }] },
+      options: baseOptions("천 명", { legend: false, barUnit: ind.freq === "분기" ? "quarter" : "month" })
     });
     state.charts.push(chart);
   }
@@ -648,11 +654,10 @@
     renderStats(c.stats, points, 2, ind.unit);
     if (!points.length) { c.canvas.replaceWith(emptyMsg()); return; }
     var colors = points.map(function (p) { return p.y >= 0 ? cssVar("--pos") : cssVar("--neg"); });
-    var labels = points.map(function (p) { return p.x; });
     var chart = new Chart(c.canvas.getContext("2d"), {
       type: "bar",
-      data: { labels: labels, datasets: [{ label: ind.indicator, data: points, backgroundColor: colors }] },
-      options: baseOptions(ind.unit, { legend: false })
+      data: { datasets: [{ label: ind.indicator, data: points, backgroundColor: colors }] },
+      options: baseOptions(ind.unit, { legend: false, barUnit: ind.freq === "분기" ? "quarter" : "month" })
     });
     state.charts.push(chart);
   }
@@ -671,15 +676,27 @@
       var ppoints = pobs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
       statsPoints = ppoints;
       var pstyle = pointStyling(ppoints, country, policyInd.indicator);
+      // 마지막 변경일 이후 오늘까지 같은 값이 유지되고 있음을 보여주기 위해
+      // 화면 표시용 합성 지점을 하나 추가한다(로우데이터에는 쓰지 않음).
+      var pdisplay = ppoints.slice();
+      var pradius = pstyle.radius.slice(), pbg = pstyle.bg.slice(), pborder = pstyle.border.slice();
+      if (ppoints.length) {
+        var lastP = ppoints[ppoints.length - 1];
+        var today = todayStr();
+        if (lastP.x < today) {
+          pdisplay.push({ x: today, y: lastP.y, release_date: null, synthetic: true });
+          pradius.push(0); pbg.push(cssVar("--accent2")); pborder.push(cssVar("--accent2"));
+        }
+      }
       datasets.push({
         label: policyInd.indicator,
-        data: ppoints,
+        data: pdisplay,
         borderColor: cssVar("--accent2"),
         backgroundColor: cssVar("--accent2"),
-        stepped: true,
-        pointRadius: pstyle.radius,
-        pointBackgroundColor: pstyle.bg,
-        pointBorderColor: pstyle.border,
+        stepped: "after",
+        pointRadius: pradius,
+        pointBackgroundColor: pbg,
+        pointBorderColor: pborder,
         borderWidth: 2,
         spanGaps: true
       });
@@ -699,7 +716,7 @@
         pointBackgroundColor: bstyle.bg,
         pointBorderColor: bstyle.border,
         borderWidth: 2,
-        spanGaps: true
+        spanGaps: false
       });
     }
 
@@ -710,10 +727,9 @@
       return;
     }
 
-    var labels = unionSortedLabels(datasets.map(function (d) { return d.data; }));
     var chart = new Chart(c.canvas.getContext("2d"), {
       type: "line",
-      data: { labels: labels, datasets: datasets },
+      data: { datasets: datasets },
       options: baseOptions(unit, { legend: datasets.length > 1 })
     });
     state.charts.push(chart);
@@ -725,6 +741,8 @@
     d.textContent = "데이터 없음";
     return d;
   }
+
+  var AXIS_MIN = "2021-09-01";
 
   function baseOptions(unit, opts) {
     opts = opts || {};
@@ -744,7 +762,14 @@
       },
       scales: {
         x: {
-          type: "category",
+          type: "time",
+          min: AXIS_MIN,
+          max: todayStr(),
+          time: {
+            unit: opts.barUnit || "month",
+            tooltipFormat: "yyyy-MM-dd",
+            displayFormats: { month: "yyyy-MM", quarter: "yyyy-MM" }
+          },
           ticks: { color: muted, maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 10 } },
           grid: { color: border }
         },
@@ -849,10 +874,16 @@
     document.getElementById("cal-month-label").textContent = year + "년 " + MONTH_NAMES[month];
 
     var evsByDate = {};
-    state.events.forEach(function (e) {
+    var seenKeys = {};
+    function addEvent(e) {
       if (state.calScope === "country" && e.country !== state.country) return;
+      var key = e.date + "|" + e.country + "|" + e.indicator;
+      if (seenKeys[key]) return; // 발표일정 예정 항목과 실제 발표일이 겹치면 한 번만 표시
+      seenKeys[key] = true;
       (evsByDate[e.date] = evsByDate[e.date] || []).push(e);
-    });
+    }
+    state.events.forEach(addEvent);
+    state.pastReleases.forEach(addEvent);
 
     var grid = document.getElementById("cal-grid");
     grid.innerHTML = "";
@@ -883,8 +914,9 @@
       cell.appendChild(dnum);
       (evsByDate[dateStr] || []).forEach(function (e) {
         var tag = document.createElement("div");
-        tag.className = "cal-event";
-        tag.title = e.country + " " + e.indicator + (e.note ? " - " + e.note : "");
+        var isPast = dateStr < today;
+        tag.className = "cal-event" + (isPast ? " past" : "");
+        tag.title = e.country + " " + e.indicator + (e.note ? " - " + e.note : "") + (isPast ? " (지난 발표)" : "");
         tag.textContent = e.country + " " + e.indicator;
         cell.appendChild(tag);
       });
