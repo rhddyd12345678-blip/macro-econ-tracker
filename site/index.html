@@ -449,7 +449,8 @@
   }
   function fmtNum(v, digits) {
     if (v === null || v === undefined || isNaN(v)) return "-";
-    return Number(v).toLocaleString("ko-KR", { maximumFractionDigits: digits == null ? 2 : digits, minimumFractionDigits: 0 });
+    var d = digits == null ? 2 : digits;
+    return Number(v).toLocaleString("ko-KR", { maximumFractionDigits: d, minimumFractionDigits: d });
   }
   function shiftMonthStr(dateStr, monthsDelta) {
     var parts = dateStr.split("-");
@@ -550,16 +551,64 @@
     }
   }
 
-  function pointStyling(points, country, indicator) {
+  function pointStyling(points, country, indicator, color) {
     var radius = [], bg = [], border = [];
     points.forEach(function (p) {
-      if (isRecent(country, indicator, p.x)) {
+      if (p.synthetic) {
+        radius.push(0); bg.push(color); border.push(color);
+      } else if (isRecent(country, indicator, p.x)) {
         radius.push(6); bg.push(cssVar("--recent")); border.push(cssVar("--recent"));
       } else {
-        radius.push(2); bg.push(cssVar("--accent")); border.push(cssVar("--accent"));
+        radius.push(2); bg.push(color); border.push(color);
       }
     });
     return { radius: radius, bg: bg, border: border };
+  }
+
+  // 계단선을 Chart.js의 stepped 옵션에 기대지 않고 직접 만든다: 변경 시점 바로
+  // 앞에 '이전 값'을 가진 보조 포인트를 끼워 넣어 순수 선형 보간만으로 수직으로
+  // 꺾이는 계단을 만든다. 마지막 변경 이후에는 오늘까지 같은 값으로 연장한다.
+  function buildStepPoints(points) {
+    var out = [];
+    for (var i = 0; i < points.length; i++) {
+      if (i > 0) {
+        out.push({ x: points[i].x, y: points[i - 1].y, release_date: null, synthetic: true });
+      }
+      out.push(points[i]);
+    }
+    if (points.length) {
+      var last = points[points.length - 1];
+      var today = todayStr();
+      if (last.x < today) {
+        out.push({ x: today, y: last.y, release_date: null, synthetic: true });
+      }
+    }
+    return out;
+  }
+
+  function monthRange(startStr, endStr) {
+    var out = [];
+    var y = parseInt(startStr.slice(0, 4), 10), m = parseInt(startStr.slice(5, 7), 10);
+    var endKey = endStr.slice(0, 7);
+    while (true) {
+      var key = y + "-" + String(m).padStart(2, "0");
+      out.push(key + "-01");
+      if (key >= endKey) break;
+      m += 1;
+      if (m > 12) { m = 1; y += 1; }
+    }
+    return out;
+  }
+
+  // 월간 시리즈의 첫~마지막 기준일 사이 빠진 달을 {x, y:null}로 채워 선이
+  // 끊어져 보이게 한다(spanGaps:false와 함께 사용).
+  function fillMonthlyGaps(points) {
+    if (points.length < 2) return points;
+    var byMonth = {};
+    points.forEach(function (p) { byMonth[p.x] = p; });
+    return monthRange(points[0].x, points[points.length - 1].x).map(function (m) {
+      return byMonth[m] || { x: m, y: null, release_date: null };
+    });
   }
 
   function tooltipLabel(unit) {
@@ -582,12 +631,13 @@
     inds.forEach(function (ind, idx) {
       var obs = observationsFor(country, ind.indicator);
       var points = obs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
-      if (idx === 0) allPointsForStats = points;
+      if (idx === 0) allPointsForStats = points; // 통계는 실제(빈달 없는) 값 기준
+      var filled = fillMonthlyGaps(points);
       var color = cssVar(PALETTE[idx % PALETTE.length]);
-      var styling = pointStyling(points, country, ind.indicator);
+      var styling = pointStyling(filled, country, ind.indicator, color);
       datasets.push({
         label: ind.indicator,
-        data: points,
+        data: filled,
         borderColor: color,
         backgroundColor: color,
         pointRadius: styling.radius,
@@ -675,28 +725,20 @@
       var pobs = observationsFor(country, policyInd.indicator);
       var ppoints = pobs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
       statsPoints = ppoints;
-      var pstyle = pointStyling(ppoints, country, policyInd.indicator);
-      // 마지막 변경일 이후 오늘까지 같은 값이 유지되고 있음을 보여주기 위해
-      // 화면 표시용 합성 지점을 하나 추가한다(로우데이터에는 쓰지 않음).
-      var pdisplay = ppoints.slice();
-      var pradius = pstyle.radius.slice(), pbg = pstyle.bg.slice(), pborder = pstyle.border.slice();
-      if (ppoints.length) {
-        var lastP = ppoints[ppoints.length - 1];
-        var today = todayStr();
-        if (lastP.x < today) {
-          pdisplay.push({ x: today, y: lastP.y, release_date: null, synthetic: true });
-          pradius.push(0); pbg.push(cssVar("--accent2")); pborder.push(cssVar("--accent2"));
-        }
-      }
+      var pcolor = cssVar("--accent2");
+      // Chart.js의 stepped 옵션에 기대지 않고, 변경일 직전에 '이전 값' 보조
+      // 포인트를 끼워 선형 보간만으로 정확한 계단을 만든다(+ 오늘까지 연장).
+      var pdisplay = buildStepPoints(ppoints);
+      var pstyle = pointStyling(pdisplay, country, policyInd.indicator, pcolor);
       datasets.push({
         label: policyInd.indicator,
         data: pdisplay,
-        borderColor: cssVar("--accent2"),
-        backgroundColor: cssVar("--accent2"),
-        stepped: "after",
-        pointRadius: pradius,
-        pointBackgroundColor: pbg,
-        pointBorderColor: pborder,
+        borderColor: pcolor,
+        backgroundColor: pcolor,
+        tension: 0,
+        pointRadius: pstyle.radius,
+        pointBackgroundColor: pstyle.bg,
+        pointBorderColor: pstyle.border,
         borderWidth: 2,
         spanGaps: true
       });
@@ -705,12 +747,14 @@
       var bobs = observationsFor(country, bondInd.indicator);
       var bpoints = bobs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
       if (!statsPoints) statsPoints = bpoints;
-      var bstyle = pointStyling(bpoints, country, bondInd.indicator);
+      var bfilled = fillMonthlyGaps(bpoints);
+      var bcolor = cssVar("--accent");
+      var bstyle = pointStyling(bfilled, country, bondInd.indicator, bcolor);
       datasets.push({
         label: "국채10년",
-        data: bpoints,
-        borderColor: cssVar("--accent"),
-        backgroundColor: cssVar("--accent"),
+        data: bfilled,
+        borderColor: bcolor,
+        backgroundColor: bcolor,
         tension: 0.15,
         pointRadius: bstyle.radius,
         pointBackgroundColor: bstyle.bg,
