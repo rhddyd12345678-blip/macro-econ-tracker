@@ -819,6 +819,7 @@ def ensure_manual_csv():
 def load_manual_rows():
     rows = read_csv_rows(MANUAL_CSV_PATH, MANUAL_HEADER)
     out = []
+    unknown_institutions = {}  # {기관명: 등장 행 수} — docs/수동전망입력.md의 "기관명 표준 표기"에 없는 값
     for r in rows:
         has_value = bool(r.get("전망치")) or any(
             r.get(k) for k in ("응답비율_동결", "응답비율_인상", "응답비율_인하")
@@ -826,6 +827,9 @@ def load_manual_rows():
         if not r.get("발표일") or not has_value:
             continue  # 빈 행(헤더만 있는 상태 등)은 건너뜀 — 전망치 없이 응답비율만
             # 있는 설문형 행(BMSI·JCER 정책금리 방향 등)은 그대로 포함해야 한다.
+        inst = r["기관"]
+        if inst not in MANUAL_INSTITUTION_KIND:
+            unknown_institutions[inst] = unknown_institutions.get(inst, 0) + 1
         out.append(
             {
                 "발표일": r["발표일"],
@@ -841,6 +845,12 @@ def load_manual_rows():
                 "출처URL": r.get("출처URL", ""),
                 "비고": r.get("비고", ""),
             }
+        )
+    for inst, n in sorted(unknown_institutions.items()):
+        log_result(
+            "forecasts_manual.csv 기관명 확인",
+            "경고",
+            f"'{inst}'({n}행)이 docs/수동전망입력.md의 기관명 표준 표기 목록에 없음 — 오타이거나 새 출처면 목록에 추가 필요",
         )
     return out
 
