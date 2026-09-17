@@ -301,6 +301,7 @@
     font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
   }
   .lc-badge.lc-badge-recent { background: var(--accent4); color: #fff; }
+  .lc-badge.lc-badge-boundary { background: var(--muted); color: var(--card-bg); }
   .mini-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
   .mini-tabs button {
     border: 1px solid var(--border); background: var(--card-bg); color: var(--fg); border-radius: 999px;
@@ -1309,7 +1310,9 @@
 
       var badges = [];
       if (code === market.strongest) badges.push(["가장 강한 연동(전체 기간)", ""]);
+      else if (code === market.strongest_boundary) badges.push(["경계 신호(전체 기간)", " lc-badge-boundary"]);
       if (code === market.strongest_recent) badges.push(["가장 강한 연동(최근 24개월)", " lc-badge-recent"]);
+      else if (code === market.strongest_recent_boundary) badges.push(["경계 신호(최근 24개월)", " lc-badge-boundary"]);
       if (badges.length) {
         var badgeWrap = document.createElement("div");
         badgeWrap.className = "lc-badges";
@@ -1337,6 +1340,7 @@
         addRow(card, "β", fmtNum(r.beta, 3));
         addRow(card, "R²", fmtNum(r.r2, 3));
         addRow(card, "p값(HAC)", r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3));
+        addRow(card, "p값(OLS)", r.p_ols == null ? "-" : (r.p_ols < 0.001 ? "<0.001" : fmtNum(r.p_ols, 3)));
         addRow(card, "표본수", String(r.n));
       }
 
@@ -1351,6 +1355,7 @@
         addRow(card, "R²", fmtNum(rec.r2, 3));
         addRow(card, "상관계수", fmtNum(rec.corr, 3));
         addRow(card, "p값(HAC)", rec.p == null ? "-" : (rec.p < 0.001 ? "<0.001" : fmtNum(rec.p, 3)));
+        addRow(card, "p값(OLS)", rec.p_ols == null ? "-" : (rec.p_ols < 0.001 ? "<0.001" : fmtNum(rec.p_ols, 3)));
       }
 
       wrap.appendChild(card);
@@ -1569,23 +1574,26 @@
   function recentSignificanceSentence(market) {
     var recent = market.recent || {};
     if (market.recent_all_insignificant) {
-      return "최근 24개월은 네 나라 모두 5% 유의수준(HAC)에서 연동이 확인되지 않습니다.";
+      return "최근 24개월은 네 나라 모두 OLS·HAC p값이 둘 다 5% 유의수준을 넘지 못해(둘 중 하나조차 유의하지 않음) 연동이 확인되지 않습니다.";
     }
-    var sig = [], notSig = [];
+    var both = [], boundary = [], none = [];
     LINKAGE_COUNTRY_CODES.forEach(function (code) {
       var rec = recent[code];
-      if (!rec || rec.p == null) return;
-      (rec.p < 0.05 ? sig : notSig).push(code);
+      if (!rec || rec.p == null || rec.p_ols == null) return;
+      var hacSig = rec.p < 0.05, olsSig = rec.p_ols < 0.05;
+      if (hacSig && olsSig) both.push(code);
+      else if (hacSig || olsSig) boundary.push(code);
+      else none.push(code);
     });
-    var threshold = market.rolling ? market.rolling.r2_threshold : null;
-    var sigText = sig.map(function (code) {
+    function fmtCountry(code) {
       var rec = recent[code];
-      var belowLine = threshold != null && rec.r2 < threshold;
-      return LINKAGE_COUNTRY_LABEL[code] + "(p=" + fmtNum(rec.p, 3) + (belowLine ? ", 단 R²=" + fmtNum(rec.r2, 3) + "는 고전적 R² 기준선(" + fmtNum(threshold, 3) + ")보다 낮아 기준에 따라 결론이 달라질 수 있음" : "") + ")";
-    }).join(", ");
-    var notSigText = notSig.map(function (code) { return LINKAGE_COUNTRY_LABEL[code]; }).join("·");
-    return "최근 24개월 기준 5% 유의수준(HAC)에서 연동이 확인된 국가: " + sigText + ". " +
-      (notSigText ? "나머지(" + notSigText + ")는 유의하지 않습니다." : "");
+      return LINKAGE_COUNTRY_LABEL[code] + "(p HAC=" + fmtNum(rec.p, 3) + ", p OLS=" + fmtNum(rec.p_ols, 3) + ")";
+    }
+    var parts = [];
+    if (both.length) parts.push("OLS·HAC 모두 유의한 국가: " + both.map(fmtCountry).join(", "));
+    if (boundary.length) parts.push("한쪽만 유의한 경계 신호: " + boundary.map(fmtCountry).join(", "));
+    if (none.length) parts.push("둘 다 유의하지 않은 국가: " + none.map(function (c) { return LINKAGE_COUNTRY_LABEL[c]; }).join("·"));
+    return "최근 24개월 기준 — " + parts.join(". ") + ".";
   }
 
   function renderLinkageNotes() {
@@ -1595,7 +1603,8 @@
       "<li>이 분석은 상관·회귀 결과이며, 인과관계를 확정하거나 향후 금리를 예측·추천하는 것이 아닙니다.</li>" +
       "<li>β는 '해외 금리가 1%p 움직일 때'를 기준으로 한 비율이라, 실제 변동폭 자체가 작은 국가(예: 일본 국채10년)는 작은 변화에도 β가 크게 나올 수 있습니다. 국가 간 연동 강도를 비교할 때는 β보다 상관계수·R²(=상관계수²)를 기준으로 보는 것이 더 적절합니다.</li>" +
       "<li>" + recentSignificanceSentence(market) + "</li>" +
-      "<li>롤링 R²의 급격한 변화는 새 데이터가 들어와서 생기는 것만이 아니라, 24개월 창에서 과거의 큰 변동이 있던 달이 빠져나가는 효과도 함께 반영된 결과입니다.</li>" +
+      "<li>표본이 24개월로 작아 HAC 표준오차가 과소추정될 수 있으며, OLS와 HAC의 결론이 다르면 약한 신호로 해석합니다.</li>" +
+      "<li>급락의 크기는 과거 큰 동조 변동이 창에서 빠진 효과이며, 2024년 중반 이후의 완만한 하락 추세는 별도로 해석해야 합니다.</li>" +
       "<li>국채10년은 월평균값이라 발표 당일·일중 반응은 볼 수 없고, 월 단위 흐름만 반영합니다.</li>" +
       "<li>분석 표본: " + s.start + " ~ " + s.end + " (월간 " + s.n_months_level + "개월 수준값 기준, 차분 후 회귀에는 이보다 1개월 적은 표본을 씁니다). 최근 24개월 수치는 전체 기간보다 표본이 훨씬 작아 변동이 큽니다.</li>" +
       "<li>정책금리 분석은 추적 기간 중 변경 횟수가 적어 시장금리 분석보다 통계적 신뢰도가 낮습니다.</li>" +

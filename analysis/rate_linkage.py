@@ -189,47 +189,56 @@ def newey_west_lags(n):
 
 
 def simple_regression(y, x):
-    """y, x: pandas Series(공통 인덱스, dropna 적용됨). 반환: dict(beta, se, t, p, r2, n)."""
+    """y, x: pandas Series(공통 인덱스, dropna 적용됨). 반환: dict(beta, se, t, p, r2, n).
+    표본이 작을 때(특히 24개월 롤링 창) OLS와 HAC의 유의성 판정이 갈릴 수 있어
+    둘 다 계산해 p(HAC)·p_ols(일반 OLS)로 함께 낸다."""
     df = pd.concat([y, x], axis=1, keys=["y", "x"]).dropna()
     n = len(df)
     if n < 8:
         return {"n": n, "insufficient": True}
     X = sm.add_constant(df["x"])
     lags = newey_west_lags(n)
-    model = sm.OLS(df["y"], X).fit(cov_type="HAC", cov_kwds={"maxlags": lags})
+    model_ols = sm.OLS(df["y"], X).fit()
+    model_hac = sm.OLS(df["y"], X).fit(cov_type="HAC", cov_kwds={"maxlags": lags})
     return {
-        "beta": float(model.params["x"]),
-        "const": float(model.params["const"]),
-        "se": float(model.bse["x"]),
-        "t": float(model.tvalues["x"]),
-        "p": float(model.pvalues["x"]),
-        "r2": float(model.rsquared),
+        "beta": float(model_hac.params["x"]),
+        "const": float(model_hac.params["const"]),
+        "se": float(model_hac.bse["x"]),
+        "se_ols": float(model_ols.bse["x"]),
+        "t": float(model_hac.tvalues["x"]),
+        "t_ols": float(model_ols.tvalues["x"]),
+        "p": float(model_hac.pvalues["x"]),
+        "p_ols": float(model_ols.pvalues["x"]),
+        "r2": float(model_hac.rsquared),
         "n": int(n),
         "hac_lags": lags,
     }
 
 
 def rolling_regression(y, x, window=ROLLING_WINDOW):
-    """window개월 롤링 단순회귀. R²와 별도로 상관계수·HAC p값도 함께 낸다 —
-    R²=상관계수^2라 부호(같은 방향/반대 방향)는 R²만으로 알 수 없고, 국가별
-    변동성 차이에 영향받지 않는 비교에도 상관계수가 더 적합하기 때문. 창 크기가
-    고정이라 HAC 시차도 매번 동일하게 계산해 재사용한다."""
+    """window개월 롤링 단순회귀. R²와 별도로 상관계수·p값(HAC·OLS 둘 다)도 함께
+    낸다 — R²=상관계수^2라 부호(같은 방향/반대 방향)는 R²만으로 알 수 없고,
+    국가별 변동성 차이에 영향받지 않는 비교에도 상관계수가 더 적합하기 때문.
+    표본이 24개월로 작을 때는 OLS와 HAC의 유의성 판정이 갈릴 수 있어 둘 다
+    계산해 둔다. 창 크기가 고정이라 HAC 시차도 매번 동일하게 계산해 재사용한다."""
     lags = newey_west_lags(window)
     df = pd.concat([y, x], axis=1, keys=["y", "x"]).dropna()
-    dates, betas, r2s, corrs, pvals = [], [], [], [], []
+    dates, betas, r2s, corrs, pvals, pvals_ols = [], [], [], [], [], []
     for end in range(window, len(df) + 1):
         chunk = df.iloc[end - window : end]
         X = sm.add_constant(chunk["x"])
         try:
-            model = sm.OLS(chunk["y"], X).fit(cov_type="HAC", cov_kwds={"maxlags": lags})
+            model_ols = sm.OLS(chunk["y"], X).fit()
+            model_hac = sm.OLS(chunk["y"], X).fit(cov_type="HAC", cov_kwds={"maxlags": lags})
         except Exception:  # noqa: BLE001
             continue
         dates.append(chunk.index[-1].date().isoformat())
-        betas.append(float(model.params["x"]))
-        r2s.append(float(model.rsquared))
+        betas.append(float(model_hac.params["x"]))
+        r2s.append(float(model_hac.rsquared))
         corrs.append(float(chunk["x"].corr(chunk["y"])))
-        pvals.append(float(model.pvalues["x"]))
-    return {"dates": dates, "beta": betas, "r2": r2s, "corr": corrs, "p": pvals}
+        pvals.append(float(model_hac.pvalues["x"]))
+        pvals_ols.append(float(model_ols.pvalues["x"]))
+    return {"dates": dates, "beta": betas, "r2": r2s, "corr": corrs, "p": pvals, "p_ols": pvals_ols}
 
 
 def r2_significance_threshold(window=ROLLING_WINDOW, alpha=0.05):
@@ -239,6 +248,35 @@ def r2_significance_threshold(window=ROLLING_WINDOW, alpha=0.05):
     dfree = window - 2
     f_crit = float(scipy_stats.f.ppf(1 - alpha, 1, dfree))
     return f_crit / (f_crit + dfree)
+
+
+def classify_strongest(stats_by_code):
+    """국가별 {"r2":..., "p":..., "p_ols":...} 딕셔너리를 받아 '가장 강한 연동'
+    판정을 셋 중 하나로 낸다:
+    - strongest: OLS와 HAC p값이 둘 다 0.05 미만인 국가 중 R²가 가장 높은 국가
+    - boundary: (strongest가 없을 때) 둘 중 하나만 0.05 미만인 국가 중 R²가
+      가장 높은 국가 — 표본이 작아 표준오차 계산 방식에 따라 결론이 갈리는
+      '경계 신호'
+    - all_insignificant: 어느 국가도 둘 중 하나조차 유의하지 않음
+    반환: (strongest_code_or_None, boundary_code_or_None, all_insignificant_bool)"""
+    both, boundary = {}, {}
+    any_significant = False
+    for code, v in stats_by_code.items():
+        if not v or v.get("insufficient"):
+            continue
+        p_hac, p_ols = v.get("p"), v.get("p_ols")
+        if p_hac is None or p_ols is None:
+            continue
+        hac_sig, ols_sig = p_hac < 0.05, p_ols < 0.05
+        if hac_sig or ols_sig:
+            any_significant = True
+        if hac_sig and ols_sig:
+            both[code] = v["r2"]
+        elif hac_sig or ols_sig:
+            boundary[code] = v["r2"]
+    strongest = max(both, key=both.get) if both else None
+    strongest_boundary = max(boundary, key=boundary.get) if (not both and boundary) else None
+    return strongest, strongest_boundary, not any_significant
 
 
 def analyze_market(bond_levels):
@@ -255,15 +293,11 @@ def analyze_market(bond_levels):
             for idx, row in pair.iterrows()
         ]
 
-    # '가장 강한 연동' 판정은 R² 기준이되, p<0.05(유의)인 국가만 후보로 삼는다.
-    # 전부 유의하지 않으면 strongest는 None(홈페이지에서 '유의한 연동 없음'으로 표시).
-    valid_r2 = {
-        c: v["r2"] for c, v in simple.items() if not v.get("insufficient") and v.get("p") is not None and v["p"] < 0.05
-    }
-    strongest = max(valid_r2, key=valid_r2.get) if valid_r2 else None
-    strongest_all_insignificant = bool(simple) and all(
-        v.get("insufficient") or v.get("p") is None or v["p"] >= 0.05 for v in simple.values()
-    )
+    # '가장 강한 연동' 판정은 R² 기준이되, OLS·HAC p값이 둘 다 0.05 미만인 국가만
+    # 후보로 삼는다. 둘 중 하나만 유의하면 '경계 신호'로 따로 표시(표본이 작을 때
+    # 표준오차 계산 방식에 따라 결론이 갈릴 수 있음을 반영). 아무도 유의하지
+    # 않으면 strongest/boundary 모두 None(홈페이지에서 '유의한 연동 없음').
+    strongest, strongest_boundary, strongest_all_insignificant = classify_strongest(simple)
 
     de_fr_corr_df = pd.concat([diff["DE"], diff["FR"]], axis=1, keys=["DE", "FR"]).dropna()
     de_fr_corr = float(de_fr_corr_df["DE"].corr(de_fr_corr_df["FR"])) if len(de_fr_corr_df) > 5 else None
@@ -312,6 +346,7 @@ def analyze_market(bond_levels):
         "r2": {},
         "corr": {},
         "p": {},
+        "p_ols": {},
         "dates": {},
         "r2_threshold": r2_significance_threshold(ROLLING_WINDOW),
     }
@@ -322,6 +357,7 @@ def analyze_market(bond_levels):
         rolling["r2"][code] = rr["r2"]
         rolling["corr"][code] = rr["corr"]
         rolling["p"][code] = rr["p"]
+        rolling["p_ols"][code] = rr["p_ols"]
 
     # '최근 24개월' 요약: 롤링 시계열의 마지막 구간(=가장 최근 24개월)을 그대로 쓴다.
     recent = {}
@@ -332,16 +368,13 @@ def analyze_market(bond_levels):
                 "r2": rolling["r2"][code][-1],
                 "corr": rolling["corr"][code][-1],
                 "p": rolling["p"][code][-1],
+                "p_ols": rolling["p_ols"][code][-1],
                 "as_of": rolling["dates"][code][-1],
                 "window": ROLLING_WINDOW,
             }
         else:
             recent[code] = None
-    valid_recent_r2 = {c: v["r2"] for c, v in recent.items() if v and v.get("p") is not None and v["p"] < 0.05}
-    strongest_recent = max(valid_recent_r2, key=valid_recent_r2.get) if valid_recent_r2 else None
-    recent_all_insignificant = bool(recent) and all(
-        (v is None) or (v.get("p") is None) or (v["p"] >= 0.05) for v in recent.values()
-    )
+    strongest_recent, strongest_recent_boundary, recent_all_insignificant = classify_strongest(recent)
 
     lead_lag = {}
     for code in ["US", "JP", "DE", "FR"]:
@@ -352,9 +385,11 @@ def analyze_market(bond_levels):
     return {
         "simple": simple,
         "strongest": strongest,
+        "strongest_boundary": strongest_boundary,
         "strongest_all_insignificant": strongest_all_insignificant,
         "recent": recent,
         "strongest_recent": strongest_recent,
+        "strongest_recent_boundary": strongest_recent_boundary,
         "recent_all_insignificant": recent_all_insignificant,
         "scatter": scatter,
         "multi": multi,
