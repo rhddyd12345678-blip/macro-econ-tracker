@@ -2077,6 +2077,9 @@
         if (f._r2Parts) {
           return escapeHtml(f.label) + ": " + renderR2PartsHtml(f._r2Parts);
         }
+        if (f.label === "다음 금통위") {
+          return escapeHtml(f.label) + ": " + escapeHtml(formatNextMeetingForSnapshot(f));
+        }
         return escapeHtml(f.label) + ": " + escapeHtml(f.value) + (f.date ? " (" + f.date + ")" : "");
       }).join("<br>");
       detail.innerHTML = fmtBokCellsTable(rec) + "<div style='margin-top:8px;'><b>저장 시점 판단 근거 데이터</b><br>" + factsHtml + "</div>";
@@ -2398,6 +2401,21 @@
     }).join(" · ");
   }
 
+  // 저장 기록 상세에서 '다음 금통위' 항목을 "YYYY-MM-DD (저장 시점 D-N)" 형태로
+  // 한 번만 보여준다(라이브 패널의 value에는 이미 "(D-N)"이 들어 있어, 그 뒤에
+  // date를 또 붙이면 날짜가 중복 표시됐었음). 저장된 원본 필드는 건드리지
+  // 않고 표시할 때만 이 형식으로 다시 조합한다 — 예전 기록(_ddayAtSave 없음)도
+  // value에 이미 있던 "D-N"을 그대로 읽어 같은 형식으로 보여준다.
+  function formatNextMeetingForSnapshot(f) {
+    if (!f.date) return f.value || "일정 미등록";
+    var dday = f._ddayAtSave;
+    if (typeof dday !== "number") {
+      var m = /D-(-?\d+)/.exec(f.value || "");
+      dday = m ? parseInt(m[1], 10) : null;
+    }
+    return dday === null ? f.date : f.date + " (저장 시점 D-" + dday + ")";
+  }
+
   function collectBokFacts() {
     var items = [];
     function add(label, obsOrNull, digits, unit) {
@@ -2449,7 +2467,8 @@
     items.push({
       label: "다음 금통위",
       value: nextMeeting ? nextMeeting.date + " (D-" + dday + ")" : "일정 미등록",
-      date: nextMeetingDate
+      date: nextMeetingDate,
+      _ddayAtSave: dday // 저장 기록 상세 표시 전용(라이브 패널은 value를 그대로 씀)
     });
 
     return { items: items, nextMeetingDate: nextMeetingDate, dday: dday };
