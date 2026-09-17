@@ -23,6 +23,7 @@ data/forecasts_manual.csv를 함께 읽어 site/data/forecasts.json으로 내보
 """
 
 import csv
+import io
 import json
 import os
 import re
@@ -43,6 +44,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 CSV_PATH = os.path.join(DATA_DIR, "forecasts.csv")
 MANUAL_CSV_PATH = os.path.join(DATA_DIR, "forecasts_manual.csv")
 JSON_PATH = os.path.join(BASE_DIR, "site", "data", "forecasts.json")
+SME_CACHE_PATH = os.path.join(DATA_DIR, "sme_cache.json")
 
 CSV_HEADER = ["발표일", "기관", "종류", "국가", "지표", "대상기간", "전망치", "출처URL"]
 MANUAL_HEADER = ["발표일", "기관", "국가", "지표", "대상기간", "전망치", "응답비율_동결", "응답비율_인상", "응답비율_인하", "출처URL", "비고"]
@@ -53,6 +55,10 @@ MANUAL_INSTITUTION_KIND = {
     "금융투자협회 BMSI": "설문컨센서스",
     "JCER ESP": "설문컨센서스",
     "ECB SPF": "설문컨센서스",
+    "ECB SMA": "설문컨센서스",
+    "분데스방크": "기관전망",
+    "Banque de France": "기관전망",
+    "EU집행위": "기관전망",
 }
 
 IMF_COUNTRIES = {"한국": "KOR", "미국": "USA", "일본": "JPN", "독일": "DEU", "프랑스": "FRA"}
@@ -261,6 +267,7 @@ SEP_ROW_LABELS = {
     "Change in real GDP": "실질GDP성장률",
     "Unemployment rate": "실업률",
     "PCE inflation": "PCE물가상승률",
+    "Core PCE inflation": "PCE 근원",
     "Federal funds rate": "정책금리(중간값)",
 }
 
@@ -296,9 +303,12 @@ def collect_fed_sep():
         this_year, next_year = this_and_next_year()
         for _, row in main_table.iterrows():
             var_label = row.iloc[0]
-            if not isinstance(var_label, str) or var_label not in SEP_ROW_LABELS:
+            if not isinstance(var_label, str):
                 continue
-            indicator = SEP_ROW_LABELS[var_label]
+            var_label_clean = re.sub(r"\d+$", "", var_label).strip()  # 각주 번호(예: "Core PCE inflation4") 제거
+            if var_label_clean not in SEP_ROW_LABELS:
+                continue
+            indicator = SEP_ROW_LABELS[var_label_clean]
             for year in (this_year, next_year):
                 col = ("Median1", str(year))
                 if col not in main_table.columns:
@@ -527,7 +537,116 @@ def collect_ecb_spf():
 
 
 # ---------------------------------------------------------------------------
-# 7. 시장금리 (ECOS 통안증권 1년·국고채 3년, FRED DGS2·T5YIE·T10YIE) — 매번 실행
+# 6.5. 뉴욕연준 SME(Survey of Market Expectations) — 무료 공개 데이터(xlsx)
+# ---------------------------------------------------------------------------
+# 연준 SEP/ECB projections와 달리 forecasts.csv의 (발표일,기관,국가,지표,대상기간,
+# 전망치) 행 구조에 맞지 않는(구간별 확률분포) 데이터라 별도로 site/data/
+# forecasts.json의 "sme" 키에 직접 내보낸다. CSV·rows에는 들어가지 않는다.
+
+SME_INDEX_URL = "https://www.newyorkfed.org/markets/survey_market_participants"
+SME_MONTH_ABBR = {"jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+                   "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12}
+
+
+def collect_ny_fed_sme():
+    """다음 FOMC 목표금리 확률분포(구간별 %)와 올해·내년 연말 목표금리 중간값
+    (path of modes 중위수)을 가장 최근 공개된 SME 데이터 파일에서 뽑는다."""
+    try:
+        idx_resp = requests.get(SME_INDEX_URL, timeout=REQUEST_TIMEOUT)
+        if _is_blocked(idx_resp):
+            log_result("뉴욕연준 SME", "차단", f"HTTP {idx_resp.status_code}")
+            return None
+        idx_resp.raise_for_status()
+    except requests.RequestException as e:
+        log_result("뉴욕연준 SME", "실패", str(e))
+        return None
+
+    links = re.findall(r"/medialibrary/media/markets/survey/(\d{4})/([a-z]{3})-\d{4}-data\.xlsx", idx_resp.text)
+    if not links:
+        log_result("뉴욕연준 SME", "실패", "데이터 파일 링크를 찾지 못함")
+        return None
+    year, mon = sorted(set(links), key=lambda t: (int(t[0]), SME_MONTH_ABBR.get(t[1], 0)))[-1]
+    file_path = f"/medialibrary/media/markets/survey/{year}/{mon}-{year}-data.xlsx"
+    file_url = "https://www.newyorkfed.org" + file_path
+
+    try:
+        resp = requests.get(file_url, timeout=REQUEST_TIMEOUT)
+        if _is_blocked(resp) or "spreadsheet" not in (resp.headers.get("Content-Type") or ""):
+            log_result("뉴욕연준 SME", "차단", f"HTTP {resp.status_code}, 파일을 받지 못함")
+            return None
+        resp.raise_for_status()
+        wb = openpyxl.load_workbook(io.BytesIO(resp.content), data_only=True, read_only=True)
+        ws = wb["Sheet1"]
+        header = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
+        idx = {h: i for i, h in enumerate(header)}
+        sub = [r for r in ws.iter_rows(min_row=2, values_only=True) if r[idx["subject"]] == "fed_funds_target_range"]
+        wb.close()
+    except requests.RequestException as e:
+        log_result("뉴욕연준 SME", "실패", str(e))
+        return None
+    except Exception as e:  # noqa: BLE001
+        log_result("뉴욕연준 SME", "실패", f"파싱 오류: {e}")
+        return None
+
+    if not sub:
+        log_result("뉴욕연준 SME", "실패", f"{file_url}에서 정책금리 문항을 찾지 못함")
+        return None
+
+    release_date = sub[0][idx["survey_release_date"]]
+
+    # 다음 FOMC 확률분포: 설문 시점에 제시된 회의별 문항 중 가장 늦은(=survey 시점
+    # 기준 가장 먼) 회의를 고른다(더 최근에 유효했던 전망을 보여주기 위함).
+    meeting_horizon = {}
+    for r in sub:
+        d = dict(zip(header, r))
+        if d["question_type"] == "probability_distribution" and re.match(r"^fftr_probdist_\d{8}$", d["question_tag"] or ""):
+            meeting_horizon[d["question_tag"]] = d["horizon_date"]
+    next_meeting = None
+    if meeting_horizon:
+        next_tag = max(meeting_horizon, key=lambda t: meeting_horizon[t])
+        buckets = []
+        for r in sub:
+            d = dict(zip(header, r))
+            if d["question_tag"] == next_tag and d["panel_type"] == "Combined" and d["aggregation"] == "avg":
+                buckets.append({
+                    "range": d["bucket_range"],
+                    "low": d["bucket_low"],
+                    "high": d["bucket_high"],
+                    "prob": round(float(d["aggregation_value"]) * 100, 1),
+                })
+        if buckets:
+            next_meeting = {"meeting_date": meeting_horizon[next_tag], "buckets": buckets}
+
+    # 연말 목표금리 중간값(올해/내년): path_of_modes 문항의 pctl50(중위수) 중
+    # 그 해 12월(또는 그 해 마지막) 시점을 고른다.
+    this_year, next_year = this_and_next_year()
+    by_horizon = {}
+    for r in sub:
+        d = dict(zip(header, r))
+        if d["question_type"] == "path_of_modes" and d["panel_type"] == "Combined" and d["aggregation"] == "pctl50":
+            by_horizon[d["horizon_date"]] = float(d["aggregation_value"]) * 100
+    year_end_median = {}
+    for yr in (this_year, next_year):
+        cands = sorted([h for h in by_horizon if isinstance(h, str) and h.startswith(str(yr))])
+        if cands:
+            year_end_median[str(yr)] = {"date": cands[-1], "value": round(by_horizon[cands[-1]], 3)}
+
+    if not next_meeting and not year_end_median:
+        log_result("뉴욕연준 SME", "실패", "확률분포·연말 중간값을 모두 찾지 못함")
+        return None
+
+    log_result("뉴욕연준 SME", "성공", f"{release_date} 발표분, 파일 {mon}-{year}")
+    return {
+        "survey_release_date": release_date,
+        "source_url": SME_INDEX_URL,
+        "file_url": file_url,
+        "next_meeting": next_meeting,
+        "year_end_median": year_end_median,
+    }
+
+
+# ---------------------------------------------------------------------------
+# 7. 시장금리 (ECOS 통안증권 1년·국고채 3년, FRED DGS2·DTB3·T5YIE·T10YIE) — 매번 실행
 # ---------------------------------------------------------------------------
 
 ECOS_MARKET_SERIES = {
@@ -536,6 +655,7 @@ ECOS_MARKET_SERIES = {
 }
 FRED_MARKET_SERIES = {
     "국채(2년)": "DGS2",
+    "국채(3개월)": "DTB3",
     "기대인플레이션(5년)": "T5YIE",
     "기대인플레이션(10년)": "T10YIE",
 }
@@ -747,6 +867,7 @@ def main():
     new_rows = []
 
     print("-- 기관 전망 / 설문 컨센서스 (매주 월요일만) --")
+    sme = None
     if is_monday or force_full:
         new_rows += collect_imf()
         new_rows += collect_oecd()
@@ -754,8 +875,15 @@ def main():
         new_rows += collect_ecb_projections()
         new_rows += collect_philly_fed_spf()
         new_rows += collect_ecb_spf()
+        sme = collect_ny_fed_sme()
+        if sme:
+            with open(SME_CACHE_PATH, "w", encoding="utf-8") as f:
+                json.dump(sme, f, ensure_ascii=False, indent=2)
     else:
         log_result("기관 전망 전체", "건너뜀", "월요일이 아님(주 1회만 조회)")
+    if sme is None and os.path.exists(SME_CACHE_PATH):
+        with open(SME_CACHE_PATH, encoding="utf-8") as f:
+            sme = json.load(f)
 
     print("\n-- 시장금리 (매번 실행) --")
     new_rows += collect_ecos_market_rates(ecos_key)
@@ -802,6 +930,7 @@ def main():
     output = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "rows": csv_rows_for_json,
+        "sme": sme,
         "collection_results": result_table,
     }
     with open(JSON_PATH, "w", encoding="utf-8") as f:

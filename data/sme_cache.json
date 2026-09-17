@@ -1,0 +1,80 @@
+{
+  "survey_release_date": "2026-07-15",
+  "source_url": "https://www.newyorkfed.org/markets/survey_market_participants",
+  "file_url": "https://www.newyorkfed.org/medialibrary/media/markets/survey/2026/jul-2026-data.xlsx",
+  "next_meeting": {
+    "meeting_date": "2026-09-16",
+    "buckets": [
+      {
+        "range": "<= 2.50%",
+        "low": null,
+        "high": 0.025,
+        "prob": 0.0
+      },
+      {
+        "range": "2.51 - 2.75%",
+        "low": 0.0251,
+        "high": 0.0275,
+        "prob": 0.0
+      },
+      {
+        "range": "2.76 - 3.00%",
+        "low": 0.0276,
+        "high": 0.03,
+        "prob": 0.0
+      },
+      {
+        "range": "3.01 - 3.25%",
+        "low": 0.0301,
+        "high": 0.0325,
+        "prob": 0.0
+      },
+      {
+        "range": "3.26 - 3.50%",
+        "low": 0.0326,
+        "high": 0.035,
+        "prob": 4.0
+      },
+      {
+        "range": "3.51 - 3.75%",
+        "low": 0.0351,
+        "high": 0.0375,
+        "prob": 61.0
+      },
+      {
+        "range": "3.76 - 4.00%",
+        "low": 0.0376,
+        "high": 0.04,
+        "prob": 29.0
+      },
+      {
+        "range": "4.01 - 4.25%",
+        "low": 0.0401,
+        "high": 0.0425,
+        "prob": 5.0
+      },
+      {
+        "range": "4.26 - 4.50%",
+        "low": 0.0426,
+        "high": 0.045,
+        "prob": 0.0
+      },
+      {
+        "range": ">= 4.51%",
+        "low": 0.0451,
+        "high": null,
+        "prob": 0.0
+      }
+    ]
+  },
+  "year_end_median": {
+    "2026": {
+      "date": "2026-12-09",
+      "value": 3.63
+    },
+    "2027": {
+      "date": "2027-12-31",
+      "value": 3.63
+    }
+  }
+}
