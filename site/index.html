@@ -2501,6 +2501,18 @@
     return dday === null ? f.date : f.date + " (저장 시점 D-" + dday + ")";
   }
 
+  // 로우데이터의 한국·미국 최신 정책금리로 계산한 '현재' 스프레드(월별 시계열이
+  // 아님). 기준일은 두 나라 중 더 최근에 바뀐 쪽의 변경일.
+  function computeCurrentKrUsSpread() {
+    var krRow = observationsFor("한국", "기준금리").slice(-1)[0];
+    var usRow = observationsFor("미국", "정책금리(상단)").slice(-1)[0];
+    if (!krRow || !usRow) return null;
+    return {
+      value: krRow.value - usRow.value,
+      date: krRow.date > usRow.date ? krRow.date : usRow.date
+    };
+  }
+
   function collectBokFacts() {
     var items = [];
     function add(label, obsOrNull, digits, unit) {
@@ -2518,15 +2530,16 @@
     add("기준금리", observationsFor("한국", "기준금리").slice(-1)[0], 2, "%");
     add("국채10년", observationsFor("한국", "국채10년").slice(-1)[0], 2, "%");
 
+    var krUsSpreadNow = computeCurrentKrUsSpread();
+    if (krUsSpreadNow) {
+      items.push({
+        label: "한미 정책금리차",
+        value: fmtNum(krUsSpreadNow.value, 2) + "%p",
+        date: krUsSpreadNow.date
+      });
+    }
+
     if (state.analysis) {
-      var spread = state.analysis.policy.spread_kr_us;
-      if (spread && spread.KR_US && spread.KR_US.length) {
-        items.push({
-          label: "한미 정책금리차",
-          value: fmtNum(spread.KR_US[spread.KR_US.length - 1], 2) + "%p",
-          date: spread.dates[spread.dates.length - 1]
-        });
-      }
       var market = state.analysis.market;
       items.push({
         label: "해외 금리 연동 (최근 24개월)",
