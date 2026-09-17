@@ -365,6 +365,9 @@
   #bok-panel h3:first-child { margin-top: 0; }
   .bok-fact-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
   .bok-fact-row b { font-variant-numeric: tabular-nums; }
+  .bok-fact-row-wide { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .bok-r2-list { font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .bok-r2-hit { color: var(--pos); }
   .spark { display: block; }
 
   #bok-save-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
@@ -2071,6 +2074,9 @@
       var detail = document.createElement("div");
       detail.className = "bok-history-detail";
       var factsHtml = (rec.facts || []).map(function (f) {
+        if (f._r2Parts) {
+          return escapeHtml(f.label) + ": " + renderR2PartsHtml(f._r2Parts);
+        }
         return escapeHtml(f.label) + ": " + escapeHtml(f.value) + (f.date ? " (" + f.date + ")" : "");
       }).join("<br>");
       detail.innerHTML = fmtBokCellsTable(rec) + "<div style='margin-top:8px;'><b>저장 시점 판단 근거 데이터</b><br>" + factsHtml + "</div>";
@@ -2356,6 +2362,42 @@
 
   // 판단 근거 데이터를 구조화된 배열로 모은다(표시용 renderBokFacts와 저장
   // 스냅샷용 saveBokSnapshot이 공유). 각 항목: {label, value(문자열, 단위 포함), date}
+  // '금리 연동 분석' 탭 배지와 동일한 기준(OLS·HAC 둘 다 유의해야 '강한 연동',
+  // 하나만 유의하면 '경계 신호')으로 최근 24개월 판정 문구를 만든다.
+  function linkageRecentSummaryText(market) {
+    if (market.strongest_recent) {
+      return LINKAGE_COUNTRY_LABEL[market.strongest_recent] + " 강한 연동";
+    }
+    if (market.strongest_recent_boundary) {
+      return "유의한 연동 없음 · " + LINKAGE_COUNTRY_LABEL[market.strongest_recent_boundary] + " 경계 신호";
+    }
+    return "유의한 연동 없음";
+  }
+
+  // 4개국 롤링 R² 최신값 + 유의수준 기준선 초과 여부. 플레인 텍스트(value)는
+  // 스냅샷·기록 상세에도 그대로 남고, parts는 렌더링 시 강조 표시에 쓴다.
+  function collectRollingR2Latest(market) {
+    var threshold = market.rolling ? market.rolling.r2_threshold : null;
+    var parts = LINKAGE_COUNTRY_CODES.map(function (code) {
+      var arr = market.rolling && market.rolling.r2 ? market.rolling.r2[code] : null;
+      var v = arr && arr.length ? arr[arr.length - 1] : null;
+      var exceeds = v != null && threshold != null && v > threshold;
+      return { code: code, value: v, exceeds: exceeds };
+    });
+    var anyExceeds = parts.some(function (p) { return p.exceeds; });
+    var text = parts.map(function (p) {
+      return LINKAGE_COUNTRY_LABEL[p.code] + " " + (p.value == null ? "-" : fmtNum(p.value, 3)) + (p.exceeds ? "*" : "");
+    }).join(" · ") + (anyExceeds ? " (*=유의수준 기준선 " + fmtNum(threshold, 3) + " 초과)" : "");
+    return { text: text, parts: parts, threshold: threshold };
+  }
+
+  function renderR2PartsHtml(parts) {
+    return parts.map(function (p) {
+      var text = LINKAGE_COUNTRY_LABEL[p.code] + " " + (p.value == null ? "-" : fmtNum(p.value, 3));
+      return p.exceeds ? "<b class='bok-r2-hit'>" + text + "</b>" : "<span class='muted'>" + text + "</span>";
+    }).join(" · ");
+  }
+
   function collectBokFacts() {
     var items = [];
     function add(label, obsOrNull, digits, unit) {
@@ -2383,15 +2425,19 @@
         });
       }
       var market = state.analysis.market;
-      var strongest = market.strongest;
-      if (strongest && market.rolling.beta[strongest] && market.rolling.beta[strongest].length) {
-        var rb = market.rolling.beta[strongest], rd = market.rolling.dates[strongest];
-        items.push({
-          label: "롤링 β 최신값 (" + LINKAGE_COUNTRY_LABEL[strongest] + ", 가장 강한 연동)",
-          value: fmtNum(rb[rb.length - 1], 3),
-          date: rd[rd.length - 1]
-        });
-      }
+      items.push({
+        label: "해외 금리 연동 (최근 24개월)",
+        value: linkageRecentSummaryText(market),
+        date: null
+      });
+
+      var r2Latest = collectRollingR2Latest(market);
+      items.push({
+        label: "롤링 R² 최신값",
+        value: r2Latest.text,
+        date: null,
+        _r2Parts: r2Latest.parts
+      });
     }
 
     var today = todayStr();
@@ -2418,6 +2464,9 @@
       "CPI 근원(YoY)": sparkSvg(recentValues("한국", "CPI 근원", 3))
     };
     el.innerHTML = facts.items.map(function (f) {
+      if (f._r2Parts) {
+        return "<div class='bok-fact-row bok-fact-row-wide'><span>" + f.label + "</span><span class='bok-r2-list'>" + renderR2PartsHtml(f._r2Parts) + "</span></div>";
+      }
       var extra = sparkByLabel[f.label] ? " " + sparkByLabel[f.label] : "";
       return "<div class='bok-fact-row'><span>" + f.label + "</span><b>" + f.value + extra + "</b></div>";
     }).join("");
