@@ -58,7 +58,7 @@ MANUAL_INSTITUTION_KIND = {
     "ECB SMA": "설문컨센서스",
     "분데스방크": "기관전망",
     "Banque de France": "기관전망",
-    "EU집행위": "기관전망",
+    "EU 집행위원회": "기관전망",
 }
 
 IMF_COUNTRIES = {"한국": "KOR", "미국": "USA", "일본": "JPN", "독일": "DEU", "프랑스": "FRA"}

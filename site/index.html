@@ -2912,7 +2912,8 @@
     "소비자물가상승률", "CPI 헤드라인", "CPI 근원",
     "HICP상승률", "HICP 헤드라인", "HICP 근원",
     "PCE물가상승률", "PCE 근원", "실업률",
-    "정책금리(중간값)", "정책금리방향", "기준금리 방향", "정책금리 방향"
+    "정책금리(중간값)", "정책금리방향", "기준금리 방향", "정책금리 방향",
+    "예금금리 방향", "예금금리 중간값"
   ];
   var MARKET_CB_LABEL = { bok: "한국은행", fed: "연준", ecb: "ECB" };
 
@@ -3012,7 +3013,11 @@
     return m ? m[1] : null;
   }
   function extractActualResult(note) {
-    var m = /실제\s*결과\s*[:：]\s*(\S+)/.exec(note || "");
+    var m = /실제\s*결과\s*[:：]\s*(동결|인상|인하)/.exec(note || "");
+    return m ? m[1] : null;
+  }
+  function extractDfrValue(note) {
+    var m = /DFR\s*([\d.]+)/.exec(note || "");
     return m ? m[1] : null;
   }
 
@@ -3424,21 +3429,53 @@
   // ---- ECB 탭: SMA(수동) + 독일·프랑스 국채10년 + ECB staff projections ----
   function renderMarketEcbSma() {
     var el = document.getElementById("market-sma-status");
-    var rows = forecastRows().filter(function (r) { return r.기관 === "ECB SMA" && r.국가 === "유로존"; });
-    if (!rows.length) {
+    var allRows = forecastRows().filter(function (r) { return r.기관 === "ECB SMA" && r.국가 === "유로존"; });
+    if (!allRows.length) {
       el.innerHTML = "수동 입력 대기 — <a href='https://github.com/rhddyd12345678-blip/macro-econ-tracker/blob/main/docs/%EC%88%98%EB%8F%99%EC%A0%84%EB%A7%9D%EC%9E%85%EB%A0%A5.md' target='_blank' rel='noopener'>docs/수동전망입력.md</a> 참고 (ECB SMA는 PDF 집계표만 제공)";
       return;
     }
-    var last = rows.reduce(function (a, b) { return b.발표일 > a.발표일 ? b : a; });
-    var meetingDate = extractMeetingDate(last.대상기간);
-    var isPast = meetingDate && meetingDate < todayStr();
-    var parts = [];
-    if (last.전망치 != null) parts.push("전망 중간값 " + fmtNum(Number(last.전망치), 2) + "%");
-    if (last.응답비율_동결 != null) parts.push("동결 " + fmtNum(Number(last.응답비율_동결), 0) + "%");
-    if (last.응답비율_인상 != null) parts.push("인상 " + fmtNum(Number(last.응답비율_인상), 0) + "%");
-    if (last.응답비율_인하 != null) parts.push("인하 " + fmtNum(Number(last.응답비율_인하), 0) + "%");
-    el.innerHTML = (isPast ? "<b>지난 조사</b> (대상 회의 " + meetingDate + ") · " : (meetingDate ? "대상 회의: <b>" + meetingDate + "</b> (예정) · " : "")) +
-      (parts.join(", ") || "-") + sourceLineHtml(last.출처URL, last.발표일);
+    var latestRelease = allRows.reduce(function (d, r) { return r.발표일 > d ? r.발표일 : d; }, allRows[0].발표일);
+    var rows = allRows.filter(function (r) { return r.발표일 === latestRelease; });
+    var today = todayStr();
+
+    var directionRows = rows.filter(function (r) { return r.지표 === "예금금리 방향"; })
+      .slice().sort(function (a, b) {
+        var da = extractMeetingDate(a.대상기간) || a.대상기간, db = extractMeetingDate(b.대상기간) || b.대상기간;
+        return da < db ? -1 : da > db ? 1 : 0;
+      });
+    var medianRows = rows.filter(function (r) { return r.지표 === "예금금리 중간값"; });
+
+    var currentRate = null, currentRateDate = null;
+    directionRows.forEach(function (r) {
+      var meetingDate = extractMeetingDate(r.대상기간);
+      if (meetingDate && meetingDate < today) {
+        var dfr = extractDfrValue(r.비고);
+        if (dfr && (!currentRateDate || meetingDate > currentRateDate)) { currentRate = dfr; currentRateDate = meetingDate; }
+      }
+    });
+
+    var html = "";
+    if (currentRate != null) {
+      html += "<div class='bok-fact-row'><span>현재 정책금리(예금금리)</span><b>" + escapeHtml(currentRate) + "% (" + currentRateDate + " 결정)</b></div>";
+    }
+    directionRows.forEach(function (r) {
+      var meetingDate = extractMeetingDate(r.대상기간);
+      var isPast = meetingDate && meetingDate < today;
+      var actual = isPast ? extractActualResult(r.비고) : null;
+      var parts = [];
+      if (r.응답비율_동결 != null) parts.push("동결 " + fmtNum(Number(r.응답비율_동결), 1) + "%");
+      if (r.응답비율_인상 != null) parts.push("인상 " + fmtNum(Number(r.응답비율_인상), 1) + "%");
+      if (r.응답비율_인하 != null) parts.push("인하 " + fmtNum(Number(r.응답비율_인하), 1) + "%");
+      var label = isPast
+        ? "<b>지난 조사</b> (대상 회의 " + (meetingDate || r.대상기간) + ")" + (actual ? " · 실제 결과: <b>" + escapeHtml(actual) + "</b>" : "")
+        : "<b>다음 회의 설문</b> (대상 회의 " + (meetingDate || r.대상기간) + ")";
+      html += "<div class='bok-fact-row bok-fact-row-wide'><span>" + label + "</span><b>" + (parts.join(", ") || "-") + "</b></div>";
+    });
+    medianRows.forEach(function (r) {
+      html += "<div class='bok-fact-row'><span>예금금리 중간값(" + escapeHtml(r.대상기간) + ")</span><b>" + (r.전망치 != null ? fmtNum(Number(r.전망치), 2) + "%" : "-") + "</b></div>";
+    });
+    html += sourceLineHtml(rows[0].출처URL, latestRelease);
+    el.innerHTML = html;
   }
 
   function renderMarketEcbBondChart() {

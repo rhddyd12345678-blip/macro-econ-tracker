@@ -24,3 +24,37 @@
 2026-07-24,ECB SPF,유로존,실질GDP 성장률,2026,0.6,,,,https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260724~a099353951.en.html,3분기 조사
 2026-07-24,ECB SPF,유로존,실질GDP 성장률,2027,1.2,,,,https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260724~a099353951.en.html,3분기 조사
 2026-07-24,ECB SPF,유로존,실업률,2026,6.3,,,,https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260724~a099353951.en.html,3분기 조사
+2026-09-11,ECB SMA,유로존,예금금리 방향,2026-09-10 ECB 회의,,14.7,85.1,0.1,https://www.ecb.europa.eu/stats/ecb_surveys/sma/shared/pdf/ecb.smar260911_september.en.pdf,9월 SMA(조사 8/24~26·69명) 첫 회의 확률. 실제 결과: 인상(DFR 2.50)
+2026-09-11,ECB SMA,유로존,예금금리 방향,2026-10-29 ECB 회의,,81.3,18.4,0.3,https://www.ecb.europa.eu/stats/ecb_surveys/sma/shared/pdf/ecb.smar260911_september.en.pdf,9월 SMA 두 번째 회의 확률
+2026-09-11,ECB SMA,유로존,예금금리 중간값,2026-12,2.50,,,,https://www.ecb.europa.eu/stats/ecb_surveys/sma/shared/pdf/ecb.smar260911_september.en.pdf,9월 SMA 응답 중간값
+2026-06-12,분데스방크,독일,HICP 헤드라인,2026,2.9,,,,https://www.bundesbank.de/en/press/press-releases/the-bundesbank-s-forecast-for-germany-energy-price-shock-slowing-down-economic-recovery-964668,6월 전망
+2026-06-12,분데스방크,독일,HICP 헤드라인,2027,2.7,,,,https://www.bundesbank.de/en/press/press-releases/the-bundesbank-s-forecast-for-germany-energy-price-shock-slowing-down-economic-recovery-964668,6월 전망
+2026-06-12,분데스방크,독일,HICP 헤드라인,2028,1.9,,,,https://www.bundesbank.de/en/press/press-releases/the-bundesbank-s-forecast-for-germany-energy-price-shock-slowing-down-economic-recovery-964668,6월 전망
+2026-06-12,분데스방크,독일,HICP 근원,2028,2.3,,,,https://www.bundesbank.de/en/press/press-releases/the-bundesbank-s-forecast-for-germany-energy-price-shock-slowing-down-economic-recovery-964668,6월 전망(2026·2027 근원은 발표문에 수치 없음)
+2026-06-12,분데스방크,독일,실질GDP 성장률,2026,0.5,,,,https://www.bundesbank.de/en/press/press-releases/the-bundesbank-s-forecast-for-germany-energy-price-shock-slowing-down-economic-recovery-964668,달력조정
+2026-06-12,분데스방크,독일,실질GDP 성장률,2027,0.8,,,,https://www.bundesbank.de/en/press/press-releases/the-bundesbank-s-forecast-for-germany-energy-price-shock-slowing-down-economic-recovery-964668,달력조정
+2026-06-12,분데스방크,독일,실질GDP 성장률,2028,1.4,,,,https://www.bundesbank.de/en/press/press-releases/the-bundesbank-s-forecast-for-germany-energy-price-shock-slowing-down-economic-recovery-964668,달력조정
+2026-09-15,Banque de France,프랑스,실질GDP 성장률,2026,0.4,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,9월 중간 전망
+2026-09-15,Banque de France,프랑스,실질GDP 성장률,2027,0.9,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,9월 중간 전망
+2026-09-15,Banque de France,프랑스,실질GDP 성장률,2028,1.2,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,9월 중간 전망
+2026-09-15,Banque de France,프랑스,HICP 헤드라인,2026,2.3,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,9월 중간 전망
+2026-09-15,Banque de France,프랑스,HICP 헤드라인,2027,1.9,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,9월 중간 전망
+2026-09-15,Banque de France,프랑스,HICP 헤드라인,2028,1.6,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,9월 중간 전망
+2026-09-15,Banque de France,프랑스,HICP 근원,2026,1.6,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,에너지·식품 제외
+2026-09-15,Banque de France,프랑스,HICP 근원,2027,2.3,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,에너지·식품 제외
+2026-09-15,Banque de France,프랑스,HICP 근원,2028,1.9,,,,https://www.banque-france.fr/fr/actualites/projections-macroeconomiques-intermediaires-septembre-2026,에너지·식품 제외
+2026-09-15,Banque de France,프랑스,실업률,2026,8.3,,,,https://www.boursorama.com/actualite-economique/actualites/la-banque-de-france-revoit-a-son-tour-sa-prevision-de-croissance-2026-b71a90a9f8984aa3a90b7b64918c409a,연평균
+2026-09-15,Banque de France,프랑스,실업률,2027,8.3,,,,https://www.boursorama.com/actualite-economique/actualites/la-banque-de-france-revoit-a-son-tour-sa-prevision-de-croissance-2026-b71a90a9f8984aa3a90b7b64918c409a,연평균
+2026-09-15,Banque de France,프랑스,실업률,2028,8.0,,,,https://www.boursorama.com/actualite-economique/actualites/la-banque-de-france-revoit-a-son-tour-sa-prevision-de-croissance-2026-b71a90a9f8984aa3a90b7b64918c409a,연평균
+2026-05-21,EU 집행위원회,독일,실질GDP 성장률,2026,0.6,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/germany/economic-forecast-germany_en,봄 전망
+2026-05-21,EU 집행위원회,독일,실질GDP 성장률,2027,0.9,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/germany/economic-forecast-germany_en,봄 전망
+2026-05-21,EU 집행위원회,독일,HICP 헤드라인,2026,2.9,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/germany/economic-forecast-germany_en,봄 전망
+2026-05-21,EU 집행위원회,독일,HICP 헤드라인,2027,2.7,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/germany/economic-forecast-germany_en,봄 전망
+2026-05-21,EU 집행위원회,독일,실업률,2026,4.0,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/germany/economic-forecast-germany_en,봄 전망
+2026-05-21,EU 집행위원회,독일,실업률,2027,3.9,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/germany/economic-forecast-germany_en,봄 전망
+2026-05-21,EU 집행위원회,프랑스,실질GDP 성장률,2026,0.8,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/france/economic-forecast-france_en,봄 전망
+2026-05-21,EU 집행위원회,프랑스,실질GDP 성장률,2027,1.1,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/france/economic-forecast-france_en,봄 전망
+2026-05-21,EU 집행위원회,프랑스,HICP 헤드라인,2026,2.4,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/france/economic-forecast-france_en,봄 전망
+2026-05-21,EU 집행위원회,프랑스,HICP 헤드라인,2027,1.8,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/france/economic-forecast-france_en,봄 전망
+2026-05-21,EU 집행위원회,프랑스,실업률,2026,8.3,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/france/economic-forecast-france_en,봄 전망
+2026-05-21,EU 집행위원회,프랑스,실업률,2027,8.7,,,,https://economy-finance.ec.europa.eu/economic-surveillance-eu-member-states/country-pages-including-country-reports/france/economic-forecast-france_en,봄 전망
