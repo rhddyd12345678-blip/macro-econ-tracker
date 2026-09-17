@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T18:10:08",
+  "generated_at": "2026-09-17T09:13:36",
   "rows": [
     {
       "발표일": "2024-08-01",
@@ -2652,6 +2652,34 @@
       "기관": "OECD",
       "종류": "기관전망",
       "국가": "프랑스",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 2.237,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-09-17",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 2.237,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-09-17",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
       "지표": "실업률",
       "대상기간": "2026 (Economic Outlook 119)",
       "전망치": 8.326,
@@ -2786,66 +2814,13 @@
       "응답비율_인하": null,
       "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
       "비고": ""
-    },
-    {
-      "발표일": "2026-09-17",
-      "기관": "OECD",
-      "종류": "기관전망",
-      "국가": "프랑스",
-      "지표": "단기금리(정책금리 근사)",
-      "대상기간": "2027 (Economic Outlook 119)",
-      "전망치": 2.237,
-      "응답비율_동결": null,
-      "응답비율_인상": null,
-      "응답비율_인하": null,
-      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
-      "비고": ""
-    },
-    {
-      "발표일": "2026-09-17",
-      "기관": "OECD",
-      "종류": "기관전망",
-      "국가": "프랑스",
-      "지표": "단기금리(정책금리 근사)",
-      "대상기간": "2026 (Economic Outlook 119)",
-      "전망치": 2.237,
-      "응답비율_동결": null,
-      "응답비율_인상": null,
-      "응답비율_인하": null,
-      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
-      "비고": ""
     }
   ],
   "collection_results": [
     {
-      "출처": "IMF WEO DataMapper",
-      "상태": "성공",
-      "비고": "30건"
-    },
-    {
-      "출처": "OECD Economic Outlook",
-      "상태": "성공",
-      "비고": "30건 (dataflow v1.5)"
-    },
-    {
-      "출처": "연준 SEP",
-      "상태": "성공",
-      "비고": "8건 (2026-09-16 발표분)"
-    },
-    {
-      "출처": "ECB staff projections",
-      "상태": "성공",
-      "비고": "4건 (유로존 집계, 국가별 분해 없음)"
-    },
-    {
-      "출처": "필라델피아 연준 SPF",
-      "상태": "성공",
-      "비고": "4건"
-    },
-    {
-      "출처": "ECB SPF",
-      "상태": "차단",
-      "비고": "data-api.ecb.europa.eu WAF 차단 — forecasts_manual.csv에 수동 입력 필요"
+      "출처": "기관 전망 전체",
+      "상태": "건너뜀",
+      "비고": "월요일이 아님(주 1회만 조회)"
     },
     {
       "출처": "ECOS 시장금리",
