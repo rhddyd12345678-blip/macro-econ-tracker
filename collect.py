@@ -1626,6 +1626,16 @@ def main():
         if result.returncode != 0:
             print("경고: export.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
 
+    # forecast_collect.py: 기관 전망·설문 컨센서스·시장금리를 모아
+    # site/data/forecasts.json으로 내보낸다. 이 스크립트가 실패해도 collect.py
+    # 자체의 성공 여부에는 영향을 주지 않는다(경고만 출력).
+    forecast_path = os.path.join(base_dir, "forecast_collect.py")
+    if os.path.exists(forecast_path):
+        print("\n=== forecast_collect.py 실행 ===")
+        result = subprocess.run([sys.executable, forecast_path])
+        if result.returncode != 0:
+            print("경고: forecast_collect.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
+
     if indicators and len(failed) == len(indicators):
         print(f"\n오류: 대상 지표 {len(indicators)}개가 전부 수집 실패했습니다.", file=sys.stderr)
         sys.exit(1)

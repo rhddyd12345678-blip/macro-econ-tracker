@@ -424,6 +424,36 @@
   #downloads-list a:hover { border-color: var(--accent); color: var(--accent); }
   #downloads-sources { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
 
+  /* ---- 시장 전망 탭 ---- */
+  #view-market h3 { font-size: 13.5px; margin: 0 0 8px; }
+  .market-bar-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 12.5px; }
+  .market-bar-label { flex: 0 0 60px; }
+  .market-bar-track { flex: 1; height: 18px; background: var(--tab-bg); border-radius: 4px; overflow: hidden; display: flex; }
+  .market-bar-fill { height: 100%; }
+  .market-bar-fill.hold { background: var(--accent); }
+  .market-bar-fill.hike { background: var(--neg); }
+  .market-bar-fill.cut { background: var(--pos); }
+  .market-bar-value { flex: 0 0 42px; text-align: right; font-variant-numeric: tabular-nums; }
+  #market-bmsi-compare { margin-top: 8px; }
+
+  .market-source-line { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .market-source-line a { color: inherit; }
+
+  table.market-table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin: 8px 0 18px; }
+  table.market-table th, table.market-table td {
+    border: 1px solid var(--border); padding: 6px 8px; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  table.market-table th:first-child, table.market-table td:first-child { text-align: left; font-variant-numeric: normal; }
+  table.market-table th { background: var(--tab-bg); }
+  table.market-table td.src-cell { text-align: left; font-size: 11px; color: var(--muted); }
+  .market-vintage-trend { height: 90px; margin: 4px 0 16px; }
+
+  #market-us-policy-compare .bok-fact-row { border-bottom: 1px dashed var(--border); }
+  #market-collection-results table.market-table td.status-성공 { color: var(--pos); }
+  #market-collection-results table.market-table td.status-차단,
+  #market-collection-results table.market-table td.status-실패 { color: var(--neg); }
+  #market-collection-results table.market-table td.status-건너뜀 { color: var(--muted); }
+
   @media (max-width: 640px) {
     #charts-grid { grid-template-columns: 1fr; }
     .chart-wrap { height: 200px; }
@@ -438,6 +468,9 @@
     .bok-history-record .rec-actions { margin-left: 0; width: 100%; }
     .bok-history-group-head { flex-direction: column; align-items: flex-start; }
     .bok-actual-result { flex-direction: column; align-items: stretch; }
+    table.market-table { font-size: 11px; }
+    table.market-table th, table.market-table td { padding: 4px 5px; }
+    .market-bar-label { flex-basis: 46px; }
   }
 </style>
 </head>
@@ -461,6 +494,7 @@
     <button type="button" data-view="countries" class="active">국가별 지표</button>
     <button type="button" data-view="linkage">금리 연동 분석</button>
     <button type="button" data-view="bok">금통위 전망</button>
+    <button type="button" data-view="market">시장 전망</button>
   </nav>
 
   <div id="view-countries">
@@ -591,6 +625,49 @@
     </section>
   </div>
 
+  <div id="view-market" style="display:none;">
+    <section class="panel card">
+      <h2>한국 금통위 컨센서스</h2>
+
+      <div id="market-bmsi-wrap">
+        <h3>금투협 BMSI 기준금리 방향 응답 비율</h3>
+        <div id="market-bmsi-bar"></div>
+        <div id="market-bmsi-empty" class="muted" style="display:none;">수동 입력 대기 — <a href="https://github.com/rhddyd12345678-blip/macro-econ-tracker/blob/main/docs/%EC%88%98%EB%8F%99%EC%A0%84%EB%A7%9D%EC%9E%85%EB%A0%A5.md" target="_blank" rel="noopener">docs/수동전망입력.md</a> 참고</div>
+        <div id="market-bmsi-compare" class="muted" style="display:none;"></div>
+      </div>
+
+      <h3 style="margin-top:18px;">시장금리 - 기준금리 스프레드 (최근 2년)</h3>
+      <div class="linkage-desc">시장금리와 기준금리의 차이는 인상·인하 기대의 방향을 보여주는 참고 지표이며, 기간 프리미엄·수급 영향이 섞여 확률로 해석할 수 없습니다.</div>
+      <div class="chart-wrap" style="height:260px;"><canvas id="market-spread-chart"></canvas></div>
+
+      <h3 style="margin-top:18px;">한국은행 최신 전망</h3>
+      <div id="market-bok-outlook"></div>
+    </section>
+
+    <section class="panel card">
+      <h2>국가별 전망</h2>
+      <div class="mini-tabs" id="market-country-tabs"></div>
+      <div id="market-country-tables"></div>
+
+      <div id="market-us-extra" style="margin-top:18px;">
+        <h3>미국: 정책금리 전망 vs 현재</h3>
+        <div id="market-us-policy-compare"></div>
+        <h3 style="margin-top:14px;">미국·유로존 기대인플레이션 추이</h3>
+        <div class="chart-wrap" style="height:240px;"><canvas id="market-breakeven-chart"></canvas></div>
+      </div>
+    </section>
+
+    <section class="panel card">
+      <h2>수집 결과</h2>
+      <div id="market-collection-results"></div>
+      <div class="muted" style="margin-top:10px;">
+        자동 수집: IMF·OECD·연준 SEP·ECB staff projections·필라델피아 연준 SPF·ECOS·FRED(각 원문 출처 표기 필요, 무료 재사용 약관 확인됨).
+        수동 입력: 한국은행·일본은행·금투협 BMSI·JCER·ECB SPF(수치만 옮기며 원문 그대로 게재하지 않음). 자세한 내용은
+        <a href="https://github.com/rhddyd12345678-blip/macro-econ-tracker/blob/main/%EC%8B%9C%EC%9E%A5%EC%A0%84%EB%A7%9D_%EC%B6%9C%EC%B2%98%EC%A1%B0%EC%82%AC.md" target="_blank" rel="noopener">시장전망_출처조사.md</a> 참고.
+      </div>
+    </section>
+  </div>
+
   <section class="panel card" id="downloads-section">
     <h2>⬇ 데이터 다운로드</h2>
     <div id="downloads-list"></div>
@@ -618,6 +695,7 @@
     events: [],
     recent: [],
     analysis: null,
+    forecasts: null,
     country: "미국",
     calScope: "country",
     calCursor: null, // {year, month} for month view
@@ -626,6 +704,8 @@
     linkageCharts: [],
     bokTrendCharts: [],
     bokDetailOpen: {},
+    marketCountry: "한국",
+    marketCharts: [],
     charts: []
   };
 
@@ -665,14 +745,16 @@
     loadJSON("data/data.json"),
     loadJSON("data/calendar.json"),
     loadJSON("data/recent.json").catch(function () { return { events: [] }; }),
-    loadJSON("data/analysis.json").catch(function () { return null; })
+    loadJSON("data/analysis.json").catch(function () { return null; }),
+    loadJSON("data/forecasts.json").catch(function () { return null; })
   ]).then(function (results) {
-    var data = results[0], cal = results[1], recent = results[2], analysis = results[3];
+    var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
     state.indicators = data.indicators || [];
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
     state.recent = recent.entries || recent.events || [];
     state.analysis = analysis;
+    state.forecasts = forecasts;
     // 로우데이터에 실제로 기록된 발표일(release_date가 있는 관측치) -> 달력에 "지난 발표"로 표시
     state.pastReleases = state.observations
       .filter(function (o) { return !!o.release_date; })
@@ -719,8 +801,10 @@
     document.getElementById("view-countries").style.display = view === "countries" ? "" : "none";
     document.getElementById("view-linkage").style.display = view === "linkage" ? "" : "none";
     document.getElementById("view-bok").style.display = view === "bok" ? "" : "none";
+    document.getElementById("view-market").style.display = view === "market" ? "" : "none";
     if (view === "linkage") renderLinkage();
     if (view === "bok") renderBokFacts();
+    if (view === "market") renderMarketTab();
   }
 
   // ---- country tabs ----
@@ -2458,6 +2542,33 @@
       });
     }
 
+    if (state.forecasts) {
+      var bmsi = latestManualRow("금융투자협회", "정책금리방향", "한국");
+      if (bmsi) {
+        var bmsiParts = [];
+        if (bmsi.응답비율_동결 != null) bmsiParts.push("동결 " + fmtNum(Number(bmsi.응답비율_동결), 0) + "%");
+        if (bmsi.응답비율_인상 != null) bmsiParts.push("인상 " + fmtNum(Number(bmsi.응답비율_인상), 0) + "%");
+        if (bmsi.응답비율_인하 != null) bmsiParts.push("인하 " + fmtNum(Number(bmsi.응답비율_인하), 0) + "%");
+        items.push({ label: "BMSI 최신 응답 비율", value: bmsiParts.join(", ") || "-", date: bmsi.발표일 });
+      } else {
+        items.push({ label: "BMSI 최신 응답 비율", value: "수동 입력 대기", date: null });
+      }
+
+      if (state.analysis) {
+        var msb1yRows = marketRateSeries("한국은행(ECOS)", "통안증권(1년)");
+        var policyMapKR = policyRateMonthlyMap("KR");
+        var lastMsb = msb1yRows.length ? msb1yRows[msb1yRows.length - 1] : null;
+        var policyAtPeriod = lastMsb ? policyMapKR[lastMsb.대상기간] : null;
+        if (lastMsb && policyAtPeriod != null) {
+          items.push({
+            label: "통안증권(1년) - 기준금리",
+            value: fmtNum(Number(lastMsb.전망치) - policyAtPeriod, 2) + "%p",
+            date: lastMsb.대상기간
+          });
+        }
+      }
+    }
+
     var today = todayStr();
     var nextMeeting = state.events
       .filter(function (e) { return e.country === "한국" && e.indicator === "기준금리" && e.date >= today; })
@@ -2525,6 +2636,343 @@
       "<div style='margin-top:6px;'><b>출처</b><ul>" +
       Object.keys(sources).sort().map(function (s) { return "<li>" + s + "</li>"; }).join("") +
       "</ul></div>";
+  }
+
+  // ==================================================================
+  // ---- 시장 전망 탭 ----
+  // ==================================================================
+  var MARKET_COUNTRIES = ["한국", "미국", "일본", "독일", "프랑스", "유로존"];
+  var MARKET_INDICATOR_ORDER = ["실질GDP성장률", "소비자물가상승률", "HICP상승률", "PCE물가상승률", "실업률", "정책금리(중간값)", "정책금리방향"];
+
+  function destroyMarketCharts() {
+    state.marketCharts.forEach(function (c) { c.destroy(); });
+    state.marketCharts = [];
+  }
+
+  function forecastRows() {
+    return (state.forecasts && state.forecasts.rows) || [];
+  }
+
+  function sourceLineHtml(url, date) {
+    var parts = [];
+    if (date) parts.push("발표일 " + date);
+    if (url) parts.push("<a href='" + url + "' target='_blank' rel='noopener'>원문</a>");
+    return parts.length ? "<div class='market-source-line'>" + parts.join(" · ") + "</div>" : "";
+  }
+
+  // ---- 통안1년/국고채3년 - 기준금리 스프레드 ----
+  function policyRateMonthlyMap(code) {
+    var map = {};
+    if (!state.analysis || !state.analysis.policy || !state.analysis.policy.series) return map;
+    var series = state.analysis.policy.series;
+    var dates = series.dates || [];
+    var vals = series[code] || [];
+    dates.forEach(function (d, i) {
+      if (vals[i] != null) map[d.slice(0, 7)] = vals[i];
+    });
+    return map;
+  }
+
+  function marketRateSeries(institution, indicator) {
+    return forecastRows()
+      .filter(function (r) { return r.기관 === institution && r.지표 === indicator; })
+      .sort(function (a, b) { return a.대상기간 < b.대상기간 ? -1 : 1; });
+  }
+
+  function computeSpreadSeries(indicator, policyMap) {
+    var cutoff = shiftMonthStr(todayStr(), -24);
+    return marketRateSeries("한국은행(ECOS)", indicator)
+      .filter(function (r) { return r.대상기간 + "-01" >= cutoff; })
+      .map(function (r) {
+        var policy = policyMap[r.대상기간];
+        if (policy == null || r.전망치 == null) return null;
+        return { x: r.대상기간 + "-01", y: round2(r.전망치 - policy) };
+      })
+      .filter(Boolean);
+  }
+  function round2(v) { return Math.round(v * 100) / 100; }
+
+  function renderMarketSpreadChart() {
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var policyMap = policyRateMonthlyMap("KR");
+    var s1y = computeSpreadSeries("통안증권(1년)", policyMap);
+    var s3y = computeSpreadSeries("국고채(3년)", policyMap);
+    var canvas = document.getElementById("market-spread-chart");
+    if (!s1y.length && !s3y.length) {
+      canvas.replaceWith(emptyMsg());
+      return;
+    }
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: {
+        datasets: [
+          { label: "통안증권(1년) - 기준금리", data: s1y, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 2, borderWidth: 2 },
+          { label: "국고채(3년) - 기준금리", data: s3y, borderColor: cssVar("--accent4"), backgroundColor: cssVar("--accent4"), pointRadius: 2, borderWidth: 2 },
+          { label: "0 기준선", data: (s1y.length ? s1y : s3y).map(function (p) { return { x: p.x, y: 0 }; }), borderColor: muted, borderDash: [5, 4], borderWidth: 1, pointRadius: 0 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { title: { display: true, text: "%p", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.marketCharts.push(chart);
+  }
+
+  // ---- BMSI ----
+  function latestManualRow(institution, indicator, country) {
+    var rows = forecastRows().filter(function (r) {
+      return r.기관 === institution && r.지표 === indicator && (!country || r.국가 === country);
+    });
+    if (!rows.length) return null;
+    rows.sort(function (a, b) { return a.발표일 < b.발표일 ? -1 : 1; });
+    return rows[rows.length - 1];
+  }
+
+  function renderMarketBmsi() {
+    var bar = document.getElementById("market-bmsi-bar");
+    var emptyEl = document.getElementById("market-bmsi-empty");
+    var compareEl = document.getElementById("market-bmsi-compare");
+    var latest = latestManualRow("금융투자협회", "정책금리방향", "한국");
+    if (!latest || (latest.응답비율_동결 == null && latest.응답비율_인상 == null && latest.응답비율_인하 == null)) {
+      bar.innerHTML = "";
+      emptyEl.style.display = "block";
+      compareEl.style.display = "none";
+      return;
+    }
+    emptyEl.style.display = "none";
+    var vals = { 동결: latest.응답비율_동결 || 0, 인상: latest.응답비율_인상 || 0, 인하: latest.응답비율_인하 || 0 };
+    var cls = { 동결: "hold", 인상: "hike", 인하: "cut" };
+    bar.innerHTML = Object.keys(vals).map(function (k) {
+      return "<div class='market-bar-row'><span class='market-bar-label'>" + k + "</span>" +
+        "<div class='market-bar-track'><div class='market-bar-fill " + cls[k] + "' style='width:" + Math.max(vals[k], 0) + "%'></div></div>" +
+        "<span class='market-bar-value'>" + fmtNum(vals[k], 0) + "%</span></div>";
+    }).join("") + sourceLineHtml(latest.출처URL, latest.발표일);
+
+    // '내 전망과 비교': 금통위 전망 탭 최근 저장 기록의 동결/인상 합계
+    var hist = loadBokHistory();
+    if (hist.records && hist.records.length) {
+      var sorted = hist.records.slice().sort(function (a, b) { return a.savedAtMs - b.savedAtMs; });
+      var last = sorted[sorted.length - 1];
+      var cols = (last.sums && last.sums.cols) || {};
+      compareEl.style.display = "block";
+      compareEl.innerHTML = "<b>내 전망과 비교</b> (마지막 저장: " + last.savedAt + (last.title ? ", " + escapeHtml(last.title) : "") + ") — " +
+        "동결 " + fmtNum(cols.hold, 0) + "% (BMSI " + fmtNum(vals.동결, 0) + "%), " +
+        "인상 " + fmtNum(cols.hike, 0) + "% (BMSI " + fmtNum(vals.인상, 0) + "%)";
+    } else {
+      compareEl.style.display = "none";
+    }
+  }
+
+  // ---- 한국은행 최신 전망 ----
+  function renderMarketBokOutlook() {
+    var el = document.getElementById("market-bok-outlook");
+    var gdp = latestManualRow("한국은행", "실질GDP성장률", "한국");
+    var cpi = latestManualRow("한국은행", "소비자물가상승률", "한국");
+    if (!gdp && !cpi) {
+      el.innerHTML = "<div class='muted'>수동 입력 대기 — docs/수동전망입력.md 참고</div>";
+      return;
+    }
+    var html = "";
+    [["실질GDP성장률", gdp], ["소비자물가상승률", cpi]].forEach(function (pair) {
+      var label = pair[0], row = pair[1];
+      if (!row) return;
+      html += "<div class='bok-fact-row'><span>" + label + " (" + row.대상기간 + ")</span><b>" + fmtNum(Number(row.전망치), 1) + "%</b></div>";
+    });
+    html += sourceLineHtml((gdp || cpi).출처URL, (gdp || cpi).발표일);
+    el.innerHTML = html;
+  }
+
+  // ---- 국가별 전망 표 ----
+  function buildMarketCountryTabs() {
+    var nav = document.getElementById("market-country-tabs");
+    nav.innerHTML = "";
+    MARKET_COUNTRIES.forEach(function (c) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = c;
+      if (c === state.marketCountry) btn.className = "active";
+      btn.addEventListener("click", function () {
+        state.marketCountry = c;
+        Array.prototype.forEach.call(nav.querySelectorAll("button"), function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        renderMarketCountryTable(c);
+        document.getElementById("market-us-extra").style.display = c === "미국" ? "" : "none";
+      });
+      nav.appendChild(btn);
+    });
+  }
+
+  function renderMarketCountryTable(country) {
+    var wrap = document.getElementById("market-country-tables");
+    wrap.innerHTML = "";
+    var rows = forecastRows().filter(function (r) { return r.국가 === country && r.종류 !== "시장가격"; });
+    if (!rows.length) {
+      wrap.innerHTML = "<div class='muted'>이 국가에 대한 전망 데이터가 없습니다.</div>";
+      return;
+    }
+    var byIndicator = {};
+    rows.forEach(function (r) { (byIndicator[r.지표] = byIndicator[r.지표] || []).push(r); });
+    var indicatorKeys = Object.keys(byIndicator).sort(function (a, b) {
+      var ia = MARKET_INDICATOR_ORDER.indexOf(a), ib = MARKET_INDICATOR_ORDER.indexOf(b);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+    indicatorKeys.forEach(function (indicator) {
+      var group = byIndicator[indicator];
+      var byInstitution = {};
+      group.forEach(function (r) { (byInstitution[r.기관] = byInstitution[r.기관] || []).push(r); });
+
+      var section = document.createElement("div");
+      var h = document.createElement("h3");
+      h.textContent = indicator;
+      section.appendChild(h);
+
+      var table = document.createElement("table");
+      table.className = "market-table";
+      var periods = Array.from(new Set(group.map(function (r) { return r.대상기간; }))).sort();
+      var thisYear = String(new Date().getFullYear()), nextYear = String(new Date().getFullYear() + 1);
+      var periodCols = periods.filter(function (p) { return p.indexOf(thisYear) === 0 || p.indexOf(nextYear) === 0; });
+      if (!periodCols.length) periodCols = periods.slice(-2);
+      var thead = "<thead><tr><th>기관</th>" + periodCols.map(function (p) { return "<th>" + p + "</th>"; }).join("") + "<th>발표일</th></tr></thead>";
+      var tbodyRows = [];
+      Object.keys(byInstitution).forEach(function (inst) {
+        var instRows = byInstitution[inst];
+        var latestByPeriod = {};
+        instRows.forEach(function (r) {
+          var prev = latestByPeriod[r.대상기간];
+          if (!prev || r.발표일 > prev.발표일) latestByPeriod[r.대상기간] = r;
+        });
+        var lastVintage = instRows.reduce(function (a, b) { return b.발표일 > a.발표일 ? b : a; });
+        var cells = periodCols.map(function (p) {
+          var r = latestByPeriod[p];
+          if (!r) return "<td>-</td>";
+          if (r.전망치 != null) return "<td title='" + escapeHtml(r.출처URL || "") + "'>" + fmtNum(Number(r.전망치), 2) + "</td>";
+          var parts = [];
+          if (r.응답비율_동결 != null) parts.push("동결 " + fmtNum(Number(r.응답비율_동결), 0) + "%");
+          if (r.응답비율_인상 != null) parts.push("인상 " + fmtNum(Number(r.응답비율_인상), 0) + "%");
+          if (r.응답비율_인하 != null) parts.push("인하 " + fmtNum(Number(r.응답비율_인하), 0) + "%");
+          return "<td>" + (parts.join(", ") || "-") + "</td>";
+        });
+        tbodyRows.push("<tr><td>" + escapeHtml(inst) + "</td>" + cells.join("") + "<td class='src-cell'>" + lastVintage.발표일 + (lastVintage.출처URL ? " <a href='" + lastVintage.출처URL + "' target='_blank' rel='noopener'>원문</a>" : "") + "</td></tr>");
+
+        var vintages = Array.from(new Set(instRows.map(function (r) { return r.발표일; })));
+        if (vintages.length >= 2) {
+          var canvasId = "market-trend-" + indicator.replace(/[^a-zA-Z0-9가-힣]/g, "") + "-" + inst.replace(/[^a-zA-Z0-9가-힣]/g, "");
+          tbodyRows.push("<tr><td colspan='" + (periodCols.length + 2) + "'><div class='market-vintage-trend'><canvas id='" + canvasId + "'></canvas></div></td></tr>");
+        }
+      });
+      table.innerHTML = thead + "<tbody>" + tbodyRows.join("") + "</tbody>";
+      section.appendChild(table);
+      wrap.appendChild(section);
+
+      Object.keys(byInstitution).forEach(function (inst) {
+        var instRows = byInstitution[inst];
+        var vintages = Array.from(new Set(instRows.map(function (r) { return r.발표일; }))).sort();
+        if (vintages.length < 2) return;
+        var canvasId = "market-trend-" + indicator.replace(/[^a-zA-Z0-9가-힣]/g, "") + "-" + inst.replace(/[^a-zA-Z0-9가-힣]/g, "");
+        var canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        var mainPeriod = periodCols[0];
+        var series = vintages.map(function (v) {
+          var r = instRows.find(function (x) { return x.발표일 === v && x.대상기간 === mainPeriod; });
+          return { x: v, y: r ? Number(r.전망치) : null };
+        });
+        var chart = new Chart(canvas.getContext("2d"), {
+          type: "line",
+          data: { datasets: [{ label: inst + " " + mainPeriod + " 수정 추이", data: series, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 3, borderWidth: 2 }] },
+          options: {
+            responsive: true, maintainAspectRatio: false, animation: false,
+            plugins: { legend: { display: true, labels: { color: cssVar("--fg"), boxWidth: 10, font: { size: 10 } } } },
+            scales: {
+              x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: cssVar("--muted"), font: { size: 9 } }, grid: { color: cssVar("--border") } },
+              y: { ticks: { color: cssVar("--muted"), font: { size: 9 } }, grid: { color: cssVar("--border") } }
+            }
+          }
+        });
+        state.marketCharts.push(chart);
+      });
+    });
+  }
+
+  // ---- 미국 정책금리·기대인플레이션 ----
+  function renderMarketUsExtra() {
+    var el = document.getElementById("market-us-policy-compare");
+    var sepRow = latestManualRow("연준(FOMC SEP)", "정책금리(중간값)", "미국");
+    var currentPolicy = observationsFor("미국", "정책금리(상단)").slice(-1)[0];
+    var dgs2Rows = marketRateSeries("FRED", "국채(2년)");
+    var latestDgs2 = dgs2Rows.length ? dgs2Rows[dgs2Rows.length - 1] : null;
+    var html = "";
+    if (sepRow) html += "<div class='bok-fact-row'><span>SEP 정책금리 중간값(" + sepRow.대상기간 + ")</span><b>" + fmtNum(Number(sepRow.전망치), 2) + "%</b></div>";
+    if (currentPolicy) html += "<div class='bok-fact-row'><span>현재 정책금리(상단)</span><b>" + fmtNum(currentPolicy.value, 2) + "% (" + currentPolicy.date + ")</b></div>";
+    if (latestDgs2) html += "<div class='bok-fact-row'><span>국채(2년) 월평균(" + latestDgs2.대상기간 + ")</span><b>" + fmtNum(Number(latestDgs2.전망치), 2) + "%</b></div>";
+    if (sepRow) html += sourceLineHtml(sepRow.출처URL, sepRow.발표일);
+    el.innerHTML = html || "<div class='muted'>데이터 없음</div>";
+
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var t5 = marketRateSeries("FRED", "기대인플레이션(5년)").map(function (r) { return { x: r.대상기간 + "-01", y: Number(r.전망치) }; });
+    var t10 = marketRateSeries("FRED", "기대인플레이션(10년)").map(function (r) { return { x: r.대상기간 + "-01", y: Number(r.전망치) }; });
+    var canvas = document.getElementById("market-breakeven-chart");
+    if (!t5.length && !t10.length) {
+      canvas.replaceWith(emptyMsg());
+      return;
+    }
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: {
+        datasets: [
+          { label: "미국 5년 기대인플레이션(BEI)", data: t5, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 0, borderWidth: 2 },
+          { label: "미국 10년 기대인플레이션(BEI)", data: t10, borderColor: cssVar("--accent2"), backgroundColor: cssVar("--accent2"), pointRadius: 0, borderWidth: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { title: { display: true, text: "%", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.marketCharts.push(chart);
+  }
+
+  // ---- 수집 결과 표 ----
+  function renderMarketCollectionResults() {
+    var el = document.getElementById("market-collection-results");
+    var results = (state.forecasts && state.forecasts.collection_results) || [];
+    if (!results.length) {
+      el.innerHTML = "<div class='muted'>수집 결과 정보가 없습니다.</div>";
+      return;
+    }
+    var html = "<table class='market-table'><thead><tr><th>출처</th><th>상태</th><th>비고</th></tr></thead><tbody>";
+    results.forEach(function (r) {
+      html += "<tr><td>" + escapeHtml(r.출처) + "</td><td class='status-" + escapeHtml(r.상태) + "'>" + escapeHtml(r.상태) + "</td><td class='src-cell'>" + escapeHtml(r.비고 || "") + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    el.innerHTML = html;
+  }
+
+  function renderMarketTab() {
+    destroyMarketCharts();
+    if (!state.forecasts) {
+      document.getElementById("market-bmsi-empty").style.display = "block";
+      document.getElementById("market-bok-outlook").innerHTML = "<div class='muted'>site/data/forecasts.json을 아직 불러오지 못했습니다(forecast_collect.py 실행 필요).</div>";
+      document.getElementById("market-country-tables").innerHTML = "";
+      document.getElementById("market-collection-results").innerHTML = "";
+      return;
+    }
+    renderMarketBmsi();
+    renderMarketSpreadChart();
+    renderMarketBokOutlook();
+    buildMarketCountryTabs();
+    renderMarketCountryTable(state.marketCountry);
+    document.getElementById("market-us-extra").style.display = state.marketCountry === "미국" ? "" : "none";
+    renderMarketUsExtra();
+    renderMarketCollectionResults();
   }
 
 })();

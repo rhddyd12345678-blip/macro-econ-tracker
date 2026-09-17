@@ -5,3 +5,4 @@ numpy==2.0.2
 pandas==2.3.3
 scipy==1.13.1
 statsmodels==0.14.6
+lxml==6.1.3
