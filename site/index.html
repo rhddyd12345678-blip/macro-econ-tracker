@@ -437,6 +437,7 @@
     <section class="panel card" id="linkage-summary-section">
       <h2>한국 국채10년, 어디에 가장 강하게 연동됐나</h2>
       <div class="linkage-desc" id="linkage-desc"></div>
+      <div id="linkage-significance-note" style="margin-bottom:10px;"></div>
       <div class="linkage-cards" id="linkage-summary-cards"></div>
       <div id="linkage-download-link" style="margin-top:10px;"></div>
     </section>
@@ -1335,7 +1336,7 @@
       } else {
         addRow(card, "β", fmtNum(r.beta, 3));
         addRow(card, "R²", fmtNum(r.r2, 3));
-        addRow(card, "p값", r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3));
+        addRow(card, "p값(HAC)", r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3));
         addRow(card, "표본수", String(r.n));
       }
 
@@ -1349,10 +1350,17 @@
         addRow(card, "β", fmtNum(rec.beta, 3));
         addRow(card, "R²", fmtNum(rec.r2, 3));
         addRow(card, "상관계수", fmtNum(rec.corr, 3));
+        addRow(card, "p값(HAC)", rec.p == null ? "-" : (rec.p < 0.001 ? "<0.001" : fmtNum(rec.p, 3)));
       }
 
       wrap.appendChild(card);
     });
+
+    var noteEl = document.getElementById("linkage-significance-note");
+    var notes = [];
+    if (market.strongest_all_insignificant) notes.push("전체 기간: 5% 유의수준에서 연동이 확인된 국가가 없습니다.");
+    if (market.recent_all_insignificant) notes.push("최근 24개월: 5% 유의수준에서 연동이 확인된 국가가 없습니다.");
+    noteEl.innerHTML = notes.length ? notes.map(function (t) { return "<div class='muted'>⚠ " + t + "</div>"; }).join("") : "";
   }
 
   function buildLinkageCountryTabs() {
@@ -1413,13 +1421,14 @@
     var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
     var palette = { US: cssVar("--accent"), JP: cssVar("--accent2"), DE: cssVar("--accent3"), FR: cssVar("--accent4") };
 
-    function buildSeriesChart(canvasId, metricKey, yTitle) {
+    function buildSeriesChart(canvasId, metricKey, yTitle, extraDatasets) {
       var datasets = LINKAGE_COUNTRY_CODES.map(function (code) {
         var dates = market.rolling.dates[code] || [];
         var vals = market.rolling[metricKey][code] || [];
         var data = dates.map(function (d, i) { return { x: d, y: vals[i] }; });
         return { label: LINKAGE_COUNTRY_LABEL[code], data: data, borderColor: palette[code], backgroundColor: palette[code], pointRadius: 0, borderWidth: 2, tension: 0.1 };
       });
+      datasets = datasets.concat(extraDatasets || []);
       var canvas = document.getElementById(canvasId);
       var chart = new Chart(canvas.getContext("2d"), {
         type: "line",
@@ -1436,7 +1445,18 @@
       state.linkageCharts.push(chart);
     }
     buildSeriesChart("linkage-rolling-beta", "beta", "β (24개월 롤링)");
-    buildSeriesChart("linkage-rolling-r2", "r2", "R² (24개월 롤링)");
+
+    var r2Threshold = market.rolling.r2_threshold;
+    var thresholdDataset = [];
+    if (typeof r2Threshold === "number") {
+      var anyDates = market.rolling.dates.US || market.rolling.dates.JP || market.rolling.dates.DE || market.rolling.dates.FR || [];
+      thresholdDataset = [{
+        label: "유의수준 5% 기준선(R²=" + fmtNum(r2Threshold, 3) + ")",
+        data: anyDates.map(function (d) { return { x: d, y: r2Threshold }; }),
+        borderColor: muted, borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, tension: 0
+      }];
+    }
+    buildSeriesChart("linkage-rolling-r2", "r2", "R² (24개월 롤링)", thresholdDataset);
     buildSeriesChart("linkage-rolling-corr", "corr", "상관계수 (24개월 롤링)");
   }
 
@@ -1546,11 +1566,36 @@
     el.innerHTML = html;
   }
 
+  function recentSignificanceSentence(market) {
+    var recent = market.recent || {};
+    if (market.recent_all_insignificant) {
+      return "최근 24개월은 네 나라 모두 5% 유의수준(HAC)에서 연동이 확인되지 않습니다.";
+    }
+    var sig = [], notSig = [];
+    LINKAGE_COUNTRY_CODES.forEach(function (code) {
+      var rec = recent[code];
+      if (!rec || rec.p == null) return;
+      (rec.p < 0.05 ? sig : notSig).push(code);
+    });
+    var threshold = market.rolling ? market.rolling.r2_threshold : null;
+    var sigText = sig.map(function (code) {
+      var rec = recent[code];
+      var belowLine = threshold != null && rec.r2 < threshold;
+      return LINKAGE_COUNTRY_LABEL[code] + "(p=" + fmtNum(rec.p, 3) + (belowLine ? ", 단 R²=" + fmtNum(rec.r2, 3) + "는 고전적 R² 기준선(" + fmtNum(threshold, 3) + ")보다 낮아 기준에 따라 결론이 달라질 수 있음" : "") + ")";
+    }).join(", ");
+    var notSigText = notSig.map(function (code) { return LINKAGE_COUNTRY_LABEL[code]; }).join("·");
+    return "최근 24개월 기준 5% 유의수준(HAC)에서 연동이 확인된 국가: " + sigText + ". " +
+      (notSigText ? "나머지(" + notSigText + ")는 유의하지 않습니다." : "");
+  }
+
   function renderLinkageNotes() {
     var s = state.analysis.sample;
+    var market = state.analysis.market;
     var html = "<ul>" +
       "<li>이 분석은 상관·회귀 결과이며, 인과관계를 확정하거나 향후 금리를 예측·추천하는 것이 아닙니다.</li>" +
       "<li>β는 '해외 금리가 1%p 움직일 때'를 기준으로 한 비율이라, 실제 변동폭 자체가 작은 국가(예: 일본 국채10년)는 작은 변화에도 β가 크게 나올 수 있습니다. 국가 간 연동 강도를 비교할 때는 β보다 상관계수·R²(=상관계수²)를 기준으로 보는 것이 더 적절합니다.</li>" +
+      "<li>" + recentSignificanceSentence(market) + "</li>" +
+      "<li>롤링 R²의 급격한 변화는 새 데이터가 들어와서 생기는 것만이 아니라, 24개월 창에서 과거의 큰 변동이 있던 달이 빠져나가는 효과도 함께 반영된 결과입니다.</li>" +
       "<li>국채10년은 월평균값이라 발표 당일·일중 반응은 볼 수 없고, 월 단위 흐름만 반영합니다.</li>" +
       "<li>분석 표본: " + s.start + " ~ " + s.end + " (월간 " + s.n_months_level + "개월 수준값 기준, 차분 후 회귀에는 이보다 1개월 적은 표본을 씁니다). 최근 24개월 수치는 전체 기간보다 표본이 훨씬 작아 변동이 큽니다.</li>" +
       "<li>정책금리 분석은 추적 기간 중 변경 횟수가 적어 시장금리 분석보다 통계적 신뢰도가 낮습니다.</li>" +
