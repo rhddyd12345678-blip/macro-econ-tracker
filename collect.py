@@ -1609,15 +1609,31 @@ def main():
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # rate_linkage.py가 site/data/analysis.json을 export.py보다 먼저 만들어야
-    # export.py가 그 안의 회귀분석 결과로 downloads/regression_analysis.xlsx를
-    # 함께 생성할 수 있다.
+    # rate_linkage.py/fx_collect.py+fx_linkage.py가 site/data/analysis.json,
+    # site/data/fx.json을 export.py보다 먼저 만들어야 export.py가 그 안의
+    # 결과로 downloads/regression_analysis.xlsx, downloads/fx_*.xlsx를 함께
+    # 생성할 수 있다. 어느 하나가 실패해도 collect.py 자체의 성공 여부에는
+    # 영향을 주지 않는다(경고만 출력, 나머지는 계속 진행).
     analysis_path = os.path.join(base_dir, "analysis", "rate_linkage.py")
     if os.path.exists(analysis_path):
         print("\n=== analysis/rate_linkage.py 실행 ===")
         result = subprocess.run([sys.executable, analysis_path])
         if result.returncode != 0:
             print("경고: rate_linkage.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
+
+    fx_collect_path = os.path.join(base_dir, "fx_collect.py")
+    if os.path.exists(fx_collect_path):
+        print("\n=== fx_collect.py 실행 ===")
+        result = subprocess.run([sys.executable, fx_collect_path])
+        if result.returncode != 0:
+            print("경고: fx_collect.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
+
+    fx_linkage_path = os.path.join(base_dir, "analysis", "fx_linkage.py")
+    if os.path.exists(fx_linkage_path):
+        print("\n=== analysis/fx_linkage.py 실행 ===")
+        result = subprocess.run([sys.executable, fx_linkage_path])
+        if result.returncode != 0:
+            print("경고: fx_linkage.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
 
     export_path = os.path.join(base_dir, "export.py")
     if os.path.exists(export_path):

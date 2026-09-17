@@ -245,6 +245,58 @@ def build_regression_workbook(analysis, out_path):
     wb.save(out_path)
 
 
+FX_DAILY_CSV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "fx_daily.csv")
+FX_DAILY_FILE = "fx_daily.xlsx"
+FX_MONTHLY_FILE = "fx_monthly.xlsx"
+FX_PAIR_ORDER = ["원/달러", "원/100엔", "원/유로", "달러지수(광의)", "엔/달러", "달러/유로"]
+
+
+def build_fx_daily_workbook(out_path):
+    import csv as _csv
+
+    if not os.path.exists(FX_DAILY_CSV_PATH):
+        return False
+    with open(FX_DAILY_CSV_PATH, encoding="utf-8-sig", newline="") as f:
+        rows_raw = list(_csv.DictReader(f))
+    by_date = {}
+    for r in rows_raw:
+        by_date.setdefault(r["날짜"], {})[r["통화쌍"]] = float(r["값"])
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "일별"
+    header = ["날짜"] + FX_PAIR_ORDER
+    rows = []
+    for d in sorted(by_date.keys()):
+        row = [d] + [by_date[d].get(pair) for pair in FX_PAIR_ORDER]
+        rows.append(row)
+    _write_rows(ws, header, rows)
+    wb.save(out_path)
+    return True
+
+
+def build_fx_monthly_workbook(fx_json, out_path):
+    monthly = fx_json.get("monthly", {})
+    wb = openpyxl.Workbook()
+    ws1 = wb.active
+    ws1.title = "월평균"
+    ws2 = wb.create_sheet("월말")
+    for ws, key in ((ws1, "avg"), (ws2, "eom")):
+        all_dates = sorted(set(d for pair in FX_PAIR_ORDER for d in monthly.get(pair, {}).get("dates", [])))
+        header = ["연월"] + FX_PAIR_ORDER
+        rows = []
+        for d in all_dates:
+            row = [d[:7]]
+            for pair in FX_PAIR_ORDER:
+                m = monthly.get(pair, {})
+                dates = m.get("dates", [])
+                vals = m.get(key, [])
+                row.append(vals[dates.index(d)] if d in dates else None)
+            rows.append(row)
+        _write_rows(ws, header, rows)
+    wb.save(out_path)
+
+
 def export_downloads(indicators, observations):
     os.makedirs(DOWNLOADS_DIR, exist_ok=True)
     for country, fname in COUNTRY_FILE.items():
@@ -255,8 +307,18 @@ def export_downloads(indicators, observations):
         with open(ANALYSIS_JSON_PATH, encoding="utf-8") as f:
             analysis = json.load(f)
         build_regression_workbook(analysis, os.path.join(DOWNLOADS_DIR, REGRESSION_FILE))
-        return True
-    return False
+        regression_written = True
+    else:
+        regression_written = False
+
+    fx_written = build_fx_daily_workbook(os.path.join(DOWNLOADS_DIR, FX_DAILY_FILE))
+    fx_json_path = os.path.join(SITE_DATA_DIR, "fx.json")
+    if fx_written and os.path.exists(fx_json_path):
+        with open(fx_json_path, encoding="utf-8") as f:
+            fx_json = json.load(f)
+        build_fx_monthly_workbook(fx_json, os.path.join(DOWNLOADS_DIR, FX_MONTHLY_FILE))
+
+    return regression_written
 
 
 def main():

@@ -495,6 +495,7 @@
     <button type="button" data-view="linkage">금리 연동 분석</button>
     <button type="button" data-view="bok">금통위 전망</button>
     <button type="button" data-view="market">시장 전망</button>
+    <button type="button" data-view="fx">환율</button>
   </nav>
 
   <div id="view-countries">
@@ -669,6 +670,50 @@
     </section>
   </div>
 
+  <div id="view-fx" style="display:none;">
+    <section class="panel card">
+      <h2>환율</h2>
+      <div class="linkage-desc">원/엔·원/유로는 원/달러와 엔/달러·달러/유로를 거쳐 계산한 재정환율(직접 고시되는 시장환율이 아님)입니다.</div>
+      <div id="fx-summary-cards" class="linkage-cards"></div>
+    </section>
+
+    <section class="panel card">
+      <h2>원화 환율 추이</h2>
+      <div id="fx-chart1-controls" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
+        <div class="mini-tabs" id="fx-period-tabs"></div>
+        <label style="font-size:12.5px; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="fx-index-toggle"> 2021-09=100 지수화</label>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="fx-chart-krw"></canvas></div>
+    </section>
+
+    <section class="panel card">
+      <h2>달러지수·엔/달러·달러/유로 추이</h2>
+      <div class="chart-wrap" style="height:260px;"><canvas id="fx-chart-drivers"></canvas></div>
+    </section>
+
+    <section class="panel card">
+      <h2>원/달러 vs 한미 정책금리차</h2>
+      <div class="chart-wrap" style="height:260px;"><canvas id="fx-chart-spread"></canvas></div>
+    </section>
+
+    <section class="panel card">
+      <h2>환율 연동 분석</h2>
+      <div class="linkage-desc" id="fx-analysis-desc"></div>
+      <div class="linkage-cards" id="fx-regression-cards"></div>
+      <h3 style="margin-top:16px;">다중회귀 결과</h3>
+      <div id="fx-multi-table"></div>
+      <h3>롤링 24개월 상관계수</h3>
+      <div class="chart-wrap" style="height:240px;"><canvas id="fx-rolling-corr"></canvas></div>
+      <h3>롤링 24개월 R²</h3>
+      <div class="chart-wrap" style="height:240px;"><canvas id="fx-rolling-r2"></canvas></div>
+    </section>
+
+    <section class="panel card" id="fx-notes">
+      <h2>해석과 한계</h2>
+      <div id="fx-notes-body"></div>
+    </section>
+  </div>
+
   <section class="panel card" id="downloads-section">
     <h2>⬇ 데이터 다운로드</h2>
     <div id="downloads-list"></div>
@@ -697,6 +742,8 @@
     recent: [],
     analysis: null,
     forecasts: null,
+    fx: null,
+    fxAnalysis: null,
     country: "미국",
     calScope: "country",
     calCursor: null, // {year, month} for month view
@@ -707,6 +754,8 @@
     bokDetailOpen: {},
     marketCountry: "한국",
     marketCharts: [],
+    fxPeriod: "1y",
+    fxCharts: [],
     charts: []
   };
 
@@ -747,14 +796,19 @@
     loadJSON("data/calendar.json"),
     loadJSON("data/recent.json").catch(function () { return { events: [] }; }),
     loadJSON("data/analysis.json").catch(function () { return null; }),
-    loadJSON("data/forecasts.json").catch(function () { return null; })
+    loadJSON("data/forecasts.json").catch(function () { return null; }),
+    loadJSON("data/fx.json").catch(function () { return null; }),
+    loadJSON("data/fx_analysis.json").catch(function () { return null; })
   ]).then(function (results) {
     var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
+    var fx = results[5], fxAnalysis = results[6];
     state.indicators = data.indicators || [];
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
     state.recent = recent.entries || recent.events || [];
     state.analysis = analysis;
+    state.fx = fx;
+    state.fxAnalysis = fxAnalysis;
     state.forecasts = forecasts;
     // 로우데이터에 실제로 기록된 발표일(release_date가 있는 관측치) -> 달력에 "지난 발표"로 표시
     state.pastReleases = state.observations
@@ -803,9 +857,11 @@
     document.getElementById("view-linkage").style.display = view === "linkage" ? "" : "none";
     document.getElementById("view-bok").style.display = view === "bok" ? "" : "none";
     document.getElementById("view-market").style.display = view === "market" ? "" : "none";
+    document.getElementById("view-fx").style.display = view === "fx" ? "" : "none";
     if (view === "linkage") renderLinkage();
     if (view === "bok") renderBokFacts();
     if (view === "market") renderMarketTab();
+    if (view === "fx") renderFxTab();
   }
 
   // ---- country tabs ----
@@ -2638,6 +2694,10 @@
       ["전체 로우데이터", "raw_data.xlsx"]
     ];
     if (state.analysis) entries.push(["회귀분석 결과", "regression_analysis.xlsx"]);
+    if (state.fx) {
+      entries.push(["환율 일별", "fx_daily.xlsx"]);
+      entries.push(["환율 월별", "fx_monthly.xlsx"]);
+    }
     entries.forEach(function (e) {
       var a = document.createElement("a");
       a.href = "data/downloads/" + e[1];
@@ -3024,6 +3084,376 @@
     document.getElementById("market-us-extra").style.display = state.marketCountry === "미국" ? "" : "none";
     renderMarketUsExtra();
     renderMarketCollectionResults();
+  }
+
+  // ==================================================================
+  // ---- 환율 탭 ----
+  // ==================================================================
+  var FX_PERIOD_DAYS = { "1m": 30, "6m": 182, "1y": 365, "5y": 1826 };
+  var FX_PERIOD_LABEL = { "1m": "1개월", "6m": "6개월", "1y": "1년", "5y": "5년" };
+  var FX_PREDICTOR_LABEL = { DXY: "달러지수(광의)", JPY: "엔/달러", EUR: "달러/유로" };
+  var FX_PREDICTOR_CODES = ["DXY", "JPY", "EUR"];
+
+  function daysAgoStr(days) {
+    var d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function fxDaily(pair) {
+    return (state.fx && state.fx.daily && state.fx.daily[pair]) || [];
+  }
+  function destroyFxChartById(id) {
+    var canvas = document.getElementById(id);
+    var existing = Chart.getChart(canvas);
+    if (existing) {
+      state.fxCharts = state.fxCharts.filter(function (c) { return c !== existing; });
+      existing.destroy();
+    }
+    return canvas;
+  }
+
+  function fxLatestChange(pair, days) {
+    var series = fxDaily(pair);
+    if (!series.length) return null;
+    var latest = series[series.length - 1];
+    var cutoff = daysAgoStr(days);
+    var base = null;
+    for (var i = series.length - 1; i >= 0; i--) {
+      if (series[i].date <= cutoff) { base = series[i]; break; }
+    }
+    if (!base) return null;
+    return { pct: (latest.value / base.value - 1) * 100, baseDate: base.date };
+  }
+
+  function renderFxSummaryCards() {
+    var wrap = document.getElementById("fx-summary-cards");
+    wrap.innerHTML = "";
+    if (!state.fx) {
+      wrap.innerHTML = "<div class='muted'>site/data/fx.json을 아직 불러오지 못했습니다(fx_collect.py 실행 필요).</div>";
+      return;
+    }
+    ["원/달러", "원/100엔", "원/유로"].forEach(function (pair) {
+      var series = fxDaily(pair);
+      var card = document.createElement("div");
+      card.className = "linkage-card";
+      var title = document.createElement("div");
+      title.className = "lc-country";
+      title.textContent = pair;
+      card.appendChild(title);
+      if (!series.length) {
+        var na = document.createElement("div"); na.className = "muted"; na.textContent = "데이터 없음";
+        card.appendChild(na);
+        wrap.appendChild(card);
+        return;
+      }
+      var latest = series[series.length - 1];
+      var prev = series.length > 1 ? series[series.length - 2] : null;
+      function row(label, html) {
+        var r = document.createElement("div"); r.className = "lc-row";
+        var l = document.createElement("span"); l.textContent = label;
+        var b = document.createElement("b"); b.innerHTML = html;
+        r.appendChild(l); r.appendChild(b);
+        card.appendChild(r);
+      }
+      row("최신값", fmtNum(latest.value, 2));
+      if (prev) {
+        var dchg = latest.value - prev.value;
+        var cls = dchg > 0 ? "change-pos" : dchg < 0 ? "change-neg" : "";
+        row("전일 대비", "<span class='" + cls + "'>" + (dchg > 0 ? "+" : "") + fmtNum(dchg, 2) + "</span>");
+      }
+      var m1 = fxLatestChange(pair, 30);
+      if (m1) row("1개월 변화율", fmtNum(m1.pct, 2) + "%");
+      var y1 = fxLatestChange(pair, 365);
+      if (y1) row("1년 변화율", fmtNum(y1.pct, 2) + "%");
+      row("기준일", latest.date);
+      wrap.appendChild(card);
+    });
+  }
+
+  function buildFxPeriodTabs() {
+    var nav = document.getElementById("fx-period-tabs");
+    nav.innerHTML = "";
+    Object.keys(FX_PERIOD_LABEL).forEach(function (key) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = FX_PERIOD_LABEL[key];
+      if (key === state.fxPeriod) btn.className = "active";
+      btn.addEventListener("click", function () {
+        state.fxPeriod = key;
+        Array.prototype.forEach.call(nav.querySelectorAll("button"), function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        renderFxChart1();
+      });
+      nav.appendChild(btn);
+    });
+    var toggle = document.getElementById("fx-index-toggle");
+    toggle.onchange = renderFxChart1;
+  }
+
+  function renderFxChart1() {
+    var canvas = destroyFxChartById("fx-chart-krw");
+    if (!state.fx) { canvas.replaceWith(emptyMsg()); return; }
+    var pairs = ["원/달러", "원/100엔", "원/유로"];
+    var palette = { "원/달러": cssVar("--accent"), "원/100엔": cssVar("--accent2"), "원/유로": cssVar("--accent4") };
+    var days = FX_PERIOD_DAYS[state.fxPeriod] || 365;
+    var cutoff = daysAgoStr(days);
+    var indexed = document.getElementById("fx-index-toggle").checked;
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var datasets = pairs.map(function (pair) {
+      var series = fxDaily(pair);
+      var base = series.length ? series[0].value : null;
+      var filtered = series.filter(function (p) { return p.date >= cutoff; });
+      var data = filtered.map(function (p) {
+        return { x: p.date, y: indexed && base ? Math.round((p.value / base * 100) * 10000) / 10000 : p.value };
+      });
+      return { label: pair, data: data, borderColor: palette[pair], backgroundColor: palette[pair], pointRadius: 0, borderWidth: 2, tension: 0.1 };
+    });
+    if (!datasets.some(function (d) { return d.data.length; })) { canvas.replaceWith(emptyMsg()); return; }
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: { datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: days > 400 ? "month" : "week", displayFormats: { week: "MM-dd", month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { title: { display: true, text: indexed ? "지수(2021-09=100)" : "원", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxChart2() {
+    var canvas = destroyFxChartById("fx-chart-drivers");
+    if (!state.fx) { canvas.replaceWith(emptyMsg()); return; }
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var pairs = ["달러지수(광의)", "엔/달러", "달러/유로"];
+    var palette = { "달러지수(광의)": cssVar("--accent"), "엔/달러": cssVar("--accent2"), "달러/유로": cssVar("--accent4") };
+    var datasets = pairs.map(function (pair) {
+      var series = fxDaily(pair);
+      return {
+        label: pair,
+        data: series.map(function (p) { return { x: p.date, y: p.value }; }),
+        borderColor: palette[pair], backgroundColor: palette[pair], pointRadius: 0, borderWidth: 2, tension: 0.1,
+        yAxisID: pair === "달러/유로" ? "y1" : "y"
+      };
+    });
+    if (!datasets.some(function (d) { return d.data.length; })) { canvas.replaceWith(emptyMsg()); return; }
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: { datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { position: "left", title: { display: true, text: "달러지수 · 엔/달러", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } },
+          y1: { position: "right", title: { display: true, text: "달러/유로", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxChart3() {
+    var canvas = destroyFxChartById("fx-chart-spread");
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var krwMonthly = (state.fx && state.fx.monthly && state.fx.monthly["원/달러"]) || { dates: [], avg: [] };
+    var krwData = krwMonthly.dates.map(function (d, i) { return { x: d, y: krwMonthly.avg[i] }; });
+    var spread = (state.analysis && state.analysis.policy && state.analysis.policy.spread_kr_us) || { dates: [], KR_US: [] };
+    var spreadData = spread.dates.map(function (d, i) { return { x: d, y: spread.KR_US[i] }; });
+    if (!krwData.length && !spreadData.length) { canvas.replaceWith(emptyMsg()); return; }
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: {
+        datasets: [
+          { label: "원/달러(월평균)", data: krwData, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 0, borderWidth: 2, yAxisID: "y" },
+          { label: "한미 정책금리차(%p)", data: spreadData, borderColor: cssVar("--accent2"), backgroundColor: cssVar("--accent2"), pointRadius: 0, borderWidth: 2, yAxisID: "y1" }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { position: "left", title: { display: true, text: "원", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } },
+          y1: { position: "right", title: { display: true, text: "%p", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxRegressionCards() {
+    var wrap = document.getElementById("fx-regression-cards");
+    wrap.innerHTML = "";
+    if (!state.fxAnalysis) {
+      wrap.innerHTML = "<div class='muted'>site/data/fx_analysis.json을 아직 불러오지 못했습니다(analysis/fx_linkage.py 실행 필요).</div>";
+      document.getElementById("fx-analysis-desc").innerHTML = "";
+      return;
+    }
+    var fx = state.fxAnalysis.fx;
+    function addRow(card, label, valueText) {
+      var row = document.createElement("div"); row.className = "lc-row";
+      var l = document.createElement("span"); l.textContent = label;
+      var b = document.createElement("b"); b.textContent = valueText;
+      row.appendChild(l); row.appendChild(b);
+      card.appendChild(row);
+    }
+    function addSectionLabel(card, text) {
+      var lbl = document.createElement("div"); lbl.className = "lc-section-label"; lbl.textContent = text;
+      card.appendChild(lbl);
+    }
+    FX_PREDICTOR_CODES.forEach(function (code) {
+      var r = fx.simple[code];
+      var rec = fx.recent ? fx.recent[code] : null;
+      var card = document.createElement("div");
+      card.className = "linkage-card" + (r && !r.insufficient ? " " + sigClass(r.p) : "");
+
+      var badges = [];
+      if (code === fx.strongest) badges.push(["가장 강한 연동(전체 기간)", ""]);
+      else if (code === fx.strongest_boundary) badges.push(["경계 신호(전체 기간)", " lc-badge-boundary"]);
+      if (code === fx.strongest_recent) badges.push(["가장 강한 연동(최근 24개월)", " lc-badge-recent"]);
+      else if (code === fx.strongest_recent_boundary) badges.push(["경계 신호(최근 24개월)", " lc-badge-boundary"]);
+      if (badges.length) {
+        var badgeWrap = document.createElement("div"); badgeWrap.className = "lc-badges";
+        badges.forEach(function (b) {
+          var el = document.createElement("span"); el.className = "lc-badge" + b[1]; el.textContent = b[0];
+          badgeWrap.appendChild(el);
+        });
+        card.appendChild(badgeWrap);
+      }
+
+      var title = document.createElement("div"); title.className = "lc-country"; title.textContent = FX_PREDICTOR_LABEL[code];
+      card.appendChild(title);
+
+      addSectionLabel(card, "전체 기간 (" + (state.fxAnalysis.sample ? state.fxAnalysis.sample.start : "") + "~)");
+      if (!r || r.insufficient) {
+        var na = document.createElement("div"); na.className = "muted"; na.textContent = "표본 부족";
+        card.appendChild(na);
+      } else {
+        addRow(card, "β", fmtNum(r.beta, 3));
+        addRow(card, "R²", fmtNum(r.r2, 3));
+        addRow(card, "p값(HAC)", r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3));
+        addRow(card, "p값(OLS)", r.p_ols == null ? "-" : (r.p_ols < 0.001 ? "<0.001" : fmtNum(r.p_ols, 3)));
+        addRow(card, "표본수", String(r.n));
+      }
+
+      addSectionLabel(card, "최근 24개월");
+      if (!rec) {
+        var na2 = document.createElement("div"); na2.className = "muted"; na2.textContent = "표본 부족";
+        card.appendChild(na2);
+      } else {
+        addRow(card, "β", fmtNum(rec.beta, 3));
+        addRow(card, "R²", fmtNum(rec.r2, 3));
+        addRow(card, "상관계수", fmtNum(rec.corr, 3));
+        addRow(card, "p값(HAC)", rec.p == null ? "-" : (rec.p < 0.001 ? "<0.001" : fmtNum(rec.p, 3)));
+        addRow(card, "p값(OLS)", rec.p_ols == null ? "-" : (rec.p_ols < 0.001 ? "<0.001" : fmtNum(rec.p_ols, 3)));
+      }
+      wrap.appendChild(card);
+    });
+
+    var descEl = document.getElementById("fx-analysis-desc");
+    var notes = [];
+    if (fx.strongest_all_insignificant) notes.push("전체 기간: 5% 유의수준에서 연동이 확인된 변수가 없습니다.");
+    if (fx.recent_all_insignificant) notes.push("최근 24개월: 5% 유의수준에서 연동이 확인된 변수가 없습니다.");
+    descEl.innerHTML = "β = 해당 변수가 1% 움직일 때 원/달러가 평균적으로 움직인 비율(월간 로그 변화율 기준) · 분석기간 " +
+      (state.fxAnalysis.sample ? state.fxAnalysis.sample.start + " ~ " + state.fxAnalysis.sample.end : "") +
+      (notes.length ? notes.map(function (t) { return "<br>⚠ " + t; }).join("") : "");
+  }
+
+  function renderFxMultiTable() {
+    var el = document.getElementById("fx-multi-table");
+    if (!state.fxAnalysis) { el.innerHTML = ""; return; }
+    var m = state.fxAnalysis.fx.multi;
+    function labelOf(k) { return k === "const" ? "상수항" : (FX_PREDICTOR_LABEL[k] || k); }
+    var html = "<table class='linkage-table'><thead><tr><th>변수</th><th>계수</th><th>p값</th><th>VIF</th></tr></thead><tbody>";
+    ["const"].concat(m.included).forEach(function (k) {
+      var vif = m.vif[k];
+      html += "<tr><td>" + labelOf(k) + "</td><td>" + fmtNum(m.coeffs[k], 4) + "</td><td>" +
+        (m.p_values[k] < 0.001 ? "<0.001" : fmtNum(m.p_values[k], 3)) + "</td><td>" + (vif == null ? "-" : fmtNum(vif, 2)) + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    html += "<div class='muted'>조정 R² " + fmtNum(m.adj_r2, 3) + " · R² " + fmtNum(m.r2, 3) + " · 표본수 " + m.n + " · HAC 시차 " + m.hac_lags + "개월</div>";
+    el.innerHTML = html;
+  }
+
+  function renderFxRollingCharts() {
+    if (!state.fxAnalysis) {
+      destroyFxChartById("fx-rolling-corr").replaceWith(emptyMsg());
+      destroyFxChartById("fx-rolling-r2").replaceWith(emptyMsg());
+      return;
+    }
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var rolling = state.fxAnalysis.fx.rolling;
+    var palette = { DXY: cssVar("--accent"), JPY: cssVar("--accent2"), EUR: cssVar("--accent4") };
+
+    function buildChart(canvasId, metricKey, yTitle, extraDatasets) {
+      var canvas = destroyFxChartById(canvasId);
+      var datasets = FX_PREDICTOR_CODES.map(function (code) {
+        var dates = rolling.dates[code] || [];
+        var vals = rolling[metricKey][code] || [];
+        var data = dates.map(function (d, i) { return { x: d, y: vals[i] }; });
+        return { label: FX_PREDICTOR_LABEL[code], data: data, borderColor: palette[code], backgroundColor: palette[code], pointRadius: 0, borderWidth: 2, tension: 0.1 };
+      }).concat(extraDatasets || []);
+      if (!datasets.some(function (d) { return d.data.length; })) { canvas.replaceWith(emptyMsg()); return; }
+      var chart = new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: { datasets: datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+          scales: {
+            x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 8, font: { size: 10 } }, grid: { color: border } },
+            y: { title: { display: true, text: yTitle, color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+          }
+        }
+      });
+      state.fxCharts.push(chart);
+    }
+
+    buildChart("fx-rolling-corr", "corr", "상관계수 (24개월 롤링)");
+
+    var r2Threshold = rolling.r2_threshold;
+    var thresholdDataset = [];
+    if (typeof r2Threshold === "number") {
+      var anyDates = rolling.dates.DXY || rolling.dates.JPY || rolling.dates.EUR || [];
+      thresholdDataset = [{
+        label: "유의수준 5% 기준선(R²=" + fmtNum(r2Threshold, 3) + ")",
+        data: anyDates.map(function (d) { return { x: d, y: r2Threshold }; }),
+        borderColor: muted, borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, tension: 0
+      }];
+    }
+    buildChart("fx-rolling-r2", "r2", "R² (24개월 롤링)", thresholdDataset);
+  }
+
+  function renderFxNotes() {
+    var el = document.getElementById("fx-notes-body");
+    if (!state.fxAnalysis) { el.innerHTML = "<div class='muted'>분석 데이터가 없습니다.</div>"; return; }
+    var s = state.fxAnalysis.sample;
+    var corr = state.fxAnalysis.kr_us_spread_corr || {};
+    var html = "<ul>" +
+      "<li>이 분석은 상관·회귀 결과이며, 인과관계를 확정하거나 향후 환율을 예측·추천하는 것이 아닙니다.</li>" +
+      "<li>β는 월간 로그 변화율 기준 비율이라, 실제 변동폭이 작은 변수는 β가 크게 나올 수 있습니다. 변수 간 연동 강도를 비교할 때는 β보다 상관계수·R²(=상관계수²)를 기준으로 보는 것이 더 적절합니다.</li>" +
+      "<li>분석 표본: " + (s ? s.start + " ~ " + s.end + " (월간 " + s.n_months_level + "개월 수준값 기준, 로그 변화율 회귀에는 이보다 1개월 적은 표본을 씁니다)" : "-") + ". 최근 24개월 수치는 전체 기간보다 표본이 훨씬 작아 변동이 큽니다.</li>" +
+      "<li>한미 정책금리차와 원/달러의 상관: 수준값 상관계수 " + fmtNum(corr.level_corr, 3) + "(표본 " + corr.level_n + "개월), 변화값 상관계수 " + fmtNum(corr.change_corr, 3) + "(표본 " + corr.change_n + "개월). 수준값은 두 시계열 모두 추세가 있어(비정상성) 상관이 실제보다 커 보일 수 있다는 점에 유의해야 합니다.</li>" +
+      "<li>원/엔·원/유로는 원/달러와 엔/달러·달러/유로를 곱셈·나눗셈으로 조합해 계산한 재정환율이며, 직접 고시되는 시장환율이 아닙니다.</li>" +
+      "<li>분석 기준일: " + state.fxAnalysis.as_of + " (fx_analysis.json 생성 시각: " + state.fxAnalysis.generated_at + ")</li>" +
+      "</ul>";
+    el.innerHTML = html;
+  }
+
+  function renderFxTab() {
+    renderFxSummaryCards();
+    buildFxPeriodTabs();
+    renderFxChart1();
+    renderFxChart2();
+    renderFxChart3();
+    renderFxRegressionCards();
+    renderFxMultiTable();
+    renderFxRollingCharts();
+    renderFxNotes();
   }
 
 })();
