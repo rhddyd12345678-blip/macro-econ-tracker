@@ -259,11 +259,119 @@
 
   footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
 
+  .muted { color: var(--muted); font-size: 12.5px; }
+
+  /* ---- main view tabs ---- */
+  #main-tabs {
+    display: flex; gap: 6px; margin: 18px 0 6px;
+    background: var(--tab-bg); border-radius: 10px; padding: 4px; overflow-x: auto;
+  }
+  #main-tabs button {
+    flex: 1 1 0; min-width: 100px; border: none; background: transparent; color: var(--fg);
+    padding: 10px 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  #main-tabs button.active { background: var(--accent); color: #fff; }
+
+  .card-download-link {
+    font-size: 11.5px; color: var(--accent); text-decoration: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 2px 8px; white-space: nowrap;
+  }
+  .card-download-link:hover { text-decoration: underline; }
+  .chart-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+
+  /* ---- linkage tab ---- */
+  .linkage-desc { color: var(--muted); font-size: 12.5px; margin-bottom: 12px; }
+  .linkage-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .linkage-card {
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; position: relative;
+  }
+  .linkage-card .lc-country { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .linkage-card .lc-row { display: flex; justify-content: space-between; font-size: 13px; margin: 3px 0; }
+  .linkage-card .lc-row b { font-variant-numeric: tabular-nums; }
+  .linkage-card.sig-strong .lc-row b { color: var(--fg); }
+  .linkage-card.sig-weak .lc-row b { color: var(--muted); }
+  .lc-badge {
+    position: absolute; top: -8px; right: 10px; background: var(--recent); color: #1a1200;
+    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+  }
+  .mini-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .mini-tabs button {
+    border: 1px solid var(--border); background: var(--card-bg); color: var(--fg); border-radius: 999px;
+    padding: 5px 12px; font-size: 12.5px; cursor: pointer;
+  }
+  .mini-tabs button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  table.linkage-table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin: 8px 0 16px; }
+  table.linkage-table th, table.linkage-table td {
+    border: 1px solid var(--border); padding: 6px 8px; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  table.linkage-table th:first-child, table.linkage-table td:first-child { text-align: left; font-variant-numeric: normal; }
+  table.linkage-table th { background: var(--tab-bg); }
+  #linkage-notes-body { font-size: 13px; line-height: 1.7; }
+  #linkage-notes-body ul { margin: 6px 0; padding-left: 20px; }
+
+  /* ---- BOK outlook tab ---- */
+  #bok-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; font-size: 13px; }
+  #bok-controls button {
+    border: 1px solid var(--border); background: var(--card-bg); color: var(--fg); border-radius: 8px;
+    padding: 6px 12px; cursor: pointer; font-size: 12.5px;
+  }
+  .bok-warning {
+    background: color-mix(in srgb, var(--neg) 15%, var(--card-bg)); color: var(--neg); border: 1px solid var(--neg);
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px;
+  }
+  #bok-layout { display: flex; gap: 16px; align-items: flex-start; }
+  #bok-grid { flex: 1 1 55%; display: grid; gap: 8px; min-width: 0; }
+  .bok-row-labels, .bok-col-labels { display: flex; gap: 8px; }
+  .bok-col-labels { padding-left: 90px; }
+  .bok-col-labels span, .bok-row-label {
+    flex: 1; text-align: center; font-size: 12.5px; font-weight: 700; color: var(--muted);
+  }
+  .bok-grid-row { display: flex; gap: 8px; align-items: stretch; }
+  .bok-row-label { flex: 0 0 82px; display: flex; align-items: center; justify-content: center; }
+  .bok-cell {
+    flex: 1; border: 1px solid var(--border); border-radius: 10px; padding: 10px; min-width: 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .bok-cell.max-cell { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+  .bok-cell .bok-cell-title { font-size: 12.5px; font-weight: 700; }
+  .bok-cell input[type="number"] {
+    width: 100%; font-size: 20px; font-weight: 700; border: none; background: transparent; color: var(--fg);
+    padding: 0; -moz-appearance: textfield;
+  }
+  .bok-cell input[type="number"]::-webkit-outer-spin-button,
+  .bok-cell input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .bok-cell textarea {
+    width: 100%; resize: vertical; min-height: 40px; font-size: 12px; font-family: inherit; color: var(--fg);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 5px 7px;
+  }
+  .bok-cell textarea::placeholder { color: var(--muted); }
+  #bok-sums { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 12.5px; color: var(--muted); }
+  #bok-sums b { color: var(--fg); }
+  #bok-panel { flex: 1 1 40%; padding: 14px 16px; min-width: 0; }
+  #bok-panel h3 { font-size: 13.5px; margin: 14px 0 6px; }
+  #bok-panel h3:first-child { margin-top: 0; }
+  .bok-fact-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .bok-fact-row b { font-variant-numeric: tabular-nums; }
+  .spark { display: block; }
+
+  /* ---- downloads section ---- */
+  #downloads-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  #downloads-list a {
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 12.5px;
+    text-decoration: none; color: var(--fg); background: var(--tab-bg);
+  }
+  #downloads-list a:hover { border-color: var(--accent); color: var(--accent); }
+  #downloads-sources { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+
   @media (max-width: 640px) {
     #charts-grid { grid-template-columns: 1fr; }
     .chart-wrap { height: 200px; }
     header h1 { font-size: 17px; }
     .cal-cell { min-height: 48px; font-size: 9px; }
+    #bok-layout { flex-direction: column; }
+    #bok-grid { width: 100%; }
+    .bok-col-labels { padding-left: 0; }
+    .bok-row-label { flex-basis: 58px; font-size: 11px; }
   }
 </style>
 </head>
@@ -283,29 +391,110 @@
     <div id="recent-list"></div>
   </div>
 
-  <nav id="country-tabs"></nav>
+  <nav id="main-tabs">
+    <button type="button" data-view="countries" class="active">국가별 지표</button>
+    <button type="button" data-view="linkage">금리 연동 분석</button>
+    <button type="button" data-view="bok">금통위 전망</button>
+  </nav>
 
-  <section id="charts-grid"></section>
+  <div id="view-countries">
+    <nav id="country-tabs"></nav>
 
-  <section class="panel card" id="calendar-section">
-    <h2>📅 발표일정</h2>
-    <div id="cal-controls">
-      <button class="toggle-btn active" data-scope="country" type="button" id="scope-country-btn">선택한 국가만</button>
-      <button class="toggle-btn" data-scope="all" type="button" id="scope-all-btn">전체 보기</button>
-    </div>
+    <section id="charts-grid"></section>
 
-    <div id="upcoming-list"></div>
-    <div id="upcoming-empty" style="display:none;">앞으로 14일 안에 예정된 발표가 없습니다.</div>
+    <section class="panel card" id="calendar-section">
+      <h2>📅 발표일정</h2>
+      <div id="cal-controls">
+        <button class="toggle-btn active" data-scope="country" type="button" id="scope-country-btn">선택한 국가만</button>
+        <button class="toggle-btn" data-scope="all" type="button" id="scope-all-btn">전체 보기</button>
+      </div>
 
-    <div id="month-nav">
-      <button id="cal-prev" type="button">‹</button>
-      <span id="cal-month-label"></span>
-      <button id="cal-next" type="button">›</button>
-    </div>
-    <div id="cal-grid"></div>
+      <div id="upcoming-list"></div>
+      <div id="upcoming-empty" style="display:none;">앞으로 14일 안에 예정된 발표가 없습니다.</div>
+
+      <div id="month-nav">
+        <button id="cal-prev" type="button">‹</button>
+        <span id="cal-month-label"></span>
+        <button id="cal-next" type="button">›</button>
+      </div>
+      <div id="cal-grid"></div>
+    </section>
+  </div>
+
+  <div id="view-linkage" style="display:none;">
+    <section class="panel card" id="linkage-summary-section">
+      <h2>한국 국채10년, 어디에 가장 강하게 연동됐나</h2>
+      <div class="linkage-desc" id="linkage-desc"></div>
+      <div class="linkage-cards" id="linkage-summary-cards"></div>
+      <div id="linkage-download-link" style="margin-top:10px;"></div>
+    </section>
+
+    <section class="panel card">
+      <h2>산점도: 한국 vs 해외 국채10년 월간 변화(%p)</h2>
+      <div class="mini-tabs" id="linkage-country-tabs"></div>
+      <div class="chart-wrap" style="height:300px;"><canvas id="linkage-scatter"></canvas></div>
+    </section>
+
+    <section class="panel card">
+      <h2>롤링 24개월 β 추이</h2>
+      <div class="chart-wrap" style="height:260px;"><canvas id="linkage-rolling-beta"></canvas></div>
+    </section>
+
+    <section class="panel card">
+      <h2>롤링 24개월 R² 추이</h2>
+      <div class="chart-wrap" style="height:260px;"><canvas id="linkage-rolling-r2"></canvas></div>
+    </section>
+
+    <section class="panel card">
+      <h2>다중회귀 결과 (미국·일본·독일 동시)</h2>
+      <div id="linkage-multi-table"></div>
+      <h2>동월 회귀 vs 1개월 선행 회귀</h2>
+      <div id="linkage-leadlag-table"></div>
+    </section>
+
+    <section class="panel card">
+      <h2>정책금리차 추이 &amp; 교차상관(한국 vs 미국, 시차별)</h2>
+      <div class="chart-wrap" style="height:240px;"><canvas id="linkage-spread"></canvas></div>
+      <div class="chart-wrap" style="height:240px; margin-top:16px;"><canvas id="linkage-crosscorr"></canvas></div>
+      <div class="muted" id="linkage-policy-caveat" style="margin-top:8px;"></div>
+    </section>
+
+    <section class="panel card" id="linkage-notes">
+      <h2>해석과 한계</h2>
+      <div id="linkage-notes-body"></div>
+    </section>
+  </div>
+
+  <div id="view-bok" style="display:none;">
+    <section class="panel card">
+      <h2>금통위 전망 <span id="bok-dday" class="dday-badge"></span></h2>
+      <div id="bok-controls">
+        <label><input type="checkbox" id="bok-cut-toggle"> 인하 칸 추가</label>
+        <button id="bok-export-btn" type="button">JSON 내보내기</button>
+        <button id="bok-import-btn" type="button">JSON 불러오기</button>
+        <input type="file" id="bok-import-file" accept="application/json" style="display:none;">
+        <button id="bok-reset-btn" type="button">초기화</button>
+        <span class="muted">입력값은 이 브라우저에만 저장됩니다(서버·저장소에 올라가지 않음)</span>
+      </div>
+      <div id="bok-warning" class="bok-warning" style="display:none;"></div>
+      <div id="bok-layout">
+        <div id="bok-grid"></div>
+        <div id="bok-panel" class="card">
+          <h3>판단 근거 데이터</h3>
+          <div id="bok-facts"></div>
+        </div>
+      </div>
+      <div id="bok-sums"></div>
+    </section>
+  </div>
+
+  <section class="panel card" id="downloads-section">
+    <h2>⬇ 데이터 다운로드</h2>
+    <div id="downloads-list"></div>
+    <div id="downloads-sources"></div>
   </section>
 
-  <footer>매크로 트래커 · collect.py + export.py 로 생성된 데이터를 로컬에서 표시합니다.</footer>
+  <footer>매크로 트래커 · collect.py + export.py + rate_linkage.py 로 생성된 데이터를 로컬에서 표시합니다.</footer>
 </main>
 
 <script>
@@ -316,15 +505,22 @@
   var CATEGORY_ORDER = ["물가", "고용", "성장", "유가", "금리"];
   var CATEGORY_LABEL = { "물가": "물가", "고용": "고용", "성장": "성장", "유가": "유가", "금리": "금리" };
   var LEVEL_EMPLOYMENT_INDICATORS = { "비농업고용": true, "취업자수": true };
+  var COUNTRY_FILE = { "한국": "korea.xlsx", "미국": "usa.xlsx", "일본": "japan.xlsx", "독일": "germany.xlsx", "프랑스": "france.xlsx" };
+  var LINKAGE_COUNTRY_LABEL = { US: "미국", JP: "일본", DE: "독일", FR: "프랑스" };
+  var LINKAGE_COUNTRY_CODES = ["US", "JP", "DE", "FR"];
 
   var state = {
     indicators: [],
     observations: [],
     events: [],
     recent: [],
+    analysis: null,
     country: "미국",
     calScope: "country",
     calCursor: null, // {year, month} for month view
+    view: "countries",
+    linkageCountry: "US",
+    linkageCharts: [],
     charts: []
   };
 
@@ -363,13 +559,15 @@
   Promise.all([
     loadJSON("data/data.json"),
     loadJSON("data/calendar.json"),
-    loadJSON("data/recent.json").catch(function () { return { events: [] }; })
+    loadJSON("data/recent.json").catch(function () { return { events: [] }; }),
+    loadJSON("data/analysis.json").catch(function () { return null; })
   ]).then(function (results) {
-    var data = results[0], cal = results[1], recent = results[2];
+    var data = results[0], cal = results[1], recent = results[2], analysis = results[3];
     state.indicators = data.indicators || [];
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
     state.recent = recent.entries || recent.events || [];
+    state.analysis = analysis;
     // 로우데이터에 실제로 기록된 발표일(release_date가 있는 관측치) -> 달력에 "지난 발표"로 표시
     state.pastReleases = state.observations
       .filter(function (o) { return !!o.release_date; })
@@ -397,6 +595,27 @@
     document.getElementById("cal-prev").addEventListener("click", function () { shiftMonth(-1); });
     document.getElementById("cal-next").addEventListener("click", function () { shiftMonth(1); });
     selectCountry(state.country);
+    buildMainTabs();
+    renderDownloads();
+    initBok();
+  }
+
+  // ---- main view tabs ----
+  function buildMainTabs() {
+    Array.prototype.forEach.call(document.querySelectorAll("#main-tabs button"), function (b) {
+      b.addEventListener("click", function () { setView(b.dataset.view); });
+    });
+  }
+  function setView(view) {
+    state.view = view;
+    Array.prototype.forEach.call(document.querySelectorAll("#main-tabs button"), function (b) {
+      b.classList.toggle("active", b.dataset.view === view);
+    });
+    document.getElementById("view-countries").style.display = view === "countries" ? "" : "none";
+    document.getElementById("view-linkage").style.display = view === "linkage" ? "" : "none";
+    document.getElementById("view-bok").style.display = view === "bok" ? "" : "none";
+    if (view === "linkage") renderLinkage();
+    if (view === "bok") renderBokFacts();
   }
 
   // ---- country tabs ----
@@ -500,12 +719,23 @@
     }
   }
 
-  function makeCard(title, unit) {
+  function makeCard(title, unit, country) {
     var card = document.createElement("div");
     card.className = "card chart-card";
+    var head = document.createElement("div");
+    head.className = "chart-card-head";
     var h = document.createElement("div");
     h.className = "chart-title";
     h.textContent = title;
+    head.appendChild(h);
+    if (country && COUNTRY_FILE[country]) {
+      var dl = document.createElement("a");
+      dl.className = "card-download-link";
+      dl.href = "data/downloads/" + COUNTRY_FILE[country];
+      dl.textContent = "⬇ 엑셀";
+      dl.setAttribute("download", "");
+      head.appendChild(dl);
+    }
     var u = document.createElement("div");
     u.className = "chart-unit";
     u.textContent = unit ? ("단위: " + unit) : "";
@@ -515,7 +745,7 @@
     wrap.className = "chart-wrap";
     var canvas = document.createElement("canvas");
     wrap.appendChild(canvas);
-    card.appendChild(h);
+    card.appendChild(head);
     card.appendChild(u);
     card.appendChild(stats);
     card.appendChild(wrap);
@@ -625,7 +855,7 @@
   var PALETTE = ["--accent", "--accent2", "--accent3", "--accent4"];
 
   function addLineCard(grid, country, title, inds, unit, opts) {
-    var c = makeCard(title, unit);
+    var c = makeCard(title, unit, country);
     grid.appendChild(c.card);
 
     var datasets = [];
@@ -668,7 +898,7 @@
 
   function addYoyBarCard(grid, country, ind) {
     var title = (country === "미국" ? "고용 (비농업고용 전년동월대비)" : "고용 (취업자수 전년동월대비)");
-    var c = makeCard(title, "전년동월대비 증감 (" + ind.unit + ")");
+    var c = makeCard(title, "전년동월대비 증감 (" + ind.unit + ")", country);
     grid.appendChild(c.card);
 
     var obs = observationsFor(country, ind.indicator);
@@ -699,7 +929,7 @@
   }
 
   function addGrowthBarCard(grid, country, ind) {
-    var c = makeCard("성장 (" + ind.indicator + ")", ind.unit);
+    var c = makeCard("성장 (" + ind.indicator + ")", ind.unit, country);
     grid.appendChild(c.card);
     var obs = observationsFor(country, ind.indicator);
     var points = obs.map(function (o) { return { x: o.date, y: o.value, release_date: o.release_date }; });
@@ -717,7 +947,7 @@
   function addRateCard(grid, country, policyInd, bondInd) {
     var title = "금리" + (policyInd ? " (" + policyInd.indicator + " · 국채10년)" : " (국채10년)");
     var unit = (bondInd || policyInd).unit;
-    var c = makeCard(title, unit);
+    var c = makeCard(title, unit, country);
     grid.appendChild(c.card);
 
     var datasets = [];
@@ -831,6 +1061,7 @@
 
   function redrawAllCharts() {
     selectCountry(state.country);
+    if (state.view === "linkage" && state.analysis) renderLinkage();
   }
 
   // ---- recent banner ----
@@ -969,6 +1200,567 @@
       });
       grid.appendChild(cell);
     }
+  }
+
+  // ==================================================================
+  // ---- 금리 연동 분석 탭 ----
+  // ==================================================================
+  function destroyLinkageCharts() {
+    state.linkageCharts.forEach(function (c) { c.destroy(); });
+    state.linkageCharts = [];
+  }
+
+  function sigClass(p) {
+    if (p === null || p === undefined || isNaN(p)) return "";
+    return p < 0.05 ? "sig-strong" : "sig-weak";
+  }
+
+  function renderLinkage() {
+    var root = document.getElementById("view-linkage");
+    var missingId = "linkage-missing-msg";
+    var existingMsg = document.getElementById(missingId);
+    if (!state.analysis) {
+      Array.prototype.forEach.call(root.querySelectorAll(":scope > section"), function (s) { s.style.display = "none"; });
+      if (!existingMsg) {
+        var msg = document.createElement("div");
+        msg.id = missingId;
+        msg.className = "card";
+        msg.style.padding = "20px";
+        msg.textContent = "분석 데이터(site/data/analysis.json)가 아직 없습니다. analysis/rate_linkage.py 실행이 필요합니다.";
+        root.appendChild(msg);
+      }
+      return;
+    }
+    if (existingMsg) existingMsg.remove();
+    Array.prototype.forEach.call(root.querySelectorAll(":scope > section"), function (s) { s.style.display = ""; });
+
+    destroyLinkageCharts();
+    var market = state.analysis.market, policy = state.analysis.policy;
+
+    document.getElementById("linkage-desc").innerHTML =
+      "β = 해외 국채10년이 1%p 움직일 때 한국 국채10년이 평균적으로 움직인 폭 · 분석기간 " +
+      state.analysis.sample.start + " ~ " + state.analysis.sample.end + " (월간 변화 기준, 분석 기준일 " + state.analysis.as_of + ")";
+    document.getElementById("linkage-download-link").innerHTML =
+      "<a class='card-download-link' href='data/downloads/regression_analysis.xlsx' download>⬇ 회귀분석 결과 엑셀</a>";
+
+    renderLinkageSummaryCards(market);
+    buildLinkageCountryTabs();
+    renderLinkageScatter(market, state.linkageCountry);
+    renderLinkageRolling(market);
+    renderLinkageMultiTable(market);
+    renderLinkageLeadLagTable(market);
+    renderLinkagePolicy(policy);
+    renderLinkageNotes();
+  }
+
+  function renderLinkageSummaryCards(market) {
+    var wrap = document.getElementById("linkage-summary-cards");
+    wrap.innerHTML = "";
+    LINKAGE_COUNTRY_CODES.forEach(function (code) {
+      var r = market.simple[code];
+      var card = document.createElement("div");
+      card.className = "linkage-card" + (r && !r.insufficient ? " " + sigClass(r.p) : "");
+      if (code === market.strongest) {
+        var badge = document.createElement("div");
+        badge.className = "lc-badge";
+        badge.textContent = "가장 강한 연동";
+        card.appendChild(badge);
+      }
+      var title = document.createElement("div");
+      title.className = "lc-country";
+      title.textContent = LINKAGE_COUNTRY_LABEL[code];
+      card.appendChild(title);
+      if (!r || r.insufficient) {
+        var na = document.createElement("div");
+        na.className = "muted";
+        na.textContent = "표본 부족";
+        card.appendChild(na);
+      } else {
+        [["β", fmtNum(r.beta, 3)], ["R²", fmtNum(r.r2, 3)], ["p값", r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3)], ["표본수", String(r.n)]].forEach(function (kv) {
+          var row = document.createElement("div");
+          row.className = "lc-row";
+          var l = document.createElement("span"); l.textContent = kv[0];
+          var b = document.createElement("b"); b.textContent = kv[1];
+          row.appendChild(l); row.appendChild(b);
+          card.appendChild(row);
+        });
+      }
+      wrap.appendChild(card);
+    });
+  }
+
+  function buildLinkageCountryTabs() {
+    var nav = document.getElementById("linkage-country-tabs");
+    nav.innerHTML = "";
+    LINKAGE_COUNTRY_CODES.forEach(function (code) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = LINKAGE_COUNTRY_LABEL[code];
+      if (code === state.linkageCountry) btn.className = "active";
+      btn.addEventListener("click", function () {
+        state.linkageCountry = code;
+        Array.prototype.forEach.call(nav.querySelectorAll("button"), function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        renderLinkageScatter(state.analysis.market, code);
+      });
+      nav.appendChild(btn);
+    });
+  }
+
+  function renderLinkageScatter(market, code) {
+    var canvas = document.getElementById("linkage-scatter");
+    var existing = Chart.getChart(canvas);
+    if (existing) {
+      state.linkageCharts = state.linkageCharts.filter(function (c) { return c !== existing; });
+      existing.destroy();
+    }
+    var pts = (market.scatter[code] || []).map(function (p) { return { x: p.x, y: p.y }; });
+    var reg = market.simple[code];
+    var lineData = [];
+    if (reg && !reg.insufficient && pts.length) {
+      var xs = pts.map(function (p) { return p.x; });
+      var xmin = Math.min.apply(null, xs), xmax = Math.max.apply(null, xs);
+      lineData = [{ x: xmin, y: reg.const + reg.beta * xmin }, { x: xmax, y: reg.const + reg.beta * xmax }];
+    }
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "scatter",
+      data: {
+        datasets: [
+          { label: LINKAGE_COUNTRY_LABEL[code] + " vs 한국", data: pts, backgroundColor: cssVar("--accent"), pointRadius: 3 },
+          { type: "line", label: "회귀선", data: lineData, borderColor: cssVar("--accent2"), borderWidth: 2, pointRadius: 0, showLine: true, fill: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "linear", title: { display: true, text: LINKAGE_COUNTRY_LABEL[code] + " 국채10년 월간 변화(%p)", color: muted, font: { size: 10.5 } }, ticks: { color: muted }, grid: { color: border } },
+          y: { type: "linear", title: { display: true, text: "한국 국채10년 월간 변화(%p)", color: muted, font: { size: 10.5 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.linkageCharts.push(chart);
+  }
+
+  function renderLinkageRolling(market) {
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var palette = { US: cssVar("--accent"), JP: cssVar("--accent2"), DE: cssVar("--accent3"), FR: cssVar("--accent4") };
+
+    function buildSeriesChart(canvasId, metricKey, yTitle) {
+      var datasets = LINKAGE_COUNTRY_CODES.map(function (code) {
+        var dates = market.rolling.dates[code] || [];
+        var vals = market.rolling[metricKey][code] || [];
+        var data = dates.map(function (d, i) { return { x: d, y: vals[i] }; });
+        return { label: LINKAGE_COUNTRY_LABEL[code], data: data, borderColor: palette[code], backgroundColor: palette[code], pointRadius: 0, borderWidth: 2, tension: 0.1 };
+      });
+      var canvas = document.getElementById(canvasId);
+      var chart = new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: { datasets: datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+          scales: {
+            x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 8, font: { size: 10 } }, grid: { color: border } },
+            y: { title: { display: true, text: yTitle, color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+          }
+        }
+      });
+      state.linkageCharts.push(chart);
+    }
+    buildSeriesChart("linkage-rolling-beta", "beta", "β (24개월 롤링)");
+    buildSeriesChart("linkage-rolling-r2", "r2", "R² (24개월 롤링)");
+  }
+
+  function renderLinkageMultiTable(market) {
+    var m = market.multi;
+    function labelOf(k) { return k === "const" ? "상수항" : (LINKAGE_COUNTRY_LABEL[k] || k); }
+    var html = "<table class='linkage-table'><thead><tr><th>변수</th><th>계수</th><th>p값</th><th>VIF</th></tr></thead><tbody>";
+    ["const"].concat(m.included).forEach(function (k) {
+      var vif = m.vif[k];
+      html += "<tr><td>" + labelOf(k) + "</td><td>" + fmtNum(m.coeffs[k], 4) + "</td><td>" +
+        (m.p_values[k] < 0.001 ? "<0.001" : fmtNum(m.p_values[k], 3)) + "</td><td>" + (vif == null ? "-" : fmtNum(vif, 2)) + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    html += "<div class='muted'>조정 R² " + fmtNum(m.adj_r2, 3) + " · R² " + fmtNum(m.r2, 3) + " · 표본수 " + m.n + " · HAC 시차 " + m.hac_lags + "개월</div>";
+    if (m.excluded && m.excluded.FR) {
+      html += "<div class='muted' style='margin-top:6px;'>프랑스 제외: " + m.excluded.FR.reason + " (독일과 상관계수 " +
+        fmtNum(m.excluded.FR.corr_with_DE, 3) + ", 4개국 동시 회귀 시 VIF " + fmtNum(m.excluded.FR.vif_in_full_model, 1) + ")</div>";
+    }
+    document.getElementById("linkage-multi-table").innerHTML = html;
+  }
+
+  function renderLinkageLeadLagTable(market) {
+    var html = "<table class='linkage-table'><thead><tr><th>국가</th><th>동월 β</th><th>동월 p값</th><th>동월 R²</th><th>1개월선행 β</th><th>1개월선행 p값</th><th>1개월선행 R²</th></tr></thead><tbody>";
+    LINKAGE_COUNTRY_CODES.forEach(function (code) {
+      var ll = market.lead_lag[code];
+      var c = ll.contemporaneous, l1 = ll.lead1;
+      html += "<tr><td>" + LINKAGE_COUNTRY_LABEL[code] + "</td><td>" + fmtNum(c.beta, 3) + "</td><td>" +
+        (c.p < 0.001 ? "<0.001" : fmtNum(c.p, 3)) + "</td><td>" + fmtNum(c.r2, 3) + "</td><td>" +
+        (l1.insufficient ? "-" : fmtNum(l1.beta, 3)) + "</td><td>" +
+        (l1.insufficient ? "-" : (l1.p < 0.001 ? "<0.001" : fmtNum(l1.p, 3))) + "</td><td>" +
+        (l1.insufficient ? "-" : fmtNum(l1.r2, 3)) + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    document.getElementById("linkage-leadlag-table").innerHTML = html;
+  }
+
+  function renderLinkagePolicy(policy) {
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var spreadUs = policy.spread_kr_us, spreadJp = policy.spread_kr_jp;
+    var canvas1 = document.getElementById("linkage-spread");
+    var chart1 = new Chart(canvas1.getContext("2d"), {
+      type: "line",
+      data: {
+        datasets: [
+          { label: "한미 정책금리차(%p)", data: spreadUs.dates.map(function (d, i) { return { x: d, y: spreadUs.KR_US[i] }; }), borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 0, borderWidth: 2 },
+          { label: "한일 정책금리차(%p)", data: spreadJp.dates.map(function (d, i) { return { x: d, y: spreadJp.KR_JP[i] }; }), borderColor: cssVar("--accent3"), backgroundColor: cssVar("--accent3"), pointRadius: 0, borderWidth: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 8, font: { size: 10 } }, grid: { color: border } },
+          y: { title: { display: true, text: "%p", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.linkageCharts.push(chart1);
+
+    var cc = policy.cross_corr_kr_us;
+    var posColor = cssVar("--pos"), negColor = cssVar("--neg");
+    var colors = cc.corr.map(function (v) { return v === null ? muted : (v >= 0 ? posColor : negColor); });
+    var canvas2 = document.getElementById("linkage-crosscorr");
+    var chart2 = new Chart(canvas2.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: cc.lags.map(function (l) { return (l > 0 ? "+" : "") + l; }),
+        datasets: [{ label: "상관계수 (한국 Δ기준금리 vs 미국 Δ정책금리)", data: cc.corr, backgroundColor: colors }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { title: { display: true, text: "시차(개월, 양수=미국 변화가 선행)", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } },
+          y: { min: -1, max: 1, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.linkageCharts.push(chart2);
+    document.getElementById("linkage-policy-caveat").textContent = policy.caveat;
+  }
+
+  function renderLinkageNotes() {
+    var s = state.analysis.sample;
+    var html = "<ul>" +
+      "<li>이 분석은 상관·회귀 결과이며, 인과관계를 확정하거나 향후 금리를 예측·추천하는 것이 아닙니다.</li>" +
+      "<li>국채10년은 월평균값이라 발표 당일·일중 반응은 볼 수 없고, 월 단위 흐름만 반영합니다.</li>" +
+      "<li>분석 표본: " + s.start + " ~ " + s.end + " (월간 " + s.n_months_level + "개월 수준값 기준, 차분 후 회귀에는 이보다 1개월 적은 표본을 씁니다).</li>" +
+      "<li>정책금리 분석은 추적 기간 중 변경 횟수가 적어 시장금리 분석보다 통계적 신뢰도가 낮습니다.</li>" +
+      "<li>분석 기준일: " + state.analysis.as_of + " (analysis.json 생성 시각: " + state.analysis.generated_at + ")</li>" +
+      "</ul>";
+    document.getElementById("linkage-notes-body").innerHTML = html;
+  }
+
+  // ==================================================================
+  // ---- 금통위 전망 탭 (localStorage 전용, 저장소/JSON에는 올리지 않음) ----
+  // ==================================================================
+  var BOK_STORAGE_KEY = "mt_bok_outlook_v1";
+  var BOK_COL_LABELS = { cut: "인하", hold: "동결", hike: "인상" };
+  var BOK_ROW_LABELS = { dove: "비둘기", hawk: "매파" };
+  var bokState = null;
+
+  function defaultBokState() { return { addCut: false, cells: {} }; }
+  function emptyBokCell() { return { p: null, cond: "", action: "" }; }
+  function bokCellKey(col, row) { return col + "-" + row; }
+  function bokColumns() { return bokState.addCut ? ["cut", "hold", "hike"] : ["hold", "hike"]; }
+  function getBokCell(col, row) {
+    var key = bokCellKey(col, row);
+    if (!bokState.cells[key]) bokState.cells[key] = emptyBokCell();
+    return bokState.cells[key];
+  }
+  function loadBokState() {
+    try {
+      var raw = localStorage.getItem(BOK_STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && parsed.cells) return parsed;
+      }
+    } catch (e) { /* localStorage 사용 불가 시 기본값 */ }
+    return defaultBokState();
+  }
+  function saveBokState() {
+    try { localStorage.setItem(BOK_STORAGE_KEY, JSON.stringify(bokState)); } catch (e) { /* ignore */ }
+  }
+
+  function initBok() {
+    bokState = loadBokState();
+    var cutToggle = document.getElementById("bok-cut-toggle");
+    cutToggle.checked = !!bokState.addCut;
+    cutToggle.addEventListener("change", function (e) {
+      bokState.addCut = e.target.checked;
+      saveBokState();
+      renderBokGrid();
+    });
+    document.getElementById("bok-export-btn").addEventListener("click", exportBokJSON);
+    document.getElementById("bok-import-btn").addEventListener("click", function () {
+      document.getElementById("bok-import-file").click();
+    });
+    document.getElementById("bok-import-file").addEventListener("change", importBokJSON);
+    document.getElementById("bok-reset-btn").addEventListener("click", resetBok);
+    renderBokGrid();
+  }
+
+  function exportBokJSON() {
+    var blob = new Blob([JSON.stringify(bokState, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "bok_outlook.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+  function importBokJSON(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(reader.result);
+        if (parsed && typeof parsed === "object" && parsed.cells) {
+          bokState = parsed;
+          if (bokState.addCut === undefined) bokState.addCut = false;
+          saveBokState();
+          document.getElementById("bok-cut-toggle").checked = !!bokState.addCut;
+          renderBokGrid();
+        } else {
+          alert("올바른 금통위 전망 JSON 파일이 아닙니다.");
+        }
+      } catch (err) {
+        alert("JSON 파싱 실패: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+  function resetBok() {
+    if (!confirm("입력한 확률·메모를 모두 초기화할까요?")) return;
+    bokState = defaultBokState();
+    saveBokState();
+    document.getElementById("bok-cut-toggle").checked = false;
+    renderBokGrid();
+  }
+
+  function renderBokGrid() {
+    var cols = bokColumns();
+    var rows = ["dove", "hawk"];
+    var gridEl = document.getElementById("bok-grid");
+    gridEl.innerHTML = "";
+
+    var colLabelsRow = document.createElement("div");
+    colLabelsRow.className = "bok-col-labels";
+    cols.forEach(function (col) {
+      var span = document.createElement("span");
+      span.textContent = BOK_COL_LABELS[col];
+      colLabelsRow.appendChild(span);
+    });
+    gridEl.appendChild(colLabelsRow);
+
+    rows.forEach(function (row) {
+      var rowEl = document.createElement("div");
+      rowEl.className = "bok-grid-row";
+      var rowLabel = document.createElement("div");
+      rowLabel.className = "bok-row-label";
+      rowLabel.textContent = BOK_ROW_LABELS[row];
+      rowEl.appendChild(rowLabel);
+
+      cols.forEach(function (col) {
+        var cellState = getBokCell(col, row);
+        var cellEl = document.createElement("div");
+        cellEl.className = "bok-cell";
+        cellEl.dataset.col = col; cellEl.dataset.row = row;
+
+        var title = document.createElement("div");
+        title.className = "bok-cell-title";
+        title.textContent = BOK_COL_LABELS[col] + " · " + BOK_ROW_LABELS[row];
+        cellEl.appendChild(title);
+
+        var pInput = document.createElement("input");
+        pInput.type = "number";
+        pInput.min = "0"; pInput.max = "100"; pInput.step = "1";
+        pInput.placeholder = "확률 %";
+        if (cellState.p !== null && cellState.p !== undefined) pInput.value = cellState.p;
+        pInput.addEventListener("input", function () {
+          var v = pInput.value === "" ? null : Number(pInput.value);
+          cellState.p = (v === null || isNaN(v)) ? null : v;
+          saveBokState();
+          renderBokSums();
+        });
+        cellEl.appendChild(pInput);
+
+        var condInput = document.createElement("textarea");
+        condInput.placeholder = "조건 메모";
+        condInput.value = cellState.cond || "";
+        condInput.addEventListener("input", function () { cellState.cond = condInput.value; saveBokState(); });
+        cellEl.appendChild(condInput);
+
+        var actionInput = document.createElement("textarea");
+        actionInput.placeholder = "대응 메모";
+        actionInput.value = cellState.action || "";
+        actionInput.addEventListener("input", function () { cellState.action = actionInput.value; saveBokState(); });
+        cellEl.appendChild(actionInput);
+
+        rowEl.appendChild(cellEl);
+      });
+      gridEl.appendChild(rowEl);
+    });
+
+    renderBokSums();
+  }
+
+  function renderBokSums() {
+    var cols = bokColumns(), rows = ["dove", "hawk"];
+    var total = 0, any = false;
+    var colSums = {}, rowSums = {};
+    cols.forEach(function (col) { colSums[col] = 0; });
+    rows.forEach(function (row) { rowSums[row] = 0; });
+    var maxVal = null;
+    cols.forEach(function (col) {
+      rows.forEach(function (row) {
+        var c = getBokCell(col, row);
+        var hasVal = typeof c.p === "number" && !isNaN(c.p);
+        var v = hasVal ? c.p : 0;
+        if (hasVal) { any = true; if (maxVal === null || c.p > maxVal) maxVal = c.p; }
+        total += v;
+        colSums[col] += v;
+        rowSums[row] += v;
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll("#bok-grid .bok-cell"), function (cellEl) {
+      var c = getBokCell(cellEl.dataset.col, cellEl.dataset.row);
+      cellEl.classList.toggle("max-cell", maxVal !== null && c.p === maxVal);
+    });
+
+    var warnEl = document.getElementById("bok-warning");
+    if (any && Math.abs(total - 100) > 0.001) {
+      warnEl.style.display = "block";
+      warnEl.textContent = "⚠ 칸별 확률의 합이 100%가 아닙니다. 현재 합계: " + fmtNum(total, 1) + "%";
+    } else {
+      warnEl.style.display = "none";
+    }
+
+    var sumsEl = document.getElementById("bok-sums");
+    var parts = [];
+    parts.push("<span>합계: <b>" + fmtNum(total, 1) + "%</b></span>");
+    cols.forEach(function (col) { parts.push("<span>" + BOK_COL_LABELS[col] + " 합계: <b>" + fmtNum(colSums[col], 1) + "%</b></span>"); });
+    rows.forEach(function (row) { parts.push("<span>" + BOK_ROW_LABELS[row] + " 합계: <b>" + fmtNum(rowSums[row], 1) + "%</b></span>"); });
+    sumsEl.innerHTML = parts.join("");
+  }
+
+  // ---- 금통위 전망: 판단 근거 데이터 패널 ----
+  function recentValues(country, indicator, n) {
+    return observationsFor(country, indicator).slice(-n).map(function (o) { return o.value; });
+  }
+  function sparkSvg(values) {
+    if (!values || values.length < 2) return "";
+    var w = 60, h = 20, pad = 2;
+    var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+    var range = max - min || 1;
+    var pts = values.map(function (v, i) {
+      var x = pad + (i / (values.length - 1)) * (w - pad * 2);
+      var y = h - pad - ((v - min) / range) * (h - pad * 2);
+      return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+    var color = values[values.length - 1] >= values[0] ? cssVar("--pos") : cssVar("--neg");
+    return "<svg class='spark' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "'>" +
+      "<polyline points='" + pts + "' fill='none' stroke='" + color + "' stroke-width='2'/></svg>";
+  }
+
+  function renderBokFacts() {
+    var el = document.getElementById("bok-facts");
+    var rows = [];
+    function factRow(label, valueHtml) {
+      rows.push("<div class='bok-fact-row'><span>" + label + "</span><b>" + valueHtml + "</b></div>");
+    }
+
+    var cpiHead = observationsFor("한국", "CPI 헤드라인").slice(-1)[0];
+    factRow("CPI 헤드라인(YoY)", (cpiHead ? fmtNum(cpiHead.value, 1) + "% (" + cpiHead.date + ")" : "-") + " " + sparkSvg(recentValues("한국", "CPI 헤드라인", 3)));
+
+    var cpiCore = observationsFor("한국", "CPI 근원").slice(-1)[0];
+    factRow("CPI 근원(YoY)", (cpiCore ? fmtNum(cpiCore.value, 1) + "% (" + cpiCore.date + ")" : "-") + " " + sparkSvg(recentValues("한국", "CPI 근원", 3)));
+
+    var gdp = observationsFor("한국", "실질GDP 성장률").slice(-1)[0];
+    factRow("실질GDP 성장률", gdp ? fmtNum(gdp.value, 1) + "% (" + gdp.date + ")" : "-");
+
+    var unemp = observationsFor("한국", "실업률").slice(-1)[0];
+    factRow("실업률", unemp ? fmtNum(unemp.value, 1) + "% (" + unemp.date + ")" : "-");
+
+    var policyRate = observationsFor("한국", "기준금리").slice(-1)[0];
+    factRow("기준금리", policyRate ? fmtNum(policyRate.value, 2) + "% (" + policyRate.date + ")" : "-");
+
+    var bond = observationsFor("한국", "국채10년").slice(-1)[0];
+    factRow("국채10년", bond ? fmtNum(bond.value, 2) + "% (" + bond.date + ")" : "-");
+
+    if (state.analysis) {
+      var spread = state.analysis.policy.spread_kr_us;
+      if (spread && spread.KR_US && spread.KR_US.length) {
+        var lastSpread = spread.KR_US[spread.KR_US.length - 1];
+        factRow("한미 정책금리차", fmtNum(lastSpread, 2) + "%p (" + spread.dates[spread.dates.length - 1] + ")");
+      }
+      var market = state.analysis.market;
+      var strongest = market.strongest;
+      if (strongest && market.rolling.beta[strongest] && market.rolling.beta[strongest].length) {
+        var rb = market.rolling.beta[strongest], rd = market.rolling.dates[strongest];
+        factRow("롤링 β 최신값 (" + LINKAGE_COUNTRY_LABEL[strongest] + ", 가장 강한 연동)", fmtNum(rb[rb.length - 1], 3) + " (" + rd[rd.length - 1] + ")");
+      }
+    }
+
+    var today = todayStr();
+    var nextMeeting = state.events
+      .filter(function (e) { return e.country === "한국" && e.indicator === "기준금리" && e.date >= today; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0];
+    var ddayEl = document.getElementById("bok-dday");
+    if (nextMeeting) {
+      var d = Math.round((new Date(nextMeeting.date) - new Date(today)) / 86400000);
+      ddayEl.textContent = "다음 금통위 " + nextMeeting.date + " (D-" + d + ")";
+      factRow("다음 금통위", nextMeeting.date + " (D-" + d + ")");
+    } else {
+      ddayEl.textContent = "일정 미등록";
+      factRow("다음 금통위", "일정 미등록");
+    }
+
+    el.innerHTML = rows.join("");
+  }
+
+  // ---- 데이터 다운로드 섹션 ----
+  function renderDownloads() {
+    var list = document.getElementById("downloads-list");
+    list.innerHTML = "";
+    var entries = [
+      ["한국", "korea.xlsx"], ["미국", "usa.xlsx"], ["일본", "japan.xlsx"], ["독일", "germany.xlsx"], ["프랑스", "france.xlsx"],
+      ["전체 로우데이터", "raw_data.xlsx"]
+    ];
+    if (state.analysis) entries.push(["회귀분석 결과", "regression_analysis.xlsx"]);
+    entries.forEach(function (e) {
+      var a = document.createElement("a");
+      a.href = "data/downloads/" + e[1];
+      a.setAttribute("download", "");
+      a.textContent = e[0] + " (" + e[1] + ")";
+      list.appendChild(a);
+    });
+
+    var sources = {};
+    state.indicators.forEach(function (i) { if (i.source) sources[i.source] = true; });
+    var srcEl = document.getElementById("downloads-sources");
+    srcEl.innerHTML = "<div>데이터 기준 시각: " + (document.getElementById("generated-at").textContent || "-") + "</div>" +
+      "<div style='margin-top:6px;'><b>출처</b><ul>" +
+      Object.keys(sources).sort().map(function (s) { return "<li>" + s + "</li>"; }).join("") +
+      "</ul></div>";
   }
 
 })();

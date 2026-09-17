@@ -1607,7 +1607,19 @@ def main():
         f.write("\n".join(log_lines) + "\n")
     print(f"\n(실행 로그 저장: {log_path})")
 
-    export_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "export.py")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # rate_linkage.py가 site/data/analysis.json을 export.py보다 먼저 만들어야
+    # export.py가 그 안의 회귀분석 결과로 downloads/regression_analysis.xlsx를
+    # 함께 생성할 수 있다.
+    analysis_path = os.path.join(base_dir, "analysis", "rate_linkage.py")
+    if os.path.exists(analysis_path):
+        print("\n=== analysis/rate_linkage.py 실행 ===")
+        result = subprocess.run([sys.executable, analysis_path])
+        if result.returncode != 0:
+            print("경고: rate_linkage.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
+
+    export_path = os.path.join(base_dir, "export.py")
     if os.path.exists(export_path):
         print("\n=== export.py 실행 ===")
         result = subprocess.run([sys.executable, export_path])
