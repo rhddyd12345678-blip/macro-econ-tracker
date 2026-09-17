@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T09:13:31",
+  "generated_at": "2026-09-17T23:10:16",
   "indicators": [
     {
       "country": "미국",
@@ -14753,6 +14753,14 @@
       "indicator": "기준금리",
       "value": 0.75,
       "release_date": "2021-08-26",
+      "freq": "수시"
+    },
+    {
+      "date": "2026-09-16",
+      "country": "미국",
+      "indicator": "정책금리(상단)",
+      "value": 4.0,
+      "release_date": "2026-09-16",
       "freq": "수시"
     }
   ]

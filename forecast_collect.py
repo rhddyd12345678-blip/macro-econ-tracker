@@ -50,9 +50,9 @@ MANUAL_HEADER = ["발표일", "기관", "국가", "지표", "대상기간", "전
 MANUAL_INSTITUTION_KIND = {
     "한국은행": "기관전망",
     "일본은행": "기관전망",
-    "금융투자협회": "설문컨센서스",
-    "JCER": "설문컨센서스",
-    "ECB": "설문컨센서스",
+    "금융투자협회 BMSI": "설문컨센서스",
+    "JCER ESP": "설문컨센서스",
+    "ECB SPF": "설문컨센서스",
 }
 
 IMF_COUNTRIES = {"한국": "KOR", "미국": "USA", "일본": "JPN", "독일": "DEU", "프랑스": "FRA"}
@@ -335,6 +335,29 @@ ECB_SHEET_INDICATOR = {
     "Prices (annual)": "HICP상승률",
 }
 
+_ECB_MONTH_NAMES = (
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+)
+_ECB_VINTAGE_DATE_RE = re.compile(
+    r"(\d{1,2})\s+(" + "|".join(_ECB_MONTH_NAMES) + r")\s+(\d{4})\s*(?:ECB staff|Eurosystem staff) macroeconomic projections"
+)
+
+
+def _ecb_precise_vintage_date(html_text):
+    """발표 페이지에서 'DD Month YYYY ECB/Eurosystem staff macroeconomic
+    projections' 형태로 나오는 정확한 발표일을 찾는다. 파일명(YYYYMM)만으로는
+    '그 달 1일'로 뭉뚱그려지므로(실제로는 매번 10일 전후 등 다른 날짜), 페이지
+    텍스트에서 정확한 일자를 뽑아낸다. 못 찾으면 None(파일명 기반 근사치로 대체)."""
+    text = re.sub(r"<[^>]+>", " ", html_text)
+    text = re.sub(r"\s+", " ", text)
+    m = _ECB_VINTAGE_DATE_RE.search(text)
+    if not m:
+        return None
+    day, month_name, year = m.group(1), m.group(2), m.group(3)
+    month = _ECB_MONTH_NAMES.index(month_name) + 1
+    return f"{year}-{month:02d}-{int(day):02d}"
+
 
 def collect_ecb_projections():
     rows = []
@@ -355,7 +378,9 @@ def collect_ecb_projections():
         return rows
     xlsx_url = "https://www.ecb.europa.eu" + m.group(1)
     vintage_month = re.search(r"projections(\d{6})_ecbstaff", xlsx_url)
-    vintage_iso = f"{vintage_month.group(1)[:4]}-{vintage_month.group(1)[4:]}-01" if vintage_month else date.today().isoformat()
+    vintage_iso = _ecb_precise_vintage_date(resp.text) or (
+        f"{vintage_month.group(1)[:4]}-{vintage_month.group(1)[4:]}-01" if vintage_month else date.today().isoformat()
+    )
 
     try:
         xresp = requests.get(xlsx_url, timeout=REQUEST_TIMEOUT)
@@ -675,8 +700,12 @@ def load_manual_rows():
     rows = read_csv_rows(MANUAL_CSV_PATH, MANUAL_HEADER)
     out = []
     for r in rows:
-        if not r.get("발표일") or not r.get("전망치"):
-            continue  # 빈 행(헤더만 있는 상태 등)은 건너뜀
+        has_value = bool(r.get("전망치")) or any(
+            r.get(k) for k in ("응답비율_동결", "응답비율_인상", "응답비율_인하")
+        )
+        if not r.get("발표일") or not has_value:
+            continue  # 빈 행(헤더만 있는 상태 등)은 건너뜀 — 전망치 없이 응답비율만
+            # 있는 설문형 행(BMSI·JCER 정책금리 방향 등)은 그대로 포함해야 한다.
         out.append(
             {
                 "발표일": r["발표일"],

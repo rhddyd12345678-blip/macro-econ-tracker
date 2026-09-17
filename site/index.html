@@ -631,6 +631,7 @@
 
       <div id="market-bmsi-wrap">
         <h3>금투협 BMSI 기준금리 방향 응답 비율</h3>
+        <div id="market-bmsi-status" class="muted" style="margin-bottom:6px;"></div>
         <div id="market-bmsi-bar"></div>
         <div id="market-bmsi-empty" class="muted" style="display:none;">수동 입력 대기 — <a href="https://github.com/rhddyd12345678-blip/macro-econ-tracker/blob/main/docs/%EC%88%98%EB%8F%99%EC%A0%84%EB%A7%9D%EC%9E%85%EB%A0%A5.md" target="_blank" rel="noopener">docs/수동전망입력.md</a> 참고</div>
         <div id="market-bmsi-compare" class="muted" style="display:none;"></div>
@@ -2543,13 +2544,16 @@
     }
 
     if (state.forecasts) {
-      var bmsi = latestManualRow("금융투자협회", "정책금리방향", "한국");
+      var bmsi = latestManualRow("금융투자협회 BMSI", "기준금리 방향", "한국");
       if (bmsi) {
         var bmsiParts = [];
         if (bmsi.응답비율_동결 != null) bmsiParts.push("동결 " + fmtNum(Number(bmsi.응답비율_동결), 0) + "%");
         if (bmsi.응답비율_인상 != null) bmsiParts.push("인상 " + fmtNum(Number(bmsi.응답비율_인상), 0) + "%");
         if (bmsi.응답비율_인하 != null) bmsiParts.push("인하 " + fmtNum(Number(bmsi.응답비율_인하), 0) + "%");
-        items.push({ label: "BMSI 최신 응답 비율", value: bmsiParts.join(", ") || "-", date: bmsi.발표일 });
+        var bmsiMeetingDate = extractMeetingDate(bmsi.대상기간);
+        var bmsiIsPast = bmsiMeetingDate && bmsiMeetingDate < todayStr();
+        var bmsiSuffix = bmsiMeetingDate ? (bmsiIsPast ? " (지난 " + bmsiMeetingDate + " 조사)" : " (" + bmsiMeetingDate + " 대상)") : "";
+        items.push({ label: "BMSI 최신 응답 비율", value: (bmsiParts.join(", ") || "-") + bmsiSuffix, date: bmsi.발표일 });
       } else {
         items.push({ label: "BMSI 최신 응답 비율", value: "수동 입력 대기", date: null });
       }
@@ -2642,7 +2646,13 @@
   // ---- 시장 전망 탭 ----
   // ==================================================================
   var MARKET_COUNTRIES = ["한국", "미국", "일본", "독일", "프랑스", "유로존"];
-  var MARKET_INDICATOR_ORDER = ["실질GDP성장률", "소비자물가상승률", "HICP상승률", "PCE물가상승률", "실업률", "정책금리(중간값)", "정책금리방향"];
+  var MARKET_INDICATOR_ORDER = [
+    "실질GDP성장률", "실질GDP 성장률",
+    "소비자물가상승률", "CPI 헤드라인", "CPI 근원",
+    "HICP상승률", "HICP 헤드라인", "HICP 근원",
+    "PCE물가상승률", "실업률",
+    "정책금리(중간값)", "정책금리방향", "기준금리 방향", "정책금리 방향"
+  ];
 
   function destroyMarketCharts() {
     state.marketCharts.forEach(function (c) { c.destroy(); });
@@ -2733,13 +2743,25 @@
     return rows[rows.length - 1];
   }
 
+  // 대상기간이 "2026-08-27 금통위"처럼 날짜를 포함하면 그 날짜를 뽑아낸다.
+  function extractMeetingDate(periodText) {
+    var m = /^(\d{4}-\d{2}-\d{2})/.exec(periodText || "");
+    return m ? m[1] : null;
+  }
+  function extractActualResult(note) {
+    var m = /실제\s*결과\s*[:：]\s*(\S+)/.exec(note || "");
+    return m ? m[1] : null;
+  }
+
   function renderMarketBmsi() {
     var bar = document.getElementById("market-bmsi-bar");
     var emptyEl = document.getElementById("market-bmsi-empty");
     var compareEl = document.getElementById("market-bmsi-compare");
-    var latest = latestManualRow("금융투자협회", "정책금리방향", "한국");
+    var statusEl = document.getElementById("market-bmsi-status");
+    var latest = latestManualRow("금융투자협회 BMSI", "기준금리 방향", "한국");
     if (!latest || (latest.응답비율_동결 == null && latest.응답비율_인상 == null && latest.응답비율_인하 == null)) {
       bar.innerHTML = "";
+      if (statusEl) statusEl.innerHTML = "";
       emptyEl.style.display = "block";
       compareEl.style.display = "none";
       return;
@@ -2747,6 +2769,20 @@
     emptyEl.style.display = "none";
     var vals = { 동결: latest.응답비율_동결 || 0, 인상: latest.응답비율_인상 || 0, 인하: latest.응답비율_인하 || 0 };
     var cls = { 동결: "hold", 인상: "hike", 인하: "cut" };
+
+    var meetingDate = extractMeetingDate(latest.대상기간);
+    var isPast = meetingDate && meetingDate < todayStr();
+    var statusHtml;
+    if (meetingDate && isPast) {
+      var actual = extractActualResult(latest.비고);
+      statusHtml = "<b>지난 조사</b> (대상 금통위 " + meetingDate + ")" + (actual ? " · 실제 결과: <b>" + escapeHtml(actual) + "</b>" : "");
+    } else if (meetingDate) {
+      statusHtml = "대상 금통위: <b>" + meetingDate + "</b> (예정)";
+    } else {
+      statusHtml = "";
+    }
+    if (statusEl) statusEl.innerHTML = statusHtml;
+
     bar.innerHTML = Object.keys(vals).map(function (k) {
       return "<div class='market-bar-row'><span class='market-bar-label'>" + k + "</span>" +
         "<div class='market-bar-track'><div class='market-bar-fill " + cls[k] + "' style='width:" + Math.max(vals[k], 0) + "%'></div></div>" +
@@ -2771,19 +2807,21 @@
   // ---- 한국은행 최신 전망 ----
   function renderMarketBokOutlook() {
     var el = document.getElementById("market-bok-outlook");
-    var gdp = latestManualRow("한국은행", "실질GDP성장률", "한국");
-    var cpi = latestManualRow("한국은행", "소비자물가상승률", "한국");
-    if (!gdp && !cpi) {
+    var rows = forecastRows().filter(function (r) { return r.기관 === "한국은행" && r.국가 === "한국"; });
+    if (!rows.length) {
       el.innerHTML = "<div class='muted'>수동 입력 대기 — docs/수동전망입력.md 참고</div>";
       return;
     }
+    var byIndicator = {};
+    rows.forEach(function (r) { (byIndicator[r.지표] = byIndicator[r.지표] || []).push(r); });
     var html = "";
-    [["실질GDP성장률", gdp], ["소비자물가상승률", cpi]].forEach(function (pair) {
-      var label = pair[0], row = pair[1];
-      if (!row) return;
-      html += "<div class='bok-fact-row'><span>" + label + " (" + row.대상기간 + ")</span><b>" + fmtNum(Number(row.전망치), 1) + "%</b></div>";
+    var lastRow = rows.reduce(function (a, b) { return b.발표일 > a.발표일 ? b : a; });
+    Object.keys(byIndicator).forEach(function (indicator) {
+      var group = byIndicator[indicator].slice().sort(function (a, b) { return a.대상기간 < b.대상기간 ? -1 : 1; });
+      var vals = group.map(function (r) { return r.대상기간 + " " + fmtNum(Number(r.전망치), 1) + "%"; }).join(" / ");
+      html += "<div class='bok-fact-row'><span>" + escapeHtml(indicator) + "</span><b>" + vals + "</b></div>";
     });
-    html += sourceLineHtml((gdp || cpi).출처URL, (gdp || cpi).발표일);
+    html += sourceLineHtml(lastRow.출처URL, lastRow.발표일);
     el.innerHTML = html;
   }
 
