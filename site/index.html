@@ -367,6 +367,51 @@
   .bok-fact-row b { font-variant-numeric: tabular-nums; }
   .spark { display: block; }
 
+  #bok-save-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  #bok-save-row input[type="text"] {
+    flex: 1 1 260px; min-width: 0; border: 1px solid var(--border); background: var(--bg); color: var(--fg);
+    border-radius: 8px; padding: 7px 10px; font-size: 13px;
+  }
+  #bok-save-row button {
+    border: none; background: var(--accent); color: #fff; border-radius: 8px; padding: 8px 16px;
+    font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+
+  #bok-history-controls { display: flex; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+  #bok-history-controls button {
+    border: 1px solid var(--border); background: var(--card-bg); color: var(--fg); border-radius: 8px;
+    padding: 6px 12px; cursor: pointer; font-size: 12.5px;
+  }
+  .bok-history-group { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-top: 14px; }
+  .bok-history-group-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .bok-history-group-head .meeting-date { font-weight: 700; font-size: 14px; }
+  .bok-history-record { padding: 8px 0; border-top: 1px dashed var(--border); font-size: 12.5px; }
+  .bok-history-record:first-of-type { border-top: none; }
+  .bok-history-record .rec-summary-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .bok-history-record .rec-title { font-weight: 700; }
+  .bok-history-record .rec-actions { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+  .bok-history-record .rec-actions button {
+    border: 1px solid var(--border); background: var(--tab-bg); color: var(--fg); border-radius: 6px;
+    padding: 4px 9px; font-size: 11.5px; cursor: pointer;
+  }
+  .bok-history-detail {
+    margin-top: 8px; padding: 10px 12px; background: var(--bg); border-radius: 8px; font-size: 12px; line-height: 1.6;
+  }
+  .bok-history-detail table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  .bok-history-detail th, .bok-history-detail td { text-align: left; padding: 3px 6px; border-bottom: 1px dashed var(--border); }
+  .bok-actual-result { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 12.5px; }
+  .bok-actual-result select, .bok-actual-result input[type="text"] {
+    border: 1px solid var(--border); background: var(--bg); color: var(--fg); border-radius: 6px; padding: 5px 8px; font-size: 12.5px;
+  }
+  .bok-actual-result button {
+    border: none; background: var(--accent3); color: #fff; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer;
+  }
+  .bok-actual-badge {
+    display: inline-block; background: color-mix(in srgb, var(--accent3) 20%, var(--card-bg)); color: var(--accent3);
+    border-radius: 999px; padding: 2px 10px; font-size: 11.5px; font-weight: 700;
+  }
+  .bok-trend-wrap { height: 160px; margin-top: 10px; }
+
   /* ---- downloads section ---- */
   #downloads-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
   #downloads-list a {
@@ -385,6 +430,11 @@
     #bok-grid { width: 100%; }
     .bok-col-labels { padding-left: 0; }
     .bok-row-label { flex-basis: 58px; font-size: 11px; }
+    #bok-save-row { flex-direction: column; align-items: stretch; }
+    .bok-history-record .rec-summary-row { flex-direction: column; align-items: flex-start; }
+    .bok-history-record .rec-actions { margin-left: 0; width: 100%; }
+    .bok-history-group-head { flex-direction: column; align-items: flex-start; }
+    .bok-actual-result { flex-direction: column; align-items: stretch; }
   }
 </style>
 </head>
@@ -500,13 +550,20 @@
       <h2>금통위 전망 <span id="bok-dday" class="dday-badge"></span></h2>
       <div id="bok-controls">
         <label><input type="checkbox" id="bok-cut-toggle"> 인하 칸 추가</label>
-        <button id="bok-export-btn" type="button">JSON 내보내기</button>
-        <button id="bok-import-btn" type="button">JSON 불러오기</button>
+        <button id="bok-export-btn" type="button">현재 작성 중인 내용 내보내기</button>
+        <button id="bok-import-btn" type="button">현재 작성 중인 내용 불러오기</button>
         <input type="file" id="bok-import-file" accept="application/json" style="display:none;">
         <button id="bok-reset-btn" type="button">초기화</button>
         <span class="muted">입력값은 이 브라우저에만 저장됩니다(서버·저장소에 올라가지 않음)</span>
       </div>
       <div id="bok-warning" class="bok-warning" style="display:none;"></div>
+
+      <div id="bok-save-row">
+        <input type="text" id="bok-save-title" placeholder="저장 제목(선택, 예: 8월 CPI 발표 후)">
+        <button id="bok-save-btn" type="button">💾 저장</button>
+        <span class="muted" id="bok-save-target"></span>
+      </div>
+
       <div id="bok-layout">
         <div id="bok-grid"></div>
         <div id="bok-panel" class="card">
@@ -515,6 +572,19 @@
         </div>
       </div>
       <div id="bok-sums"></div>
+    </section>
+
+    <section class="panel card" id="bok-history-section">
+      <h2>저장 기록</h2>
+      <div class="muted">기록은 이 브라우저에만 저장됩니다. 다른 기기에서는 보이지 않으며, 브라우저 데이터를 지우면 사라지니 주기적으로 내보내기 해두세요.</div>
+      <div id="bok-backup-reminder" class="bok-warning" style="display:none; margin-top:10px;"></div>
+      <div id="bok-history-controls">
+        <button id="bok-history-export-btn" type="button">기록 전체 내보내기</button>
+        <button id="bok-history-import-btn" type="button">기록 불러오기</button>
+        <input type="file" id="bok-history-import-file" accept="application/json" style="display:none;">
+      </div>
+      <div id="bok-history-list"></div>
+      <div id="bok-history-empty" class="muted" style="display:none;">아직 저장된 기록이 없습니다.</div>
     </section>
   </div>
 
@@ -551,6 +621,8 @@
     view: "countries",
     linkageCountry: "US",
     linkageCharts: [],
+    bokTrendCharts: [],
+    bokDetailOpen: {},
     charts: []
   };
 
@@ -1617,9 +1689,23 @@
   // ---- 금통위 전망 탭 (localStorage 전용, 저장소/JSON에는 올리지 않음) ----
   // ==================================================================
   var BOK_STORAGE_KEY = "mt_bok_outlook_v1";
+  var BOK_HISTORY_KEY = "mt_bok_history_v1";
+  var BOK_HISTORY_EXPORT_TRACK_KEY = "mt_bok_history_last_export_v1";
+  var BOK_HISTORY_BACKUP_REMINDER_DAYS = 30;
   var BOK_COL_LABELS = { cut: "인하", hold: "동결", hike: "인상" };
   var BOK_ROW_LABELS = { dove: "비둘기", hawk: "매파" };
+  var BOK_RESULT_LABELS = { hold: "동결", hike: "인상", cut: "인하" };
   var bokState = null;
+  var bokHistory = null; // { records: [...], groupMeta: { <meetingDate>: {actualResult, actualNote} } }
+
+  function nowKstString() {
+    var now = new Date();
+    var utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+    var kst = new Date(utcMs + 9 * 3600000);
+    var y = kst.getFullYear(), m = String(kst.getMonth() + 1).padStart(2, "0"), d = String(kst.getDate()).padStart(2, "0");
+    var hh = String(kst.getHours()).padStart(2, "0"), mm = String(kst.getMinutes()).padStart(2, "0");
+    return y + "-" + m + "-" + d + " " + hh + ":" + mm;
+  }
 
   function defaultBokState() { return { addCut: false, cells: {} }; }
   function emptyBokCell() { return { p: null, cond: "", action: "" }; }
@@ -1644,8 +1730,30 @@
     try { localStorage.setItem(BOK_STORAGE_KEY, JSON.stringify(bokState)); } catch (e) { /* ignore */ }
   }
 
+  function defaultBokHistory() { return { records: [], groupMeta: {} }; }
+  function loadBokHistory() {
+    try {
+      var raw = localStorage.getItem(BOK_HISTORY_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && Array.isArray(parsed.records)) {
+          if (!parsed.groupMeta) parsed.groupMeta = {};
+          return parsed;
+        }
+      }
+    } catch (e) { /* localStorage 사용 불가 시 기본값 */ }
+    return defaultBokHistory();
+  }
+  function saveBokHistory() {
+    try { localStorage.setItem(BOK_HISTORY_KEY, JSON.stringify(bokHistory)); } catch (e) { /* ignore */ }
+  }
+  function bokRecordId() {
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
   function initBok() {
     bokState = loadBokState();
+    bokHistory = loadBokHistory();
     var cutToggle = document.getElementById("bok-cut-toggle");
     cutToggle.checked = !!bokState.addCut;
     cutToggle.addEventListener("change", function (e) {
@@ -1659,7 +1767,14 @@
     });
     document.getElementById("bok-import-file").addEventListener("change", importBokJSON);
     document.getElementById("bok-reset-btn").addEventListener("click", resetBok);
+    document.getElementById("bok-save-btn").addEventListener("click", saveBokSnapshot);
+    document.getElementById("bok-history-export-btn").addEventListener("click", exportBokHistoryJSON);
+    document.getElementById("bok-history-import-btn").addEventListener("click", function () {
+      document.getElementById("bok-history-import-file").click();
+    });
+    document.getElementById("bok-history-import-file").addEventListener("change", importBokHistoryJSON);
     renderBokGrid();
+    renderBokHistory();
   }
 
   function exportBokJSON() {
@@ -1771,44 +1886,453 @@
     renderBokSums();
   }
 
-  function renderBokSums() {
+  // bokState.cells에서 합계·최고값 칸을 계산(렌더링과 저장 스냅샷이 공유).
+  function computeBokSums() {
     var cols = bokColumns(), rows = ["dove", "hawk"];
     var total = 0, any = false;
     var colSums = {}, rowSums = {};
     cols.forEach(function (col) { colSums[col] = 0; });
     rows.forEach(function (row) { rowSums[row] = 0; });
-    var maxVal = null;
+    var maxVal = null, maxCell = null;
     cols.forEach(function (col) {
       rows.forEach(function (row) {
         var c = getBokCell(col, row);
         var hasVal = typeof c.p === "number" && !isNaN(c.p);
         var v = hasVal ? c.p : 0;
-        if (hasVal) { any = true; if (maxVal === null || c.p > maxVal) maxVal = c.p; }
+        if (hasVal) {
+          any = true;
+          if (maxVal === null || c.p > maxVal) { maxVal = c.p; maxCell = col + "-" + row; }
+        }
         total += v;
         colSums[col] += v;
         rowSums[row] += v;
       });
     });
+    return { cols: cols, rows: rows, total: total, any: any, colSums: colSums, rowSums: rowSums, maxVal: maxVal, maxCell: maxCell };
+  }
+
+  function renderBokSums() {
+    var s = computeBokSums();
 
     Array.prototype.forEach.call(document.querySelectorAll("#bok-grid .bok-cell"), function (cellEl) {
       var c = getBokCell(cellEl.dataset.col, cellEl.dataset.row);
-      cellEl.classList.toggle("max-cell", maxVal !== null && c.p === maxVal);
+      cellEl.classList.toggle("max-cell", s.maxVal !== null && c.p === s.maxVal);
     });
 
     var warnEl = document.getElementById("bok-warning");
-    if (any && Math.abs(total - 100) > 0.001) {
+    if (s.any && Math.abs(s.total - 100) > 0.001) {
       warnEl.style.display = "block";
-      warnEl.textContent = "⚠ 칸별 확률의 합이 100%가 아닙니다. 현재 합계: " + fmtNum(total, 1) + "%";
+      warnEl.textContent = "⚠ 칸별 확률의 합이 100%가 아닙니다. 현재 합계: " + fmtNum(s.total, 1) + "%";
     } else {
       warnEl.style.display = "none";
     }
 
     var sumsEl = document.getElementById("bok-sums");
     var parts = [];
-    parts.push("<span>합계: <b>" + fmtNum(total, 1) + "%</b></span>");
-    cols.forEach(function (col) { parts.push("<span>" + BOK_COL_LABELS[col] + " 합계: <b>" + fmtNum(colSums[col], 1) + "%</b></span>"); });
-    rows.forEach(function (row) { parts.push("<span>" + BOK_ROW_LABELS[row] + " 합계: <b>" + fmtNum(rowSums[row], 1) + "%</b></span>"); });
+    parts.push("<span>합계: <b>" + fmtNum(s.total, 1) + "%</b></span>");
+    s.cols.forEach(function (col) { parts.push("<span>" + BOK_COL_LABELS[col] + " 합계: <b>" + fmtNum(s.colSums[col], 1) + "%</b></span>"); });
+    s.rows.forEach(function (row) { parts.push("<span>" + BOK_ROW_LABELS[row] + " 합계: <b>" + fmtNum(s.rowSums[row], 1) + "%</b></span>"); });
     sumsEl.innerHTML = parts.join("");
+  }
+
+  // ---- 금통위 전망: 저장(스냅샷) ----
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function saveBokSnapshot() {
+    var s = computeBokSums();
+    if (s.any && Math.abs(s.total - 100) > 0.001) {
+      if (!confirm("확률 합이 100%가 아닙니다(현재 " + fmtNum(s.total, 1) + "%). 그래도 저장할까요?")) return;
+    }
+    var facts = collectBokFacts();
+    var titleInput = document.getElementById("bok-save-title");
+    var record = {
+      id: bokRecordId(),
+      savedAt: nowKstString(),
+      savedAtMs: Date.now(),
+      title: (titleInput && titleInput.value.trim()) || "",
+      meetingDate: facts.nextMeetingDate,
+      addCut: !!bokState.addCut,
+      cells: JSON.parse(JSON.stringify(bokState.cells)),
+      sums: JSON.parse(JSON.stringify({
+        total: s.total, cols: s.colSums, rows: s.rowSums, maxCell: s.maxCell, maxVal: s.maxVal
+      })),
+      facts: JSON.parse(JSON.stringify(facts.items))
+    };
+    bokHistory.records.push(record);
+    saveBokHistory();
+    if (titleInput) titleInput.value = "";
+    renderBokHistory();
+    alert(record.savedAt + " 저장됨");
+  }
+
+  // ---- 금통위 전망: 저장 기록 목록 ----
+  function groupBokHistory() {
+    var groups = {};
+    (bokHistory.records || []).forEach(function (r) {
+      var key = r.meetingDate || "__none__";
+      (groups[key] = groups[key] || []).push(r);
+    });
+    Object.keys(groups).forEach(function (k) {
+      groups[k].sort(function (a, b) { return a.savedAtMs - b.savedAtMs; }); // 오래된 것부터(추이 차트용)
+    });
+    var keys = Object.keys(groups).sort(function (a, b) {
+      if (a === "__none__") return 1;
+      if (b === "__none__") return -1;
+      return a < b ? 1 : a > b ? -1 : 0; // 최신(미래에 가까운) 금통위 먼저
+    });
+    return { groups: groups, order: keys };
+  }
+
+  function destroyBokTrendCharts() {
+    state.bokTrendCharts.forEach(function (c) { c.destroy(); });
+    state.bokTrendCharts = [];
+  }
+
+  function fmtBokCellsTable(rec) {
+    var cols = rec.addCut ? ["cut", "hold", "hike"] : ["hold", "hike"];
+    var rows = ["dove", "hawk"];
+    var html = "<table><thead><tr><th></th>" + cols.map(function (c) { return "<th>" + BOK_COL_LABELS[c] + "</th>"; }).join("") + "</tr></thead><tbody>";
+    rows.forEach(function (row) {
+      html += "<tr><th>" + BOK_ROW_LABELS[row] + "</th>" + cols.map(function (col) {
+        var c = (rec.cells && rec.cells[col + "-" + row]) || {};
+        var p = (typeof c.p === "number" && !isNaN(c.p)) ? fmtNum(c.p, 1) + "%" : "-";
+        var extra = "";
+        if (c.cond) extra += "<br><span class='muted'>조건: " + escapeHtml(c.cond) + "</span>";
+        if (c.action) extra += "<br><span class='muted'>대응: " + escapeHtml(c.action) + "</span>";
+        return "<td>" + p + extra + "</td>";
+      }).join("") + "</tr>";
+    });
+    html += "</tbody></table>";
+    return html;
+  }
+
+  function buildBokHistoryRecordEl(rec) {
+    var wrap = document.createElement("div");
+    wrap.className = "bok-history-record";
+
+    var row = document.createElement("div");
+    row.className = "rec-summary-row";
+
+    var savedSpan = document.createElement("span");
+    savedSpan.textContent = rec.savedAt;
+    row.appendChild(savedSpan);
+
+    if (rec.title) {
+      var titleSpan = document.createElement("span");
+      titleSpan.className = "rec-title";
+      titleSpan.textContent = rec.title;
+      row.appendChild(titleSpan);
+    }
+
+    var sumsSpan = document.createElement("span");
+    sumsSpan.className = "muted";
+    var cols = rec.sums && rec.sums.cols ? rec.sums.cols : {};
+    sumsSpan.textContent = "동결 " + fmtNum(cols.hold, 0) + "% · 인상 " + fmtNum(cols.hike, 0) + "%" +
+      (rec.addCut ? " · 인하 " + fmtNum(cols.cut, 0) + "%" : "");
+    row.appendChild(sumsSpan);
+
+    if (rec.sums && rec.sums.maxCell) {
+      var parts = rec.sums.maxCell.split("-");
+      var maxSpan = document.createElement("span");
+      maxSpan.className = "muted";
+      maxSpan.textContent = "가장 높은 칸: " + BOK_COL_LABELS[parts[0]] + "·" + BOK_ROW_LABELS[parts[1]] + "(" + fmtNum(rec.sums.maxVal, 0) + "%)";
+      row.appendChild(maxSpan);
+    }
+
+    var actions = document.createElement("div");
+    actions.className = "rec-actions";
+
+    var loadBtn = document.createElement("button");
+    loadBtn.type = "button"; loadBtn.textContent = "불러오기";
+    loadBtn.addEventListener("click", function () { loadHistoryRecordIntoDraft(rec.id); });
+    actions.appendChild(loadBtn);
+
+    var detailBtn = document.createElement("button");
+    detailBtn.type = "button";
+    detailBtn.textContent = state.bokDetailOpen[rec.id] ? "접기" : "자세히";
+    detailBtn.addEventListener("click", function () {
+      state.bokDetailOpen[rec.id] = !state.bokDetailOpen[rec.id];
+      renderBokHistory();
+    });
+    actions.appendChild(detailBtn);
+
+    var delBtn = document.createElement("button");
+    delBtn.type = "button"; delBtn.textContent = "삭제";
+    delBtn.addEventListener("click", function () { deleteHistoryRecord(rec.id); });
+    actions.appendChild(delBtn);
+
+    row.appendChild(actions);
+    wrap.appendChild(row);
+
+    if (state.bokDetailOpen[rec.id]) {
+      var detail = document.createElement("div");
+      detail.className = "bok-history-detail";
+      var factsHtml = (rec.facts || []).map(function (f) {
+        return escapeHtml(f.label) + ": " + escapeHtml(f.value) + (f.date ? " (" + f.date + ")" : "");
+      }).join("<br>");
+      detail.innerHTML = fmtBokCellsTable(rec) + "<div style='margin-top:8px;'><b>저장 시점 판단 근거 데이터</b><br>" + factsHtml + "</div>";
+      wrap.appendChild(detail);
+    }
+
+    return wrap;
+  }
+
+  function renderBokTrendChart(canvas, recordsOldToNew) {
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var labels = recordsOldToNew.map(function (r) { return r.savedAt; });
+    var holdData = recordsOldToNew.map(function (r) { return (r.sums && r.sums.cols) ? r.sums.cols.hold : null; });
+    var hikeData = recordsOldToNew.map(function (r) { return (r.sums && r.sums.cols) ? r.sums.cols.hike : null; });
+    var hawkData = recordsOldToNew.map(function (r) { return (r.sums && r.sums.rows) ? r.sums.rows.hawk : null; });
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          { label: "동결 합계(%)", data: holdData, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 3, borderWidth: 2 },
+          { label: "인상 합계(%)", data: hikeData, borderColor: cssVar("--accent2"), backgroundColor: cssVar("--accent2"), pointRadius: 3, borderWidth: 2 },
+          { label: "매파 합계(%)", data: hawkData, borderColor: cssVar("--accent4"), backgroundColor: cssVar("--accent4"), pointRadius: 3, borderWidth: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 10, font: { size: 10 } } } },
+        scales: {
+          x: { ticks: { color: muted, font: { size: 9 }, maxRotation: 0, autoSkip: true }, grid: { color: border } },
+          y: { min: 0, max: 100, ticks: { color: muted, font: { size: 10 } }, grid: { color: border } }
+        }
+      }
+    });
+    state.bokTrendCharts.push(chart);
+  }
+
+  function loadHistoryRecordIntoDraft(id) {
+    var rec = bokHistory.records.find(function (r) { return r.id === id; });
+    if (!rec) return;
+    if (!confirm("현재 작성 중인 내용을 이 기록으로 덮어쓸까요? 저장하지 않은 변경 사항은 사라집니다.")) return;
+    bokState = { addCut: !!rec.addCut, cells: JSON.parse(JSON.stringify(rec.cells || {})) };
+    saveBokState();
+    document.getElementById("bok-cut-toggle").checked = !!bokState.addCut;
+    renderBokGrid();
+  }
+
+  function deleteHistoryRecord(id) {
+    if (!confirm("이 저장 기록을 삭제할까요? 되돌릴 수 없습니다.")) return;
+    bokHistory.records = bokHistory.records.filter(function (r) { return r.id !== id; });
+    delete state.bokDetailOpen[id];
+    saveBokHistory();
+    renderBokHistory();
+  }
+
+  // ---- 금통위 전망: 실제 결과 ----
+  function suggestActualResult(meetingDate) {
+    var obs = observationsFor("한국", "기준금리");
+    var idx = obs.findIndex(function (o) { return o.date === meetingDate; });
+    if (idx >= 0) {
+      if (idx === 0) return null; // 비교할 이전 값이 없음
+      var diff = obs[idx].value - obs[idx - 1].value;
+      if (diff > 0) return "hike";
+      if (diff < 0) return "cut";
+      return "hold";
+    }
+    // 해당 날짜에 변경 행이 없으면 동결로 추정(이미 지난 날짜일 때만 의미 있음)
+    return meetingDate < todayStr() ? "hold" : null;
+  }
+
+  function appliedProbabilityForResult(records, result) {
+    if (!records.length || !result) return null;
+    var last = records[records.length - 1]; // records는 오래된->최신 순으로 전달됨
+    if (!last.sums) return null;
+    if (result === "hold") return last.sums.cols.hold;
+    if (result === "hike") return last.sums.cols.hike;
+    if (result === "cut") return last.sums.cols.cut;
+    return null;
+  }
+
+  function buildActualResultEl(meetingDate, recordsOldToNew) {
+    var wrap = document.createElement("div");
+    wrap.className = "bok-actual-result";
+    var meta = bokHistory.groupMeta[meetingDate] || {};
+
+    var label = document.createElement("span");
+    label.textContent = "실제 결과:";
+    wrap.appendChild(label);
+
+    var select = document.createElement("select");
+    [["", "선택"], ["hold", "동결"], ["hike", "인상"], ["cut", "인하"]].forEach(function (opt) {
+      var o = document.createElement("option");
+      o.value = opt[0]; o.textContent = opt[1];
+      if (meta.actualResult === opt[0]) o.selected = true;
+      select.appendChild(o);
+    });
+    wrap.appendChild(select);
+
+    var suggestion = suggestActualResult(meetingDate);
+    if (!meta.actualResult && suggestion) {
+      var suggestSpan = document.createElement("span");
+      suggestSpan.className = "muted";
+      suggestSpan.textContent = "로우데이터 기준 제안: " + BOK_RESULT_LABELS[suggestion];
+      var applyBtn = document.createElement("button");
+      applyBtn.type = "button"; applyBtn.textContent = "제안 적용";
+      applyBtn.style.cssText = "border:1px solid var(--border);background:var(--tab-bg);color:var(--fg);border-radius:6px;padding:4px 9px;font-size:11.5px;cursor:pointer;";
+      applyBtn.addEventListener("click", function () { select.value = suggestion; });
+      wrap.appendChild(suggestSpan);
+      wrap.appendChild(applyBtn);
+    }
+
+    var noteInput = document.createElement("input");
+    noteInput.type = "text";
+    noteInput.placeholder = "결정 후 메모";
+    noteInput.value = meta.actualNote || "";
+    wrap.appendChild(noteInput);
+
+    var saveBtn = document.createElement("button");
+    saveBtn.type = "button"; saveBtn.textContent = "저장";
+    saveBtn.addEventListener("click", function () {
+      if (!select.value) { alert("실제 결과를 선택해 주세요."); return; }
+      bokHistory.groupMeta[meetingDate] = { actualResult: select.value, actualNote: noteInput.value.trim() };
+      saveBokHistory();
+      renderBokHistory();
+    });
+    wrap.appendChild(saveBtn);
+
+    if (meta.actualResult) {
+      var applied = appliedProbabilityForResult(recordsOldToNew, meta.actualResult);
+      if (applied != null) {
+        var appliedSpan = document.createElement("div");
+        appliedSpan.className = "muted";
+        appliedSpan.style.width = "100%";
+        appliedSpan.textContent = "마지막 저장 기록 기준 " + BOK_RESULT_LABELS[meta.actualResult] + "에 " + fmtNum(applied, 0) + "% 부여";
+        wrap.appendChild(appliedSpan);
+      }
+    }
+
+    return wrap;
+  }
+
+  function renderBokHistory() {
+    destroyBokTrendCharts();
+    checkBackupReminder();
+    var listEl = document.getElementById("bok-history-list");
+    var emptyEl = document.getElementById("bok-history-empty");
+    listEl.innerHTML = "";
+    var g = groupBokHistory();
+    if (!g.order.length) { emptyEl.style.display = "block"; return; }
+    emptyEl.style.display = "none";
+
+    var today = todayStr();
+    g.order.forEach(function (key) {
+      var recordsOldToNew = g.groups[key];
+      var recordsNewToOld = recordsOldToNew.slice().reverse();
+      var meetingDate = key === "__none__" ? null : key;
+
+      var groupEl = document.createElement("div");
+      groupEl.className = "bok-history-group";
+
+      var head = document.createElement("div");
+      head.className = "bok-history-group-head";
+      var mdEl = document.createElement("div");
+      mdEl.className = "meeting-date";
+      mdEl.textContent = meetingDate ? "대상 금통위: " + meetingDate : "대상 금통위: 일정 미등록";
+      head.appendChild(mdEl);
+      var meta = meetingDate ? (bokHistory.groupMeta[meetingDate] || {}) : {};
+      if (meta.actualResult) {
+        var badge = document.createElement("span");
+        badge.className = "bok-actual-badge";
+        badge.textContent = "실제 결과: " + BOK_RESULT_LABELS[meta.actualResult];
+        head.appendChild(badge);
+      }
+      groupEl.appendChild(head);
+
+      recordsNewToOld.forEach(function (rec) { groupEl.appendChild(buildBokHistoryRecordEl(rec)); });
+
+      if (recordsOldToNew.length >= 2) {
+        var canvasWrap = document.createElement("div");
+        canvasWrap.className = "bok-trend-wrap";
+        var canvas = document.createElement("canvas");
+        canvasWrap.appendChild(canvas);
+        groupEl.appendChild(canvasWrap);
+        renderBokTrendChart(canvas, recordsOldToNew);
+      }
+
+      if (meetingDate && meetingDate < today) {
+        groupEl.appendChild(buildActualResultEl(meetingDate, recordsOldToNew));
+      }
+
+      listEl.appendChild(groupEl);
+    });
+  }
+
+  // ---- 금통위 전망: 기록 백업(전체 내보내기/불러오기, 병합) ----
+  function exportBokHistoryJSON() {
+    var blob = new Blob([JSON.stringify(bokHistory, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var today = todayStr().replace(/-/g, "");
+    a.href = url;
+    a.download = "mpc_forecast_history_" + today + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    try { localStorage.setItem(BOK_HISTORY_EXPORT_TRACK_KEY, String(Date.now())); } catch (e) { /* ignore */ }
+    checkBackupReminder();
+  }
+
+  function importBokHistoryJSON(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(reader.result);
+        if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.records)) {
+          alert("올바른 금통위 전망 기록 JSON 파일이 아닙니다.");
+          return;
+        }
+        var existingKeys = {};
+        bokHistory.records.forEach(function (r) { existingKeys[r.savedAt] = true; });
+        var added = 0;
+        parsed.records.forEach(function (r) {
+          if (!r || !r.savedAt || existingKeys[r.savedAt]) return; // 같은 저장 일시는 중복 제외
+          if (!r.id) r.id = bokRecordId();
+          bokHistory.records.push(r);
+          existingKeys[r.savedAt] = true;
+          added++;
+        });
+        if (parsed.groupMeta) {
+          Object.keys(parsed.groupMeta).forEach(function (k) {
+            if (!bokHistory.groupMeta[k]) bokHistory.groupMeta[k] = parsed.groupMeta[k];
+          });
+        }
+        saveBokHistory();
+        renderBokHistory();
+        alert(added + "건의 기록을 불러왔습니다(중복 " + (parsed.records.length - added) + "건 제외).");
+      } catch (err) {
+        alert("JSON 파싱 실패: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  function checkBackupReminder() {
+    var el = document.getElementById("bok-backup-reminder");
+    if (!el) return;
+    if (!bokHistory.records.length) { el.style.display = "none"; return; }
+    var lastExport = null;
+    try { lastExport = localStorage.getItem(BOK_HISTORY_EXPORT_TRACK_KEY); } catch (e) { /* ignore */ }
+    var lastExportMs = lastExport ? Number(lastExport) : null;
+    var daysSince = lastExportMs ? (Date.now() - lastExportMs) / 86400000 : null;
+    if (daysSince === null || daysSince > BOK_HISTORY_BACKUP_REMINDER_DAYS) {
+      el.style.display = "block";
+      el.textContent = "⚠ " + (daysSince === null ? "아직 기록을 내보낸 적이 없습니다." : "마지막 내보내기 후 " + Math.floor(daysSince) + "일이 지났습니다.") +
+        " '기록 전체 내보내기'로 백업해 두세요.";
+    } else {
+      el.style.display = "none";
+    }
   }
 
   // ---- 금통위 전망: 판단 근거 데이터 패널 ----
@@ -1830,42 +2354,43 @@
       "<polyline points='" + pts + "' fill='none' stroke='" + color + "' stroke-width='2'/></svg>";
   }
 
-  function renderBokFacts() {
-    var el = document.getElementById("bok-facts");
-    var rows = [];
-    function factRow(label, valueHtml) {
-      rows.push("<div class='bok-fact-row'><span>" + label + "</span><b>" + valueHtml + "</b></div>");
+  // 판단 근거 데이터를 구조화된 배열로 모은다(표시용 renderBokFacts와 저장
+  // 스냅샷용 saveBokSnapshot이 공유). 각 항목: {label, value(문자열, 단위 포함), date}
+  function collectBokFacts() {
+    var items = [];
+    function add(label, obsOrNull, digits, unit) {
+      items.push({
+        label: label,
+        value: obsOrNull ? fmtNum(obsOrNull.value, digits) + (unit || "") : "-",
+        date: obsOrNull ? obsOrNull.date : null
+      });
     }
 
-    var cpiHead = observationsFor("한국", "CPI 헤드라인").slice(-1)[0];
-    factRow("CPI 헤드라인(YoY)", (cpiHead ? fmtNum(cpiHead.value, 1) + "% (" + cpiHead.date + ")" : "-") + " " + sparkSvg(recentValues("한국", "CPI 헤드라인", 3)));
-
-    var cpiCore = observationsFor("한국", "CPI 근원").slice(-1)[0];
-    factRow("CPI 근원(YoY)", (cpiCore ? fmtNum(cpiCore.value, 1) + "% (" + cpiCore.date + ")" : "-") + " " + sparkSvg(recentValues("한국", "CPI 근원", 3)));
-
-    var gdp = observationsFor("한국", "실질GDP 성장률").slice(-1)[0];
-    factRow("실질GDP 성장률", gdp ? fmtNum(gdp.value, 1) + "% (" + gdp.date + ")" : "-");
-
-    var unemp = observationsFor("한국", "실업률").slice(-1)[0];
-    factRow("실업률", unemp ? fmtNum(unemp.value, 1) + "% (" + unemp.date + ")" : "-");
-
-    var policyRate = observationsFor("한국", "기준금리").slice(-1)[0];
-    factRow("기준금리", policyRate ? fmtNum(policyRate.value, 2) + "% (" + policyRate.date + ")" : "-");
-
-    var bond = observationsFor("한국", "국채10년").slice(-1)[0];
-    factRow("국채10년", bond ? fmtNum(bond.value, 2) + "% (" + bond.date + ")" : "-");
+    add("CPI 헤드라인(YoY)", observationsFor("한국", "CPI 헤드라인").slice(-1)[0], 1, "%");
+    add("CPI 근원(YoY)", observationsFor("한국", "CPI 근원").slice(-1)[0], 1, "%");
+    add("실질GDP 성장률", observationsFor("한국", "실질GDP 성장률").slice(-1)[0], 1, "%");
+    add("실업률", observationsFor("한국", "실업률").slice(-1)[0], 1, "%");
+    add("기준금리", observationsFor("한국", "기준금리").slice(-1)[0], 2, "%");
+    add("국채10년", observationsFor("한국", "국채10년").slice(-1)[0], 2, "%");
 
     if (state.analysis) {
       var spread = state.analysis.policy.spread_kr_us;
       if (spread && spread.KR_US && spread.KR_US.length) {
-        var lastSpread = spread.KR_US[spread.KR_US.length - 1];
-        factRow("한미 정책금리차", fmtNum(lastSpread, 2) + "%p (" + spread.dates[spread.dates.length - 1] + ")");
+        items.push({
+          label: "한미 정책금리차",
+          value: fmtNum(spread.KR_US[spread.KR_US.length - 1], 2) + "%p",
+          date: spread.dates[spread.dates.length - 1]
+        });
       }
       var market = state.analysis.market;
       var strongest = market.strongest;
       if (strongest && market.rolling.beta[strongest] && market.rolling.beta[strongest].length) {
         var rb = market.rolling.beta[strongest], rd = market.rolling.dates[strongest];
-        factRow("롤링 β 최신값 (" + LINKAGE_COUNTRY_LABEL[strongest] + ", 가장 강한 연동)", fmtNum(rb[rb.length - 1], 3) + " (" + rd[rd.length - 1] + ")");
+        items.push({
+          label: "롤링 β 최신값 (" + LINKAGE_COUNTRY_LABEL[strongest] + ", 가장 강한 연동)",
+          value: fmtNum(rb[rb.length - 1], 3),
+          date: rd[rd.length - 1]
+        });
       }
     }
 
@@ -1873,17 +2398,39 @@
     var nextMeeting = state.events
       .filter(function (e) { return e.country === "한국" && e.indicator === "기준금리" && e.date >= today; })
       .sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0];
+    var nextMeetingDate = nextMeeting ? nextMeeting.date : null;
+    var dday = nextMeeting ? Math.round((new Date(nextMeeting.date) - new Date(today)) / 86400000) : null;
+    items.push({
+      label: "다음 금통위",
+      value: nextMeeting ? nextMeeting.date + " (D-" + dday + ")" : "일정 미등록",
+      date: nextMeetingDate
+    });
+
+    return { items: items, nextMeetingDate: nextMeetingDate, dday: dday };
+  }
+
+  function renderBokFacts() {
+    var el = document.getElementById("bok-facts");
+    var facts = collectBokFacts();
+
+    var sparkByLabel = {
+      "CPI 헤드라인(YoY)": sparkSvg(recentValues("한국", "CPI 헤드라인", 3)),
+      "CPI 근원(YoY)": sparkSvg(recentValues("한국", "CPI 근원", 3))
+    };
+    el.innerHTML = facts.items.map(function (f) {
+      var extra = sparkByLabel[f.label] ? " " + sparkByLabel[f.label] : "";
+      return "<div class='bok-fact-row'><span>" + f.label + "</span><b>" + f.value + extra + "</b></div>";
+    }).join("");
+
     var ddayEl = document.getElementById("bok-dday");
-    if (nextMeeting) {
-      var d = Math.round((new Date(nextMeeting.date) - new Date(today)) / 86400000);
-      ddayEl.textContent = "다음 금통위 " + nextMeeting.date + " (D-" + d + ")";
-      factRow("다음 금통위", nextMeeting.date + " (D-" + d + ")");
-    } else {
-      ddayEl.textContent = "일정 미등록";
-      factRow("다음 금통위", "일정 미등록");
+    ddayEl.textContent = facts.nextMeetingDate ? "다음 금통위 " + facts.nextMeetingDate + " (D-" + facts.dday + ")" : "일정 미등록";
+
+    var targetEl = document.getElementById("bok-save-target");
+    if (targetEl) {
+      targetEl.textContent = facts.nextMeetingDate ? "저장 시 대상 금통위: " + facts.nextMeetingDate : "저장 시 대상 금통위: 일정 미등록";
     }
 
-    el.innerHTML = rows.join("");
+    return facts;
   }
 
   // ---- 데이터 다운로드 섹션 ----
