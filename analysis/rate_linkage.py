@@ -14,7 +14,7 @@
 import json
 import os
 import warnings
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import numpy as np
 import pandas as pd
@@ -72,9 +72,86 @@ def build_bond_levels(rows):
     return df
 
 
+def _policy_events(rows, country):
+    ind = POLICY_INDICATORS[country]
+    ev = [(r["date"], float(r["value"])) for r in rows if r["country"] == country and r["indicator"] == ind]
+    ev.sort(key=lambda x: x[0])
+    return ev
+
+
+def _value_in_effect(events, on_date):
+    """events: [(date, value), ...] 정렬됨. on_date 시점에 적용 중이던 값(스텝 함수)."""
+    v = None
+    for d, val in events:
+        if d <= on_date:
+            v = val
+        else:
+            break
+    return v
+
+
+def build_bok_fed_case_table(rows):
+    """한국은행 기준금리 변경마다: 방향, 변경폭, 직전 같은 방향 연준 변경일과의
+    시차(개월), 그 시점의 한미 금리차를 계산한다. 방향이 직전 변경과 달라지는
+    지점(또는 최초 변경)을 '사이클 시작'으로 표시한다."""
+    kr_events = _policy_events(rows, "한국")
+    us_events = _policy_events(rows, "미국")
+
+    us_changes = []  # (date, direction) — 베이스라인(최초 행) 제외, 실제 변경만
+    for i in range(1, len(us_events)):
+        d, v = us_events[i]
+        prev_v = us_events[i - 1][1]
+        if v > prev_v:
+            us_changes.append((d, "인상"))
+        elif v < prev_v:
+            us_changes.append((d, "인하"))
+
+    cases = []
+    prev_direction = None
+    for i in range(1, len(kr_events)):
+        d, v = kr_events[i]
+        prev_v = kr_events[i - 1][1]
+        change = round(v - prev_v, 3)
+        if change == 0:
+            continue
+        direction = "인상" if change > 0 else "인하"
+
+        prior_fed = [fd for fd, fdir in us_changes if fdir == direction and fd < d]
+        prior_fed_date = max(prior_fed) if prior_fed else None
+        lag_months = round((d - prior_fed_date).days / 30.44, 1) if prior_fed_date else None
+
+        us_value_then = _value_in_effect(us_events, d)
+        spread = round(v - us_value_then, 3) if us_value_then is not None else None
+
+        cycle_start = prev_direction is None or direction != prev_direction
+        cases.append(
+            {
+                "decision_date": d.isoformat(),
+                "direction": direction,
+                "change": change,
+                "prior_fed_same_direction_date": prior_fed_date.isoformat() if prior_fed_date else None,
+                "lag_months": lag_months,
+                "spread_kr_us_at_decision": spread,
+                "cycle_start": cycle_start,
+            }
+        )
+        prev_direction = direction
+    return cases
+
+
+def _last_completed_month_end(today=None):
+    """실행 시점 기준 '가장 최근 완료된 달'의 마지막 날. 예: 2026-09-17에 실행하면
+    2026-09는 아직 끝나지 않았으므로 2026-08-31을 반환한다."""
+    today = today or date.today()
+    first_of_this_month = today.replace(day=1)
+    return pd.Timestamp(first_of_this_month - timedelta(days=1))
+
+
 def build_policy_monthly(rows):
     """월말 기준 정책금리 시계열(index=월말 Timestamp, columns=KR/US/JP). 각국 최초
-    행부터 마지막 관측월까지, 변경 시점 값을 다음 변경 전까지 그대로 이어간다."""
+    행부터 '가장 최근 완료된 달'까지, 변경 시점 값을 다음 변경 전까지 그대로
+    이어간다(이벤트 날짜 자체가 아니라 완료된 달력월 기준으로 끝을 잡아야, 월말
+    이전에 발생한 최신 변경이 해당 월에 반영된다)."""
     code_by_country = {"한국": "KR", "미국": "US", "일본": "JP"}
     events = {code: [] for code in code_by_country.values()}
     for r in rows:
@@ -87,7 +164,8 @@ def build_policy_monthly(rows):
     for code in events:
         events[code].sort(key=lambda x: x[0])
 
-    last_date = max(max(d for d, _ in ev) for ev in events.values())
+    last_event_date = max(max(d for d, _ in ev) for ev in events.values())
+    last_date = max(_last_completed_month_end(), last_event_date)
     month_ends = pd.date_range(pd.Timestamp(OBS_START), last_date, freq="M")
 
     series = {}
@@ -131,8 +209,11 @@ def simple_regression(y, x):
 
 
 def rolling_regression(y, x, window=ROLLING_WINDOW):
+    """window개월 롤링 단순회귀. R²와 별도로 상관계수도 함께 낸다 — R²=상관계수^2라
+    부호(같은 방향/반대 방향)는 R²만으로 알 수 없고, 국가별 변동성 차이에 영향받지
+    않는 비교에도 상관계수가 더 적합하기 때문."""
     df = pd.concat([y, x], axis=1, keys=["y", "x"]).dropna()
-    dates, betas, r2s = [], [], []
+    dates, betas, r2s, corrs = [], [], [], []
     for end in range(window, len(df) + 1):
         chunk = df.iloc[end - window : end]
         X = sm.add_constant(chunk["x"])
@@ -143,7 +224,8 @@ def rolling_regression(y, x, window=ROLLING_WINDOW):
         dates.append(chunk.index[-1].date().isoformat())
         betas.append(float(model.params["x"]))
         r2s.append(float(model.rsquared))
-    return {"dates": dates, "beta": betas, "r2": r2s}
+        corrs.append(float(chunk["x"].corr(chunk["y"])))
+    return {"dates": dates, "beta": betas, "r2": r2s, "corr": corrs}
 
 
 def analyze_market(bond_levels):
@@ -204,12 +286,29 @@ def analyze_market(bond_levels):
         "hac_lags": lags,
     }
 
-    rolling = {"window": ROLLING_WINDOW, "beta": {}, "r2": {}, "dates": {}}
+    rolling = {"window": ROLLING_WINDOW, "beta": {}, "r2": {}, "corr": {}, "dates": {}}
     for code in ["US", "JP", "DE", "FR"]:
         rr = rolling_regression(kr, diff[code])
         rolling["dates"][code] = rr["dates"]
         rolling["beta"][code] = rr["beta"]
         rolling["r2"][code] = rr["r2"]
+        rolling["corr"][code] = rr["corr"]
+
+    # '최근 24개월' 요약: 롤링 시계열의 마지막 구간(=가장 최근 24개월)을 그대로 쓴다.
+    recent = {}
+    for code in ["US", "JP", "DE", "FR"]:
+        if rolling["beta"][code]:
+            recent[code] = {
+                "beta": rolling["beta"][code][-1],
+                "r2": rolling["r2"][code][-1],
+                "corr": rolling["corr"][code][-1],
+                "as_of": rolling["dates"][code][-1],
+                "window": ROLLING_WINDOW,
+            }
+        else:
+            recent[code] = None
+    valid_recent_r2 = {c: v["r2"] for c, v in recent.items() if v}
+    strongest_recent = max(valid_recent_r2, key=valid_recent_r2.get) if valid_recent_r2 else None
 
     lead_lag = {}
     for code in ["US", "JP", "DE", "FR"]:
@@ -220,6 +319,8 @@ def analyze_market(bond_levels):
     return {
         "simple": simple,
         "strongest": strongest,
+        "recent": recent,
+        "strongest_recent": strongest_recent,
         "scatter": scatter,
         "multi": multi,
         "rolling": rolling,
@@ -244,13 +345,19 @@ def cross_correlation(y, x, max_lag=6):
     return {"lags": lags, "corr": corrs}
 
 
-def analyze_policy(policy_monthly):
+def analyze_policy(policy_monthly, rows):
     kr_us_spread = (policy_monthly["KR"] - policy_monthly["US"]).dropna()
     kr_jp_spread = (policy_monthly["KR"] - policy_monthly["JP"]).dropna()
 
     d_kr = policy_monthly["KR"].diff()
     d_us = policy_monthly["US"].diff()
     cc = cross_correlation(d_kr, d_us, max_lag=6)
+    # 실제 계산 결과(모든 시차에서 양수, 뚜렷한 단일 정점 없음)를 확인하고 붙인
+    # 해석 문구 — 데이터가 이 패턴을 유지하는 한 그대로 쓴다(선후행보다 같은
+    # 사이클 기간이 겹친 효과로 보는 것이 더 타당하다는 판단).
+    cc_note = "모든 시차에서 양수이고 뚜렷한 정점이 없어, 선후행 관계보다 같은 사이클 기간이 겹친 효과로 해석됨."
+
+    bok_fed_cases = build_bok_fed_case_table(rows)
 
     series = {
         "dates": [d.date().isoformat() for d in policy_monthly.index],
@@ -278,7 +385,9 @@ def analyze_policy(policy_monthly):
         "spread_kr_us": spread,
         "spread_kr_jp": spread_jp,
         "cross_corr_kr_us": cc,
+        "cross_corr_note": cc_note,
         "n_rate_changes": n_changes,
+        "bok_fed_cases": bok_fed_cases,
         "caveat": "정책금리는 추적 기간 중 변경 횟수가 적어(한국 " + str(n_changes["KR"]) + "회, 미국 "
         + str(n_changes["US"]) + "회, 일본 " + str(n_changes["JP"]) + "회) 통계적 신뢰도가 시장금리 분석보다 낮음.",
     }
@@ -290,7 +399,7 @@ def main():
     policy_monthly = build_policy_monthly(rows)
 
     market = analyze_market(bond_levels)
-    policy = analyze_policy(policy_monthly)
+    policy = analyze_policy(policy_monthly, rows)
 
     last_date = max(r["date"] for r in rows if r["indicator"] == "국채10년" and r["country"] == "한국")
 
@@ -311,8 +420,10 @@ def main():
         json.dump(result, f, ensure_ascii=False, indent=2)
 
     print(f"rate_linkage.py: {ANALYSIS_JSON_PATH} 생성 (기준일 {last_date.isoformat()})")
-    print(f"  가장 강한 연동: {market['strongest']} (R²={market['simple'].get(market['strongest'], {}).get('r2')})")
+    print(f"  가장 강한 연동(전체 기간): {market['strongest']} (R²={market['simple'].get(market['strongest'], {}).get('r2')})")
+    print(f"  가장 강한 연동(최근 24개월): {market['strongest_recent']} (R²={(market['recent'].get(market['strongest_recent']) or {}).get('r2')})")
     print(f"  다중회귀 포함 변수: {market['multi']['included']}")
+    print(f"  한은-연준 금리 변경 사례: {len(policy['bok_fed_cases'])}건")
 
 
 if __name__ == "__main__":

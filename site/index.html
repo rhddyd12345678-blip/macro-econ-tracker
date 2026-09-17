@@ -283,17 +283,24 @@
   .linkage-desc { color: var(--muted); font-size: 12.5px; margin-bottom: 12px; }
   .linkage-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
   .linkage-card {
-    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; position: relative;
+    border: 1px solid var(--border); border-radius: 10px; padding: 14px 14px 12px; position: relative;
   }
   .linkage-card .lc-country { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .linkage-card .lc-section-label {
+    font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.02em;
+    margin: 10px 0 4px; padding-top: 8px; border-top: 1px dashed var(--border);
+  }
+  .linkage-card .lc-section-label:first-of-type { margin-top: 2px; padding-top: 0; border-top: none; }
   .linkage-card .lc-row { display: flex; justify-content: space-between; font-size: 13px; margin: 3px 0; }
   .linkage-card .lc-row b { font-variant-numeric: tabular-nums; }
   .linkage-card.sig-strong .lc-row b { color: var(--fg); }
   .linkage-card.sig-weak .lc-row b { color: var(--muted); }
+  .lc-badges { position: absolute; top: -10px; right: 10px; display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 80%; }
   .lc-badge {
-    position: absolute; top: -8px; right: 10px; background: var(--recent); color: #1a1200;
-    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    background: var(--recent); color: #1a1200;
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
   }
+  .lc-badge.lc-badge-recent { background: var(--accent4); color: #fff; }
   .mini-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
   .mini-tabs button {
     border: 1px solid var(--border); background: var(--card-bg); color: var(--fg); border-radius: 999px;
@@ -306,6 +313,11 @@
   }
   table.linkage-table th:first-child, table.linkage-table td:first-child { text-align: left; font-variant-numeric: normal; }
   table.linkage-table th { background: var(--tab-bg); }
+  table.linkage-table tr.cycle-start td {
+    font-weight: 700; background: color-mix(in srgb, var(--accent) 12%, var(--card-bg));
+  }
+  table.linkage-table td.lc-direction-up { color: var(--pos); }
+  table.linkage-table td.lc-direction-down { color: var(--neg); }
   #linkage-notes-body { font-size: 13px; line-height: 1.7; }
   #linkage-notes-body ul { margin: 6px 0; padding-left: 20px; }
 
@@ -446,6 +458,12 @@
     </section>
 
     <section class="panel card">
+      <h2>롤링 24개월 상관계수 추이</h2>
+      <div class="linkage-desc">국가별 변동성 차이에 영향받지 않는 비교용 — β는 해외 금리 변동폭 대비 비율이라 변동성이 작은 국가일수록 β가 부풀어 보일 수 있어, 연동 강도 자체는 이 상관계수(또는 R²)로 비교하는 것이 더 적절함</div>
+      <div class="chart-wrap" style="height:260px;"><canvas id="linkage-rolling-corr"></canvas></div>
+    </section>
+
+    <section class="panel card">
       <h2>다중회귀 결과 (미국·일본·독일 동시)</h2>
       <div id="linkage-multi-table"></div>
       <h2>동월 회귀 vs 1개월 선행 회귀</h2>
@@ -453,10 +471,20 @@
     </section>
 
     <section class="panel card">
-      <h2>정책금리차 추이 &amp; 교차상관(한국 vs 미국, 시차별)</h2>
+      <h2>정책금리차 추이</h2>
       <div class="chart-wrap" style="height:240px;"><canvas id="linkage-spread"></canvas></div>
-      <div class="chart-wrap" style="height:240px; margin-top:16px;"><canvas id="linkage-crosscorr"></canvas></div>
       <div class="muted" id="linkage-policy-caveat" style="margin-top:8px;"></div>
+    </section>
+
+    <section class="panel card">
+      <h2>한국은행 금리 변경 사례</h2>
+      <div class="linkage-desc">한국은행이 금리를 바꾼 시점마다, 같은 방향(인상/인하)의 직전 연준 변경과 비교. 굵게 표시된 행은 방향이 바뀐 '사이클 시작' 시점.</div>
+      <div id="linkage-bok-fed-table"></div>
+      <details id="linkage-crosscorr-details" style="margin-top:14px;">
+        <summary style="cursor:pointer; font-size:13px; color:var(--muted);">참고용: 교차상관(한국 vs 미국, 시차별) 펼치기</summary>
+        <div class="chart-wrap" style="height:240px; margin-top:12px;"><canvas id="linkage-crosscorr"></canvas></div>
+        <div class="muted" id="linkage-crosscorr-note" style="margin-top:8px;"></div>
+      </details>
     </section>
 
     <section class="panel card" id="linkage-notes">
@@ -1256,35 +1284,73 @@
   function renderLinkageSummaryCards(market) {
     var wrap = document.getElementById("linkage-summary-cards");
     wrap.innerHTML = "";
+
+    function addRow(card, label, valueText) {
+      var row = document.createElement("div");
+      row.className = "lc-row";
+      var l = document.createElement("span"); l.textContent = label;
+      var b = document.createElement("b"); b.textContent = valueText;
+      row.appendChild(l); row.appendChild(b);
+      card.appendChild(row);
+    }
+    function addSectionLabel(card, text) {
+      var lbl = document.createElement("div");
+      lbl.className = "lc-section-label";
+      lbl.textContent = text;
+      card.appendChild(lbl);
+    }
+
     LINKAGE_COUNTRY_CODES.forEach(function (code) {
       var r = market.simple[code];
+      var rec = market.recent ? market.recent[code] : null;
       var card = document.createElement("div");
       card.className = "linkage-card" + (r && !r.insufficient ? " " + sigClass(r.p) : "");
-      if (code === market.strongest) {
-        var badge = document.createElement("div");
-        badge.className = "lc-badge";
-        badge.textContent = "가장 강한 연동";
-        card.appendChild(badge);
+
+      var badges = [];
+      if (code === market.strongest) badges.push(["가장 강한 연동(전체 기간)", ""]);
+      if (code === market.strongest_recent) badges.push(["가장 강한 연동(최근 24개월)", " lc-badge-recent"]);
+      if (badges.length) {
+        var badgeWrap = document.createElement("div");
+        badgeWrap.className = "lc-badges";
+        badges.forEach(function (b) {
+          var el = document.createElement("span");
+          el.className = "lc-badge" + b[1];
+          el.textContent = b[0];
+          badgeWrap.appendChild(el);
+        });
+        card.appendChild(badgeWrap);
       }
+
       var title = document.createElement("div");
       title.className = "lc-country";
       title.textContent = LINKAGE_COUNTRY_LABEL[code];
       card.appendChild(title);
+
+      addSectionLabel(card, "전체 기간 (" + (state.analysis ? state.analysis.sample.start : "") + "~)");
       if (!r || r.insufficient) {
         var na = document.createElement("div");
         na.className = "muted";
         na.textContent = "표본 부족";
         card.appendChild(na);
       } else {
-        [["β", fmtNum(r.beta, 3)], ["R²", fmtNum(r.r2, 3)], ["p값", r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3)], ["표본수", String(r.n)]].forEach(function (kv) {
-          var row = document.createElement("div");
-          row.className = "lc-row";
-          var l = document.createElement("span"); l.textContent = kv[0];
-          var b = document.createElement("b"); b.textContent = kv[1];
-          row.appendChild(l); row.appendChild(b);
-          card.appendChild(row);
-        });
+        addRow(card, "β", fmtNum(r.beta, 3));
+        addRow(card, "R²", fmtNum(r.r2, 3));
+        addRow(card, "p값", r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3));
+        addRow(card, "표본수", String(r.n));
       }
+
+      addSectionLabel(card, "최근 24개월");
+      if (!rec) {
+        var na2 = document.createElement("div");
+        na2.className = "muted";
+        na2.textContent = "표본 부족";
+        card.appendChild(na2);
+      } else {
+        addRow(card, "β", fmtNum(rec.beta, 3));
+        addRow(card, "R²", fmtNum(rec.r2, 3));
+        addRow(card, "상관계수", fmtNum(rec.corr, 3));
+      }
+
       wrap.appendChild(card);
     });
   }
@@ -1371,6 +1437,7 @@
     }
     buildSeriesChart("linkage-rolling-beta", "beta", "β (24개월 롤링)");
     buildSeriesChart("linkage-rolling-r2", "r2", "R² (24개월 롤링)");
+    buildSeriesChart("linkage-rolling-corr", "corr", "상관계수 (24개월 롤링)");
   }
 
   function renderLinkageMultiTable(market) {
@@ -1428,6 +1495,9 @@
       }
     });
     state.linkageCharts.push(chart1);
+    document.getElementById("linkage-policy-caveat").textContent = policy.caveat;
+
+    renderBokFedTable(policy.bok_fed_cases);
 
     var cc = policy.cross_corr_kr_us;
     var posColor = cssVar("--pos"), negColor = cssVar("--neg");
@@ -1449,15 +1519,40 @@
       }
     });
     state.linkageCharts.push(chart2);
-    document.getElementById("linkage-policy-caveat").textContent = policy.caveat;
+    document.getElementById("linkage-crosscorr-note").textContent = policy.cross_corr_note || "";
+  }
+
+  function renderBokFedTable(cases) {
+    var el = document.getElementById("linkage-bok-fed-table");
+    if (!cases || !cases.length) {
+      el.innerHTML = "<div class='muted'>사례 데이터가 없습니다.</div>";
+      return;
+    }
+    var html = "<table class='linkage-table'><thead><tr>" +
+      "<th>한국은행 결정일</th><th>방향</th><th>변경폭</th><th>직전 같은 방향 연준 변경일</th><th>시차(개월)</th><th>당시 한미 금리차</th>" +
+      "</tr></thead><tbody>";
+    cases.forEach(function (c) {
+      var dirClass = c.direction === "인상" ? "lc-direction-up" : "lc-direction-down";
+      html += "<tr" + (c.cycle_start ? " class='cycle-start'" : "") + ">" +
+        "<td>" + c.decision_date + (c.cycle_start ? " (사이클 시작)" : "") + "</td>" +
+        "<td class='" + dirClass + "'>" + c.direction + "</td>" +
+        "<td>" + (c.change > 0 ? "+" : "") + fmtNum(c.change, 2) + "%p</td>" +
+        "<td>" + (c.prior_fed_same_direction_date || "없음") + "</td>" +
+        "<td>" + (c.lag_months == null ? "-" : fmtNum(c.lag_months, 1) + "개월") + "</td>" +
+        "<td>" + (c.spread_kr_us_at_decision == null ? "-" : fmtNum(c.spread_kr_us_at_decision, 2) + "%p") + "</td>" +
+        "</tr>";
+    });
+    html += "</tbody></table>";
+    el.innerHTML = html;
   }
 
   function renderLinkageNotes() {
     var s = state.analysis.sample;
     var html = "<ul>" +
       "<li>이 분석은 상관·회귀 결과이며, 인과관계를 확정하거나 향후 금리를 예측·추천하는 것이 아닙니다.</li>" +
+      "<li>β는 '해외 금리가 1%p 움직일 때'를 기준으로 한 비율이라, 실제 변동폭 자체가 작은 국가(예: 일본 국채10년)는 작은 변화에도 β가 크게 나올 수 있습니다. 국가 간 연동 강도를 비교할 때는 β보다 상관계수·R²(=상관계수²)를 기준으로 보는 것이 더 적절합니다.</li>" +
       "<li>국채10년은 월평균값이라 발표 당일·일중 반응은 볼 수 없고, 월 단위 흐름만 반영합니다.</li>" +
-      "<li>분석 표본: " + s.start + " ~ " + s.end + " (월간 " + s.n_months_level + "개월 수준값 기준, 차분 후 회귀에는 이보다 1개월 적은 표본을 씁니다).</li>" +
+      "<li>분석 표본: " + s.start + " ~ " + s.end + " (월간 " + s.n_months_level + "개월 수준값 기준, 차분 후 회귀에는 이보다 1개월 적은 표본을 씁니다). 최근 24개월 수치는 전체 기간보다 표본이 훨씬 작아 변동이 큽니다.</li>" +
       "<li>정책금리 분석은 추적 기간 중 변경 횟수가 적어 시장금리 분석보다 통계적 신뢰도가 낮습니다.</li>" +
       "<li>분석 기준일: " + state.analysis.as_of + " (analysis.json 생성 시각: " + state.analysis.generated_at + ")</li>" +
       "</ul>";
