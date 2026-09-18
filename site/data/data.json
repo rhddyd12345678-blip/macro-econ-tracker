@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T22:08:10",
+  "generated_at": "2026-09-18T22:08:22",
   "indicators": [
     {
       "country": "미국",
@@ -14762,6 +14762,22 @@
       "value": 4.0,
       "release_date": "2026-09-16",
       "freq": "수시"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "value": 1.9,
+      "release_date": "2026-09-18",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "value": 1.7,
+      "release_date": "2026-09-18",
+      "freq": "월간"
     }
   ]
 }

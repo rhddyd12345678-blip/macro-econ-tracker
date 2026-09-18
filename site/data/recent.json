@@ -1,3 +1,16 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "date": "2026-08-01",
+      "added_date": "2026-09-18"
+    },
+    {
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "date": "2026-08-01",
+      "added_date": "2026-09-18"
+    }
+  ]
 }
