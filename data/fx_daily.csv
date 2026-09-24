@@ -1256,6 +1256,11 @@
 2026-09-09,달러/유로,1.1627,https://fred.stlouisfed.org/series/DEXUSEU
 2026-09-10,달러/유로,1.1629,https://fred.stlouisfed.org/series/DEXUSEU
 2026-09-11,달러/유로,1.1604,https://fred.stlouisfed.org/series/DEXUSEU
+2026-09-14,달러/유로,1.1549,https://fred.stlouisfed.org/series/DEXUSEU
+2026-09-15,달러/유로,1.1542,https://fred.stlouisfed.org/series/DEXUSEU
+2026-09-16,달러/유로,1.1538,https://fred.stlouisfed.org/series/DEXUSEU
+2026-09-17,달러/유로,1.1479,https://fred.stlouisfed.org/series/DEXUSEU
+2026-09-18,달러/유로,1.1464,https://fred.stlouisfed.org/series/DEXUSEU
 2021-09-01,달러지수(광의),112.8732,https://fred.stlouisfed.org/series/DTWEXBGS
 2021-09-02,달러지수(광의),112.7863,https://fred.stlouisfed.org/series/DTWEXBGS
 2021-09-03,달러지수(광의),112.5476,https://fred.stlouisfed.org/series/DTWEXBGS
@@ -2513,6 +2518,11 @@
 2026-09-09,달러지수(광의),117.8834,https://fred.stlouisfed.org/series/DTWEXBGS
 2026-09-10,달러지수(광의),118.0787,https://fred.stlouisfed.org/series/DTWEXBGS
 2026-09-11,달러지수(광의),118.2126,https://fred.stlouisfed.org/series/DTWEXBGS
+2026-09-14,달러지수(광의),118.6923,https://fred.stlouisfed.org/series/DTWEXBGS
+2026-09-15,달러지수(광의),118.8822,https://fred.stlouisfed.org/series/DTWEXBGS
+2026-09-16,달러지수(광의),118.9206,https://fred.stlouisfed.org/series/DTWEXBGS
+2026-09-17,달러지수(광의),119.3489,https://fred.stlouisfed.org/series/DTWEXBGS
+2026-09-18,달러지수(광의),119.5133,https://fred.stlouisfed.org/series/DTWEXBGS
 2021-09-01,엔/달러,110.03,https://fred.stlouisfed.org/series/DEXJPUS
 2021-09-02,엔/달러,110.01,https://fred.stlouisfed.org/series/DEXJPUS
 2021-09-03,엔/달러,109.64,https://fred.stlouisfed.org/series/DEXJPUS
@@ -3770,6 +3780,11 @@
 2026-09-09,엔/달러,153.5,https://fred.stlouisfed.org/series/DEXJPUS
 2026-09-10,엔/달러,154.06,https://fred.stlouisfed.org/series/DEXJPUS
 2026-09-11,엔/달러,153.71,https://fred.stlouisfed.org/series/DEXJPUS
+2026-09-14,엔/달러,154.42,https://fred.stlouisfed.org/series/DEXJPUS
+2026-09-15,엔/달러,155.11,https://fred.stlouisfed.org/series/DEXJPUS
+2026-09-16,엔/달러,155.08,https://fred.stlouisfed.org/series/DEXJPUS
+2026-09-17,엔/달러,155.85,https://fred.stlouisfed.org/series/DEXJPUS
+2026-09-18,엔/달러,156.87,https://fred.stlouisfed.org/series/DEXJPUS
 2021-09-01,원/100엔,1057.04,https://ecos.bok.or.kr
 2021-09-02,원/100엔,1051.84,https://ecos.bok.or.kr
 2021-09-03,원/100엔,1054.7,https://ecos.bok.or.kr
@@ -5009,6 +5024,10 @@
 2026-09-15,원/100엔,872.07,https://ecos.bok.or.kr
 2026-09-16,원/100엔,871.97,https://ecos.bok.or.kr
 2026-09-17,원/100엔,875.96,https://ecos.bok.or.kr
+2026-09-18,원/100엔,885.29,https://ecos.bok.or.kr
+2026-09-21,원/100엔,881.01,https://ecos.bok.or.kr
+2026-09-22,원/100엔,879.84,https://ecos.bok.or.kr
+2026-09-23,원/100엔,863.68,https://ecos.bok.or.kr
 2021-09-01,원/달러,1162.8,https://ecos.bok.or.kr
 2021-09-02,원/달러,1157.5,https://ecos.bok.or.kr
 2021-09-03,원/달러,1159.7,https://ecos.bok.or.kr
@@ -6248,6 +6267,10 @@
 2026-09-15,원/달러,1345.3,https://ecos.bok.or.kr
 2026-09-16,원/달러,1353.3,https://ecos.bok.or.kr
 2026-09-17,원/달러,1368.3,https://ecos.bok.or.kr
+2026-09-18,원/달러,1380.3,https://ecos.bok.or.kr
+2026-09-21,원/달러,1383.8,https://ecos.bok.or.kr
+2026-09-22,원/달러,1384.3,https://ecos.bok.or.kr
+2026-09-23,원/달러,1360.0,https://ecos.bok.or.kr
 2021-09-01,원/유로,1373.27,https://ecos.bok.or.kr
 2021-09-02,원/유로,1370.77,https://ecos.bok.or.kr
 2021-09-03,원/유로,1377.09,https://ecos.bok.or.kr
@@ -7487,3 +7510,7 @@
 2026-09-15,원/유로,1554.09,https://ecos.bok.or.kr
 2026-09-16,원/유로,1561.44,https://ecos.bok.or.kr
 2026-09-17,원/유로,1569.17,https://ecos.bok.or.kr
+2026-09-18,원/유로,1584.31,https://ecos.bok.or.kr
+2026-09-21,원/유로,1588.6,https://ecos.bok.or.kr
+2026-09-22,원/유로,1587.1,https://ecos.bok.or.kr
+2026-09-23,원/유로,1556.93,https://ecos.bok.or.kr

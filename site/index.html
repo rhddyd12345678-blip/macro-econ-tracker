@@ -744,6 +744,78 @@
       <h2>해석과 한계</h2>
       <div id="fx-notes-body"></div>
     </section>
+
+    <section class="panel card" id="fxpos-section">
+      <h2>환율 위치 분석</h2>
+      <div class="linkage-desc">이 섹션은 매수·매도 신호가 아니라 사실 지표와 과거 통계만 보여줍니다. 판단은 직접 하시기 바랍니다.</div>
+
+      <div class="linkage-cards" id="fxpos-summary-cards"></div>
+      <div class="linkage-cards" id="fxpos-vol-cards"></div>
+
+      <h3 style="margin-top:16px;">원/달러 5년 추이 (스윙 고점·저점·52주 고점·저점)</h3>
+      <div class="linkage-desc">스윙 고점·저점은 직전 극값 대비 3% 이상 되돌림이 나온 뒤에만 확정되는 사후 판정입니다. 가장 최근 극값(속이 빈 점)은 아직 확정되지 않았을 수 있습니다.</div>
+      <div class="chart-wrap" style="height:300px;"><canvas id="fxpos-chart-swings"></canvas></div>
+
+      <h3 style="margin-top:16px;">원/달러 vs 달러지수 vs 원화 고유 강도 (지수화)</h3>
+      <div class="linkage-desc">원화 고유 강도 = 원/달러 ÷ 달러지수(지수화). 원/달러 움직임 중 달러 자체의 힘(달러지수)으로 설명되는 부분과 원화만의 움직임을 분리해 봅니다.</div>
+      <div class="chart-wrap" style="height:260px;"><canvas id="fxpos-chart-decomp"></canvas></div>
+      <div id="fxpos-decomp-table"></div>
+
+      <h3 style="margin-top:16px;">원/달러 vs 한미 정책금리차 · 두바이유</h3>
+      <div class="chart-wrap" style="height:260px;"><canvas id="fxpos-chart-drivers"></canvas></div>
+      <div id="fxpos-drivers-corr"></div>
+
+      <h3 style="margin-top:16px;">실현변동성 추이 (20·60·120일, 연율화)</h3>
+      <div class="chart-wrap" style="height:240px;"><canvas id="fxpos-chart-vol"></canvas></div>
+
+      <h3 style="margin-top:16px;">과거 유사 국면 이후 변화율 분포 + 양방향 최대 역행폭(MAE)</h3>
+      <div class="linkage-desc" id="fxpos-analogs-desc"></div>
+      <div id="fxpos-analogs-table"></div>
+
+      <h3 style="margin-top:16px;">단순 규칙 백테스트 (2021-09~현재)</h3>
+      <div id="fxpos-backtest-table"></div>
+
+      <h3 style="margin-top:16px;">향후 30일 주요 발표 일정</h3>
+      <div id="fxpos-events"></div>
+
+      <div class="bok-warning" id="fxpos-disclaimer" style="display:block; margin-top:16px;"></div>
+    </section>
+
+    <section class="panel card" id="fxpos-judgment-section">
+      <h2>판단 기록</h2>
+      <div class="muted">입력값은 이 브라우저에만 저장됩니다(서버·저장소에 올라가지 않음)</div>
+
+      <div id="fxpos-judgment-form" style="margin-top:10px;">
+        <div id="fxpos-prob-row" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <label style="display:flex; align-items:center; gap:5px;">원화 강세 % <input type="number" id="fxpos-p-strong" min="0" max="100" step="1" style="width:70px;"></label>
+          <label style="display:flex; align-items:center; gap:5px;">원화 약세 % <input type="number" id="fxpos-p-weak" min="0" max="100" step="1" style="width:70px;"></label>
+          <label style="display:flex; align-items:center; gap:5px;">횡보 % <input type="number" id="fxpos-p-flat" min="0" max="100" step="1" style="width:70px;"></label>
+        </div>
+        <div id="fxpos-prob-warning" class="bok-warning" style="display:none; margin-top:8px;"></div>
+        <textarea id="fxpos-note" placeholder="근거 메모" style="width:100%; margin-top:8px; min-height:60px;"></textarea>
+        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; align-items:center;">
+          <label>전망 기간
+            <select id="fxpos-horizon">
+              <option value="1">1개월</option>
+              <option value="3" selected>3개월</option>
+              <option value="6">6개월</option>
+            </select>
+          </label>
+          <label>감내 가능한 역행폭(%, 선택)
+            <input type="number" id="fxpos-tolerance" step="0.5" min="0" style="width:80px;">
+          </label>
+          <button id="fxpos-save-btn" type="button">💾 저장</button>
+        </div>
+      </div>
+
+      <div id="fxpos-history-controls" style="margin-top:14px;">
+        <button id="fxpos-history-export-btn" type="button">기록 전체 내보내기</button>
+        <button id="fxpos-history-import-btn" type="button">기록 불러오기</button>
+        <input type="file" id="fxpos-history-import-file" accept="application/json" style="display:none;">
+      </div>
+      <div id="fxpos-history-list" style="margin-top:10px;"></div>
+      <div id="fxpos-history-empty" class="muted" style="display:none;">아직 저장된 기록이 없습니다.</div>
+    </section>
   </div>
 
   <section class="panel card" id="downloads-section">
@@ -790,6 +862,8 @@
     marketCharts: [],
     fxPeriod: "1y",
     fxCharts: [],
+    fxPosition: null,
+    fxPosHistoryDetailOpen: {},
     charts: []
   };
 
@@ -832,10 +906,11 @@
     loadJSON("data/analysis.json").catch(function () { return null; }),
     loadJSON("data/forecasts.json").catch(function () { return null; }),
     loadJSON("data/fx.json").catch(function () { return null; }),
-    loadJSON("data/fx_analysis.json").catch(function () { return null; })
+    loadJSON("data/fx_analysis.json").catch(function () { return null; }),
+    loadJSON("data/fx_position.json").catch(function () { return null; })
   ]).then(function (results) {
     var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
-    var fx = results[5], fxAnalysis = results[6];
+    var fx = results[5], fxAnalysis = results[6], fxPosition = results[7];
     state.indicators = data.indicators || [];
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
@@ -843,6 +918,7 @@
     state.analysis = analysis;
     state.fx = fx;
     state.fxAnalysis = fxAnalysis;
+    state.fxPosition = fxPosition;
     state.forecasts = forecasts;
     // 로우데이터에 실제로 기록된 발표일(release_date가 있는 관측치) -> 달력에 "지난 발표"로 표시
     state.pastReleases = state.observations
@@ -874,6 +950,7 @@
     buildMainTabs();
     renderDownloads();
     initBok();
+    initFxPosJudgment();
   }
 
   // ---- main view tabs ----
@@ -3929,6 +4006,632 @@
     el.innerHTML = html;
   }
 
+  // ==================================================================
+  // ---- 환율 위치 분석 섹션 ----
+  // ==================================================================
+  function monthsBetweenStr(startStr, endStr) {
+    var s = startStr.split("-").map(Number), e = endStr.split("-").map(Number);
+    return (e[0] - s[0]) * 12 + (e[1] - s[1]);
+  }
+
+  function renderFxPosSummaryCards() {
+    var wrap = document.getElementById("fxpos-summary-cards");
+    wrap.innerHTML = "";
+    var fp = state.fxPosition;
+    if (!fp) {
+      wrap.innerHTML = "<div class='muted'>site/data/fx_position.json을 아직 불러오지 못했습니다(analysis/fx_position.py 실행 필요).</div>";
+      return;
+    }
+    var p = fp.position;
+    var card = document.createElement("div");
+    card.className = "linkage-card";
+    var title = document.createElement("div"); title.className = "lc-country"; title.textContent = "현재 위치 (" + p.as_of + ")";
+    card.appendChild(title);
+    function row(label, val) {
+      var r = document.createElement("div"); r.className = "lc-row";
+      var l = document.createElement("span"); l.textContent = label;
+      var b = document.createElement("b"); b.textContent = val;
+      r.appendChild(l); r.appendChild(b); card.appendChild(r);
+    }
+    row("원/달러", fmtNum(p.value, 1) + "원");
+    row("5년 백분위", fmtNum(p.percentile_5y, 1) + "% (표본 " + p.n_5y + "일)");
+    row("3년 백분위", fmtNum(p.percentile_3y, 1) + "%");
+    row("1년 백분위", fmtNum(p.percentile_1y, 1) + "%");
+    row("52주 고점(" + fmtNum(p.high_52w, 0) + ") 대비", fmtNum(p.dev_from_high_52w_pct, 2) + "%");
+    row("52주 저점(" + fmtNum(p.low_52w, 0) + ") 대비", fmtNum(p.dev_from_low_52w_pct, 2) + "%");
+    row("120일선 대비 이격도", p.dev_from_ma120_pct != null ? fmtNum(p.dev_from_ma120_pct, 2) + "%" : "-");
+    row("5년 z-score", p.z_score_5y != null ? fmtNum(p.z_score_5y, 2) : "-");
+    wrap.appendChild(card);
+  }
+
+  function renderFxPosVolCards() {
+    var wrap = document.getElementById("fxpos-vol-cards");
+    wrap.innerHTML = "";
+    var fp = state.fxPosition;
+    if (!fp) return;
+    var v = fp.volatility;
+    var card = document.createElement("div");
+    card.className = "linkage-card";
+    var title = document.createElement("div"); title.className = "lc-country"; title.textContent = "변동성";
+    card.appendChild(title);
+    function row(label, val) {
+      var r = document.createElement("div"); r.className = "lc-row";
+      var l = document.createElement("span"); l.textContent = label;
+      var b = document.createElement("b"); b.textContent = val;
+      r.appendChild(l); r.appendChild(b); card.appendChild(r);
+    }
+    row("20일 실현변동성(연율화)", fmtNum(v.latest["20"], 2) + "% (5년 백분위 " + fmtNum(v.percentile_5y["20"], 0) + "%)");
+    row("60일 실현변동성(연율화)", fmtNum(v.latest["60"], 2) + "% (5년 백분위 " + fmtNum(v.percentile_5y["60"], 0) + "%)");
+    row("120일 실현변동성(연율화)", fmtNum(v.latest["120"], 2) + "% (5년 백분위 " + fmtNum(v.percentile_5y["120"], 0) + "%)");
+    row("최근 1개월 일간 변동폭", fmtNum(v.recent_month.min_pct, 2) + "% ~ " + fmtNum(v.recent_month.max_pct, 2) + "%");
+    wrap.appendChild(card);
+  }
+
+  function renderFxPosSwingsChart() {
+    var canvas = destroyFxChartById("fxpos-chart-swings");
+    var fp = state.fxPosition;
+    if (!fp) { canvas.replaceWith(emptyMsg()); return; }
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var dates = fp.krw_daily.dates, vals = fp.krw_daily.value;
+    var lineData = dates.map(function (d, i) { return { x: d, y: vals[i] }; });
+    if (!lineData.length) { canvas.replaceWith(emptyMsg()); return; }
+    var confirmedHigh = fp.swings.filter(function (s) { return s.type === "high" && s.confirmed; }).map(function (s) { return { x: s.date, y: s.value }; });
+    var confirmedLow = fp.swings.filter(function (s) { return s.type === "low" && s.confirmed; }).map(function (s) { return { x: s.date, y: s.value }; });
+    var unconfirmed = fp.swings.filter(function (s) { return !s.confirmed; }).map(function (s) { return { x: s.date, y: s.value }; });
+    var p = fp.position;
+    var firstX = lineData[0].x, lastX = lineData[lineData.length - 1].x;
+    var datasets = [
+      { label: "원/달러", data: lineData, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 0, borderWidth: 1.3 },
+      { label: "스윙 고점(확정)", data: confirmedHigh, borderColor: cssVar("--neg"), backgroundColor: cssVar("--neg"), pointRadius: 4, showLine: false },
+      { label: "스윙 저점(확정)", data: confirmedLow, borderColor: cssVar("--pos"), backgroundColor: cssVar("--pos"), pointRadius: 4, showLine: false },
+      { label: "최근 극값(미확정)", data: unconfirmed, borderColor: muted, backgroundColor: "transparent", pointRadius: 5, pointBorderWidth: 2, showLine: false },
+      { label: "52주 고점 " + fmtNum(p.high_52w, 0), data: [{ x: firstX, y: p.high_52w }, { x: lastX, y: p.high_52w }], borderColor: muted, borderDash: [5, 4], borderWidth: 1, pointRadius: 0 },
+      { label: "52주 저점 " + fmtNum(p.low_52w, 0), data: [{ x: firstX, y: p.low_52w }, { x: lastX, y: p.low_52w }], borderColor: muted, borderDash: [5, 4], borderWidth: 1, pointRadius: 0 }
+    ];
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: { datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 10.5 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 12, font: { size: 10 } }, grid: { color: border } },
+          y: { title: { display: true, text: "원", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxPosDecompChart() {
+    var canvas = destroyFxChartById("fxpos-chart-decomp");
+    var fp = state.fxPosition;
+    if (!fp) { canvas.replaceWith(emptyMsg()); return; }
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var s = fp.dollar_decomposition.series;
+    if (!s.dates.length) { canvas.replaceWith(emptyMsg()); return; }
+    var datasets = [
+      { label: "원/달러(지수화)", data: s.dates.map(function (d, i) { return { x: d, y: s.krw_usd_index[i] }; }), borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 0, borderWidth: 2 },
+      { label: "달러지수(지수화)", data: s.dates.map(function (d, i) { return { x: d, y: s.dollar_index_index[i] }; }), borderColor: cssVar("--accent2"), backgroundColor: cssVar("--accent2"), pointRadius: 0, borderWidth: 2 },
+      { label: "원화 고유 강도(지수화)", data: s.dates.map(function (d, i) { return { x: d, y: s.won_strength_index[i] }; }), borderColor: cssVar("--accent4"), backgroundColor: cssVar("--accent4"), pointRadius: 0, borderWidth: 2 }
+    ];
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: { datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { title: { display: true, text: "지수(시작일=100)", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxPosDecompTable() {
+    var el = document.getElementById("fxpos-decomp-table");
+    var fp = state.fxPosition;
+    if (!fp) { el.innerHTML = ""; return; }
+    var c = fp.dollar_decomposition.contributions;
+    var html = "<table class='market-table'><thead><tr><th>기간</th><th>총 변화율</th><th>달러 요인</th><th>원화 고유 요인</th></tr></thead><tbody>";
+    ["1m", "3m", "6m"].forEach(function (key) {
+      var d = c[key];
+      if (!d) { html += "<tr><td>" + key + "</td><td colspan='3' class='muted'>데이터 부족</td></tr>"; return; }
+      html += "<tr><td>" + key + " (" + d.start_date + " ~ " + d.end_date + ")</td><td>" + fmtNum(d.total_pct, 2) + "%</td>" +
+        "<td>" + fmtNum(d.dollar_factor_pct, 2) + "%</td><td>" + fmtNum(d.won_factor_pct, 2) + "%</td></tr>";
+    });
+    html += "</tbody></table>";
+    el.innerHTML = html;
+  }
+
+  function renderFxPosDriversChart() {
+    var canvas = destroyFxChartById("fxpos-chart-drivers");
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var krwMonthly = (state.fx && state.fx.monthly && state.fx.monthly["원/달러"]) || { dates: [], avg: [] };
+    var krwData = krwMonthly.dates.map(function (d, i) { return { x: d, y: krwMonthly.avg[i] }; });
+    var spread = (state.analysis && state.analysis.policy && state.analysis.policy.spread_kr_us) || { dates: [], KR_US: [] };
+    var spreadData = spread.dates.map(function (d, i) { return { x: d, y: spread.KR_US[i] }; });
+    var oilObs = observationsFor("한국", "두바이유");
+    var oilData = oilObs.map(function (o) { return { x: o.date, y: o.value }; });
+    if (!krwData.length && !spreadData.length && !oilData.length) { canvas.replaceWith(emptyMsg()); return; }
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: {
+        datasets: [
+          { label: "원/달러(월평균)", data: krwData, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 0, borderWidth: 2, yAxisID: "y" },
+          { label: "한미 정책금리차(%p)", data: spreadData, borderColor: cssVar("--accent2"), backgroundColor: cssVar("--accent2"), pointRadius: 0, borderWidth: 2, yAxisID: "y1" },
+          { label: "두바이유($/배럴)", data: oilData, borderColor: cssVar("--accent3"), backgroundColor: cssVar("--accent3"), pointRadius: 0, borderWidth: 1.5, yAxisID: "y2" }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 10.5 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { position: "left", title: { display: true, text: "원", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } },
+          y1: { position: "right", title: { display: true, text: "%p", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { drawOnChartArea: false } },
+          y2: { position: "right", display: false }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxPosDriversCorr() {
+    var el = document.getElementById("fxpos-drivers-corr");
+    var fp = state.fxPosition;
+    if (!fp) { el.innerHTML = ""; return; }
+    var d = fp.drivers;
+    el.innerHTML = "<div class='muted'>롤링 12개월 상관계수(원/달러 월간 로그 변화율 기준) 최신값 — " +
+      "한미 정책금리차 변화: " + fmtNum(d.spread_kr_us.latest, 3) + " · 두바이유 로그변화율: " + fmtNum(d.dubai_oil.latest, 3) +
+      " · 엔/달러 로그변화율: " + fmtNum(d.jpy_usd.latest, 3) + "</div>";
+  }
+
+  function renderFxPosVolChart() {
+    var canvas = destroyFxChartById("fxpos-chart-vol");
+    var fp = state.fxPosition;
+    if (!fp) { canvas.replaceWith(emptyMsg()); return; }
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var v = fp.volatility;
+    var palette = { "20": cssVar("--accent"), "60": cssVar("--accent2"), "120": cssVar("--accent4") };
+    var datasets = [];
+    ["20", "60", "120"].forEach(function (w) {
+      var s = v.series[w];
+      datasets.push({ label: w + "일 실현변동성", data: s.dates.map(function (d, i) { return { x: d, y: s.value[i] }; }), borderColor: palette[w], backgroundColor: palette[w], pointRadius: 0, borderWidth: 1.5 });
+    });
+    if (v.median_5y && v.median_5y["60"] != null && v.series["60"].dates.length) {
+      var s60 = v.series["60"];
+      datasets.push({
+        label: "60일 5년 중앙값(" + fmtNum(v.median_5y["60"], 2) + "%)",
+        data: [{ x: s60.dates[0], y: v.median_5y["60"] }, { x: s60.dates[s60.dates.length - 1], y: v.median_5y["60"] }],
+        borderColor: muted, borderDash: [5, 4], borderWidth: 1, pointRadius: 0
+      });
+    }
+    if (!datasets.some(function (d) { return d.data.length; })) { canvas.replaceWith(emptyMsg()); return; }
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: { datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 10.5 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { title: { display: true, text: "연율화 %", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxPosAnalogsTable() {
+    var el = document.getElementById("fxpos-analogs-table");
+    var descEl = document.getElementById("fxpos-analogs-desc");
+    var fp = state.fxPosition;
+    if (!fp) { el.innerHTML = ""; descEl.innerHTML = ""; return; }
+    var a = fp.analogs;
+    var signText = a.current.spread_kr_us_sign > 0 ? "양(+)" : (a.current.spread_kr_us_sign < 0 ? "음(-)" : "0");
+    descEl.textContent = "현재(5년 백분위 " + fmtNum(a.current.percentile_5y, 1) + "%, 한미 금리차 부호 " + signText +
+      ")와 비슷했던 과거 " + a.n_candidates + "개 시점(월 1회 샘플링, 최근 6개월 이내는 제외) 기준입니다.";
+    if (!a.n_candidates) { el.innerHTML = "<div class='muted'>조건에 맞는 과거 유사 국면이 없습니다.</div>"; return; }
+    var html = "<table class='market-table'><thead><tr><th>보유 기간</th><th>표본수</th><th>변화율 중앙값</th><th>25%~75%</th>" +
+      "<th>원화약세 베팅 역행폭(중앙값 / 최악, D+일)</th><th>원화강세 베팅 역행폭(중앙값 / 최악, D+일)</th></tr></thead><tbody>";
+    ["1m", "3m", "6m"].forEach(function (key) {
+      var h = a.horizons[key];
+      if (!h || !h.n) { html += "<tr><td>" + key + "</td><td colspan='5' class='muted'>표본 부족</td></tr>"; return; }
+      var mae = h.mae || {};
+      html += "<tr><td>" + key + "</td><td>" + h.n + "</td><td>" + fmtNum(h.median_pct, 2) + "%</td>" +
+        "<td>" + fmtNum(h.p25_pct, 2) + "% ~ " + fmtNum(h.p75_pct, 2) + "%</td>" +
+        "<td>" + (mae.weak_won_bet_median_pct != null ? fmtNum(mae.weak_won_bet_median_pct, 2) + "% / " + fmtNum(mae.weak_won_bet_worst_pct, 2) + "%(D+" + mae.weak_won_bet_worst_day + ")" : "-") + "</td>" +
+        "<td>" + (mae.strong_won_bet_median_pct != null ? fmtNum(mae.strong_won_bet_median_pct, 2) + "% / " + fmtNum(mae.strong_won_bet_worst_pct, 2) + "%(D+" + mae.strong_won_bet_worst_day + ")" : "-") + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    var b3 = a.baseline_mae_all_periods["3m"], b6 = a.baseline_mae_all_periods["6m"];
+    html += "<div class='muted' style='margin-top:6px;'>참고(유사 국면 조건 없이 전체 기간 기준): 3개월 보유 최대 역행폭 중앙값 " +
+      (b3 ? fmtNum(b3.weak_won_bet_median_pct, 2) + "%(원화약세 베팅) / " + fmtNum(b3.strong_won_bet_median_pct, 2) + "%(원화강세 베팅)" : "-") +
+      ", 6개월 보유 " + (b6 ? fmtNum(b6.weak_won_bet_median_pct, 2) + "% / " + fmtNum(b6.strong_won_bet_median_pct, 2) + "%" : "-") + "</div>";
+    el.innerHTML = html;
+  }
+
+  function renderFxPosBacktestTable() {
+    var el = document.getElementById("fxpos-backtest-table");
+    var fp = state.fxPosition;
+    if (!fp) { el.innerHTML = ""; return; }
+    var b = fp.backtests;
+    var html = "<table class='market-table'><thead><tr><th>규칙</th><th>표본수</th><th>적중률</th><th>평균 방향 수익률</th>" +
+      "<th>평균/최악 역행폭</th><th>'항상 보유' 대비</th><th>이항검정 p값</th></tr></thead><tbody>";
+    ["rule_a_percentile", "rule_b_ma120", "rule_c_spread"].forEach(function (key) {
+      var r = b[key];
+      if (!r) return;
+      if (!r.n) { html += "<tr><td>" + escapeHtml(r.rule || key) + "</td><td colspan='5' class='muted'>표본 부족</td></tr>"; return; }
+      html += "<tr><td>" + escapeHtml(r.rule) + (r.low_sample_caveat ? " <span class='muted'>(표본 30건 미만 — 주의)</span>" : "") + "</td>" +
+        "<td>" + r.n + "</td><td>" + fmtNum(r.hit_rate_pct, 1) + "%</td>" +
+        "<td>" + fmtNum(r.mean_directional_return_pct, 2) + "%</td>" +
+        "<td>" + (r.mean_adverse_excursion_pct != null ? fmtNum(r.mean_adverse_excursion_pct, 2) + "% / " + fmtNum(r.worst_adverse_excursion_pct, 2) + "%" : "-") + "</td>" +
+        "<td>" + (r.baseline_buy_and_hold_pct != null ? fmtNum(r.baseline_buy_and_hold_pct, 2) + "%" : "-") + "</td>" +
+        "<td>" + fmtNum(r.binom_p_value, 4) + "</td></tr>";
+    });
+    html += "</tbody></table><div class='muted' style='margin-top:6px;'>표본이 적으면(대략 30건 미만) 이항검정 p값의 통계적 유의성이 낮을 가능성이 높습니다. 세 규칙은 각각 독립적으로 평가했으며 서로 비교·조합하기 위한 것이 아닙니다.</div>";
+    el.innerHTML = html;
+  }
+
+  function renderFxPosEvents() {
+    var el = document.getElementById("fxpos-events");
+    var fp = state.fxPosition;
+    if (!fp || !fp.upcoming_events || !fp.upcoming_events.length) {
+      el.innerHTML = "<div class='muted'>향후 30일 내 예정된 발표가 없습니다(또는 데이터 없음).</div>";
+      return;
+    }
+    var html = "<table class='market-table'><thead><tr><th>날짜</th><th>D-day</th><th>국가</th><th>지표</th></tr></thead><tbody>";
+    fp.upcoming_events.forEach(function (e) {
+      html += "<tr><td>" + e.date + "</td><td>D-" + e.d_day + "</td><td>" + escapeHtml(e.country || "") + "</td><td>" + escapeHtml(e.indicator || "") + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    el.innerHTML = html;
+  }
+
+  function renderFxPosDisclaimer() {
+    var el = document.getElementById("fxpos-disclaimer");
+    var fp = state.fxPosition;
+    if (!fp) { el.innerHTML = ""; return; }
+    var n = monthsBetweenStr(fp.sample.start, fp.sample.end);
+    el.textContent = "이 섹션은 현재 환율의 과거 대비 위치와 과거 통계를 보여줄 뿐 향후 방향을 예측하지 않습니다. " +
+      "단기 환율은 펀더멘털 모형이 단순 예측을 이기지 못한다는 연구 결과가 일반적이며, 고점·저점은 사후에만 확정됩니다. " +
+      "표본은 " + n + "개월로 제한적이고 독립 국면은 더 적습니다. " +
+      "과거 최대 역행폭은 미래 손실의 상한이 아닙니다. 투자 판단과 그 결과는 본인 책임입니다.";
+  }
+
+  function renderFxPosTab() {
+    renderFxPosSummaryCards();
+    renderFxPosVolCards();
+    renderFxPosSwingsChart();
+    renderFxPosDecompChart();
+    renderFxPosDecompTable();
+    renderFxPosDriversChart();
+    renderFxPosDriversCorr();
+    renderFxPosVolChart();
+    renderFxPosAnalogsTable();
+    renderFxPosBacktestTable();
+    renderFxPosEvents();
+    renderFxPosDisclaimer();
+  }
+
+  // ---- 환율 위치 분석: 판단 기록(localStorage 전용) ----
+  var FXPOS_STORAGE_KEY = "mt_fxpos_judgment_history_v1";
+  var FXPOS_DIRECTION_LABELS = { strong: "원화 강세", weak: "원화 약세", flat: "횡보" };
+  var fxPosHistory = null;
+
+  function addMonthsToDateStr(dateStr, months) {
+    var parts = dateStr.split("-").map(Number);
+    var y = parts[0], m = parts[1], d = parts[2];
+    var total = y * 12 + (m - 1) + months;
+    var ny = Math.floor(total / 12), nm = (total % 12) + 1;
+    var daysInMonth = new Date(ny, nm, 0).getDate();
+    var nd = Math.min(d, daysInMonth);
+    return ny + "-" + String(nm).padStart(2, "0") + "-" + String(nd).padStart(2, "0");
+  }
+
+  function fxPosRecordId() {
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  function defaultFxPosHistory() { return { records: [] }; }
+  function loadFxPosHistory() {
+    try {
+      var raw = localStorage.getItem(FXPOS_STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && Array.isArray(parsed.records)) return parsed;
+      }
+    } catch (e) { /* localStorage 사용 불가 시 기본값 */ }
+    return defaultFxPosHistory();
+  }
+  function saveFxPosHistoryToStorage(history) {
+    try { localStorage.setItem(FXPOS_STORAGE_KEY, JSON.stringify(history)); } catch (e) { /* ignore */ }
+  }
+
+  function updateFxPosProbWarning() {
+    var sEl = document.getElementById("fxpos-p-strong"), wEl = document.getElementById("fxpos-p-weak"), fEl = document.getElementById("fxpos-p-flat");
+    var s = Number(sEl.value) || 0, w = Number(wEl.value) || 0, f = Number(fEl.value) || 0;
+    var total = s + w + f;
+    var any = sEl.value !== "" || wEl.value !== "" || fEl.value !== "";
+    var warnEl = document.getElementById("fxpos-prob-warning");
+    if (any && Math.abs(total - 100) > 0.001) {
+      warnEl.style.display = "block";
+      warnEl.textContent = "⚠ 확률의 합이 100%가 아닙니다. 현재 합계: " + fmtNum(total, 1) + "%";
+    } else {
+      warnEl.style.display = "none";
+    }
+    return total;
+  }
+
+  function collectFxPosSnapshot() {
+    var fp = state.fxPosition;
+    if (!fp) return null;
+    var snapshot = { as_of: fp.as_of, position: fp.position, volatility_latest: fp.volatility.latest, drivers_latest: {} };
+    Object.keys(fp.drivers).forEach(function (k) { snapshot.drivers_latest[k] = fp.drivers[k].latest; });
+    return snapshot;
+  }
+
+  function saveFxPosJudgment() {
+    var total = updateFxPosProbWarning();
+    var pStrongEl = document.getElementById("fxpos-p-strong"), pWeakEl = document.getElementById("fxpos-p-weak"), pFlatEl = document.getElementById("fxpos-p-flat");
+    if (pStrongEl.value === "" && pWeakEl.value === "" && pFlatEl.value === "") {
+      alert("방향 전망 확률을 입력해 주세요.");
+      return;
+    }
+    if (Math.abs(total - 100) > 0.001) {
+      if (!confirm("확률 합이 100%가 아닙니다(현재 " + fmtNum(total, 1) + "%). 그래도 저장할까요?")) return;
+    }
+    var horizonMonths = Number(document.getElementById("fxpos-horizon").value);
+    var toleranceRaw = document.getElementById("fxpos-tolerance").value;
+    var entryDate = todayStr();
+    var record = {
+      id: fxPosRecordId(),
+      savedAt: nowKstString(),
+      savedAtMs: Date.now(),
+      prob: {
+        strong: pStrongEl.value === "" ? null : Number(pStrongEl.value),
+        weak: pWeakEl.value === "" ? null : Number(pWeakEl.value),
+        flat: pFlatEl.value === "" ? null : Number(pFlatEl.value)
+      },
+      note: document.getElementById("fxpos-note").value.trim(),
+      horizonMonths: horizonMonths,
+      entryDate: entryDate,
+      expiryDate: addMonthsToDateStr(entryDate, horizonMonths),
+      tolerancePct: toleranceRaw === "" ? null : Number(toleranceRaw),
+      entryValue: state.fxPosition ? state.fxPosition.position.value : null,
+      snapshot: collectFxPosSnapshot()
+    };
+    fxPosHistory.records.push(record);
+    saveFxPosHistoryToStorage(fxPosHistory);
+    pStrongEl.value = ""; pWeakEl.value = ""; pFlatEl.value = "";
+    document.getElementById("fxpos-note").value = "";
+    document.getElementById("fxpos-tolerance").value = "";
+    updateFxPosProbWarning();
+    renderFxPosJudgmentHistory();
+    alert(record.savedAt + " 저장됨");
+  }
+
+  function nearestFxValue(arr, targetDateStr, toleranceDays) {
+    toleranceDays = toleranceDays || 5;
+    var target = new Date(targetDateStr).getTime();
+    var best = null, bestDiff = Infinity;
+    for (var i = 0; i < arr.length; i++) {
+      var diff = Math.abs(new Date(arr[i].date).getTime() - target) / 86400000;
+      if (diff < bestDiff) { bestDiff = diff; best = arr[i]; }
+    }
+    if (!best || bestDiff > toleranceDays) return null;
+    return best;
+  }
+
+  function maeForWindow(arr, entryDateStr, endDateStr) {
+    var inWindow = arr.filter(function (p) { return p.date >= entryDateStr && p.date <= endDateStr; });
+    if (!inWindow.length) return null;
+    var entryVal = inWindow[0].value;
+    var minP = inWindow[0], maxP = inWindow[0];
+    inWindow.forEach(function (p) {
+      if (p.value < minP.value) minP = p;
+      if (p.value > maxP.value) maxP = p;
+    });
+    return {
+      weak_won_bet_adverse_pct: (minP.value / entryVal - 1) * 100,
+      strong_won_bet_adverse_pct: (maxP.value / entryVal - 1) * 100
+    };
+  }
+
+  function evaluateFxPosRecord(rec) {
+    var fxSeries = fxDaily("원/달러");
+    if (!fxSeries.length) return null;
+    var today = todayStr();
+    if (rec.expiryDate > today) return null; // 아직 만기 전
+    var entryPoint = nearestFxValue(fxSeries, rec.entryDate, 5);
+    var exitPoint = nearestFxValue(fxSeries, rec.expiryDate, 5);
+    if (!entryPoint || !exitPoint) return null;
+    var actualReturnPct = (exitPoint.value / entryPoint.value - 1) * 100;
+    var actualDirection = actualReturnPct > 1 ? "weak" : (actualReturnPct < -1 ? "strong" : "flat");
+    var predicted = "flat", maxP = -1;
+    ["strong", "weak", "flat"].forEach(function (k) {
+      var v = rec.prob ? rec.prob[k] : null;
+      if (v != null && v > maxP) { maxP = v; predicted = k; }
+    });
+    var hit = predicted === actualDirection;
+    var mae = maeForWindow(fxSeries, entryPoint.date, exitPoint.date);
+    var breached = null;
+    if (rec.tolerancePct != null && mae) {
+      if (predicted === "weak") breached = Math.abs(mae.weak_won_bet_adverse_pct) > rec.tolerancePct;
+      else if (predicted === "strong") breached = Math.abs(mae.strong_won_bet_adverse_pct) > rec.tolerancePct;
+    }
+    return { actualReturnPct: actualReturnPct, actualDirection: actualDirection, predicted: predicted, hit: hit, mae: mae, breached: breached, entryPoint: entryPoint, exitPoint: exitPoint };
+  }
+
+  function buildFxPosHistoryRecordEl(rec) {
+    var wrap = document.createElement("div");
+    wrap.className = "bok-history-record";
+
+    var row = document.createElement("div");
+    row.className = "rec-summary-row";
+
+    var savedSpan = document.createElement("span");
+    savedSpan.textContent = rec.savedAt;
+    row.appendChild(savedSpan);
+
+    var probParts = [];
+    ["strong", "weak", "flat"].forEach(function (k) {
+      if (rec.prob && rec.prob[k] != null) probParts.push(FXPOS_DIRECTION_LABELS[k] + " " + fmtNum(rec.prob[k], 0) + "%");
+    });
+    var probSpan = document.createElement("span");
+    probSpan.className = "muted";
+    probSpan.textContent = probParts.join(", ") || "-";
+    row.appendChild(probSpan);
+
+    var horizonSpan = document.createElement("span");
+    horizonSpan.className = "muted";
+    horizonSpan.textContent = rec.horizonMonths + "개월 (만기 " + rec.expiryDate + ")";
+    row.appendChild(horizonSpan);
+
+    var actions = document.createElement("div");
+    actions.className = "rec-actions";
+    var detailBtn = document.createElement("button");
+    detailBtn.type = "button";
+    detailBtn.textContent = state.fxPosHistoryDetailOpen[rec.id] ? "접기" : "자세히";
+    detailBtn.addEventListener("click", function () {
+      state.fxPosHistoryDetailOpen[rec.id] = !state.fxPosHistoryDetailOpen[rec.id];
+      renderFxPosJudgmentHistory();
+    });
+    actions.appendChild(detailBtn);
+    var delBtn = document.createElement("button");
+    delBtn.type = "button"; delBtn.textContent = "삭제";
+    delBtn.addEventListener("click", function () {
+      if (!confirm("이 기록을 삭제할까요? 되돌릴 수 없습니다.")) return;
+      fxPosHistory.records = fxPosHistory.records.filter(function (r) { return r.id !== rec.id; });
+      delete state.fxPosHistoryDetailOpen[rec.id];
+      saveFxPosHistoryToStorage(fxPosHistory);
+      renderFxPosJudgmentHistory();
+    });
+    actions.appendChild(delBtn);
+    row.appendChild(actions);
+    wrap.appendChild(row);
+
+    var evalResult = evaluateFxPosRecord(rec);
+    if (evalResult) {
+      var evalDiv = document.createElement("div");
+      evalDiv.className = "bok-actual-result";
+      var hitBadge = document.createElement("span");
+      hitBadge.className = "bok-actual-badge";
+      hitBadge.textContent = (evalResult.hit ? "적중" : "불일치") + " · 실제 " + FXPOS_DIRECTION_LABELS[evalResult.actualDirection] +
+        " (" + (evalResult.actualReturnPct >= 0 ? "+" : "") + fmtNum(evalResult.actualReturnPct, 2) + "%)";
+      evalDiv.appendChild(hitBadge);
+      if (evalResult.breached !== null) {
+        var breachSpan = document.createElement("span");
+        breachSpan.className = "muted";
+        breachSpan.style.marginLeft = "8px";
+        breachSpan.textContent = evalResult.breached ? "⚠ 감내 역행폭 초과" : "감내 역행폭 이내";
+        evalDiv.appendChild(breachSpan);
+      }
+      wrap.appendChild(evalDiv);
+    } else if (rec.expiryDate > todayStr()) {
+      var pendingDiv = document.createElement("div");
+      pendingDiv.className = "muted";
+      pendingDiv.textContent = "만기 전 (D-" + Math.round((new Date(rec.expiryDate) - new Date(todayStr())) / 86400000) + ")";
+      wrap.appendChild(pendingDiv);
+    }
+
+    if (state.fxPosHistoryDetailOpen[rec.id]) {
+      var detail = document.createElement("div");
+      detail.className = "bok-history-detail";
+      var html = "";
+      if (rec.note) html += "<div><b>근거 메모</b><br>" + escapeHtml(rec.note) + "</div>";
+      if (rec.snapshot) {
+        html += "<div style='margin-top:6px;'><b>저장 시점 스냅샷</b><br>원/달러 " + fmtNum(rec.snapshot.position.value, 1) +
+          "원 · 5년 백분위 " + fmtNum(rec.snapshot.position.percentile_5y, 1) + "% · z-score " + fmtNum(rec.snapshot.position.z_score_5y, 2) + "</div>";
+      }
+      if (rec.tolerancePct != null) {
+        html += "<div style='margin-top:6px;'><b>감내 가능한 역행폭</b>: " + fmtNum(rec.tolerancePct, 1) + "%</div>";
+      }
+      if (evalResult && evalResult.mae) {
+        html += "<div style='margin-top:6px;'><b>보유 기간 중 양방향 최대 역행폭</b><br>" +
+          "원화 약세 베팅 기준: " + fmtNum(evalResult.mae.weak_won_bet_adverse_pct, 2) + "% · 원화 강세 베팅 기준: " + fmtNum(evalResult.mae.strong_won_bet_adverse_pct, 2) + "%</div>";
+      }
+      detail.innerHTML = html;
+      wrap.appendChild(detail);
+    }
+
+    return wrap;
+  }
+
+  function renderFxPosJudgmentHistory() {
+    var listEl = document.getElementById("fxpos-history-list");
+    var emptyEl = document.getElementById("fxpos-history-empty");
+    listEl.innerHTML = "";
+    var records = (fxPosHistory && fxPosHistory.records) || [];
+    if (!records.length) { emptyEl.style.display = "block"; return; }
+    emptyEl.style.display = "none";
+    records.slice().sort(function (a, b) { return b.savedAtMs - a.savedAtMs; }).forEach(function (rec) {
+      listEl.appendChild(buildFxPosHistoryRecordEl(rec));
+    });
+  }
+
+  function exportFxPosHistoryJSON() {
+    var blob = new Blob([JSON.stringify(fxPosHistory, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var today = todayStr().replace(/-/g, "");
+    a.href = url;
+    a.download = "fx_position_judgment_history_" + today + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function importFxPosHistoryJSON(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var parsed = JSON.parse(reader.result);
+        if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.records)) {
+          alert("올바른 환율 위치 분석 판단 기록 JSON 파일이 아닙니다.");
+          return;
+        }
+        var existingKeys = {};
+        fxPosHistory.records.forEach(function (r) { existingKeys[r.savedAt] = true; });
+        var added = 0;
+        parsed.records.forEach(function (r) {
+          if (!r || !r.savedAt || existingKeys[r.savedAt]) return;
+          if (!r.id) r.id = fxPosRecordId();
+          fxPosHistory.records.push(r);
+          existingKeys[r.savedAt] = true;
+          added++;
+        });
+        saveFxPosHistoryToStorage(fxPosHistory);
+        renderFxPosJudgmentHistory();
+        alert(added + "건의 기록을 불러왔습니다(중복 " + (parsed.records.length - added) + "건 제외).");
+      } catch (err) {
+        alert("JSON 파싱 실패: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  function initFxPosJudgment() {
+    fxPosHistory = loadFxPosHistory();
+    ["fxpos-p-strong", "fxpos-p-weak", "fxpos-p-flat"].forEach(function (id) {
+      document.getElementById(id).addEventListener("input", updateFxPosProbWarning);
+    });
+    document.getElementById("fxpos-save-btn").addEventListener("click", saveFxPosJudgment);
+    document.getElementById("fxpos-history-export-btn").addEventListener("click", exportFxPosHistoryJSON);
+    document.getElementById("fxpos-history-import-btn").addEventListener("click", function () {
+      document.getElementById("fxpos-history-import-file").click();
+    });
+    document.getElementById("fxpos-history-import-file").addEventListener("change", importFxPosHistoryJSON);
+    renderFxPosJudgmentHistory();
+  }
+
   function renderFxTab() {
     renderFxSummaryCards();
     buildFxPeriodTabs();
@@ -3939,6 +4642,8 @@
     renderFxMultiTable();
     renderFxRollingCharts();
     renderFxNotes();
+    renderFxPosTab();
+    renderFxPosJudgmentHistory();
   }
 
 })();
