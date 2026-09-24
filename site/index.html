@@ -454,6 +454,9 @@
   #market-collection-results table.market-table td.status-실패 { color: var(--neg); }
   #market-collection-results table.market-table td.status-건너뜀 { color: var(--muted); }
   #market-collection-results table.market-table td.status-경고 { color: #d97706; }
+  .fxpred-judge-confirmed { color: var(--pos); }
+  .fxpred-judge-boundary { color: #d97706; }
+  .fxpred-judge-none { color: var(--muted); }
 
   @media (max-width: 640px) {
     #charts-grid { grid-template-columns: 1fr; }
@@ -781,6 +784,26 @@
       <div class="bok-warning" id="fxpos-disclaimer" style="display:block; margin-top:16px;"></div>
     </section>
 
+    <section class="panel card" id="fxpred-section">
+      <h2>선행지표 예측력 검정</h2>
+      <div class="linkage-desc">동시점 상관이 높아도 예측력이 있다는 뜻은 아닙니다. 표본외 적중률과 RMSE 비율이 실제 예측력의 기준이며, 표본이 제한적이라 우연히 좋게 나올 수 있습니다.</div>
+
+      <div id="fxpred-summary-table"></div>
+
+      <h3 style="margin-top:16px;">원/달러 vs 후보 변수 롤링 12개월 상관계수</h3>
+      <div class="mini-tabs" id="fxpred-var-tabs"></div>
+      <div class="chart-wrap" style="height:240px;"><canvas id="fxpred-chart-corr"></canvas></div>
+
+      <h3 style="margin-top:16px;">변수별 단순 규칙 백테스트 (변수 월간 변화 상·하위 1/3 기준, 다음 달 평가)</h3>
+      <div id="fxpred-backtest-table"></div>
+
+      <h3 style="margin-top:16px;">다중회귀 표본외 검정</h3>
+      <div id="fxpred-multi-table"></div>
+
+      <div class="muted" id="fxpred-meta" style="margin-top:10px;"></div>
+      <div class="muted" id="fxpred-not-collected" style="margin-top:10px;"></div>
+    </section>
+
     <section class="panel card" id="fxpos-judgment-section">
       <h2>판단 기록</h2>
       <div class="muted">입력값은 이 브라우저에만 저장됩니다(서버·저장소에 올라가지 않음)</div>
@@ -864,6 +887,8 @@
     fxCharts: [],
     fxPosition: null,
     fxPosHistoryDetailOpen: {},
+    fxPredictors: null,
+    fxPredVar: null,
     charts: []
   };
 
@@ -907,10 +932,11 @@
     loadJSON("data/forecasts.json").catch(function () { return null; }),
     loadJSON("data/fx.json").catch(function () { return null; }),
     loadJSON("data/fx_analysis.json").catch(function () { return null; }),
-    loadJSON("data/fx_position.json").catch(function () { return null; })
+    loadJSON("data/fx_position.json").catch(function () { return null; }),
+    loadJSON("data/fx_predictors.json").catch(function () { return null; })
   ]).then(function (results) {
     var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
-    var fx = results[5], fxAnalysis = results[6], fxPosition = results[7];
+    var fx = results[5], fxAnalysis = results[6], fxPosition = results[7], fxPredictors = results[8];
     state.indicators = data.indicators || [];
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
@@ -919,6 +945,7 @@
     state.fx = fx;
     state.fxAnalysis = fxAnalysis;
     state.fxPosition = fxPosition;
+    state.fxPredictors = fxPredictors;
     state.forecasts = forecasts;
     // 로우데이터에 실제로 기록된 발표일(release_date가 있는 관측치) -> 달력에 "지난 발표"로 표시
     state.pastReleases = state.observations
@@ -4632,6 +4659,159 @@
     renderFxPosJudgmentHistory();
   }
 
+  // ==================================================================
+  // ---- 선행지표 예측력 검정 ----
+  // ==================================================================
+  var FXPRED_JUDGMENT_CLASS = { "예측력 확인": "fxpred-judge-confirmed", "경계": "fxpred-judge-boundary", "예측력 확인 안 됨": "fxpred-judge-none" };
+
+  function renderFxPredSummaryTable() {
+    var el = document.getElementById("fxpred-summary-table");
+    var fp = state.fxPredictors;
+    if (!fp) {
+      el.innerHTML = "<div class='muted'>site/data/fx_predictors.json을 아직 불러오지 못했습니다(analysis/fx_predictors.py 실행 필요).</div>";
+      return;
+    }
+    var vars = fp.variables;
+    var html = "<div style='overflow-x:auto;'><table class='market-table'><thead><tr><th>변수</th><th>동시점 상관</th>" +
+      "<th>1개월 선행 β(p)</th><th>2개월 선행 β(p)</th><th>3개월 선행 β(p)</th>" +
+      "<th>그레인저 p(1·2·3개월)</th><th>표본외 적중률(n, p값)</th><th>RMSE 비율</th><th>판정</th></tr></thead><tbody>";
+    Object.keys(vars).forEach(function (key) {
+      var v = vars[key];
+      function betaCell(h) {
+        var r = v.leading_regression[h];
+        if (!r || r.insufficient) return "-";
+        var pTxt = r.p < 0.001 ? "<0.001" : fmtNum(r.p, 3);
+        return fmtNum(r.beta, 3) + " (" + pTxt + ")";
+      }
+      var g = v.granger;
+      var gTxt = g && g.lag1_p != null ? fmtNum(g.lag1_p, 3) + " / " + fmtNum(g.lag2_p, 3) + " / " + fmtNum(g.lag3_p, 3) : "-";
+      var oos = v.out_of_sample;
+      var oosTxt = oos ? fmtNum(oos.hit_rate_pct, 1) + "% (n=" + oos.n + ", p=" + fmtNum(oos.binom_p_value, 3) + ")" : "표본 부족";
+      var rmseTxt = oos && oos.rmse_ratio != null ? fmtNum(oos.rmse_ratio, 3) : "-";
+      html += "<tr><td>" + escapeHtml(v.label) + "</td>" +
+        "<td>" + (v.contemporaneous.corr != null ? fmtNum(v.contemporaneous.corr, 3) : "-") + "</td>" +
+        "<td>" + betaCell("1m") + "</td><td>" + betaCell("2m") + "</td><td>" + betaCell("3m") + "</td>" +
+        "<td>" + gTxt + "</td><td>" + oosTxt + "</td><td>" + rmseTxt + "</td>" +
+        "<td><b class='" + (FXPRED_JUDGMENT_CLASS[v.judgment] || "") + "'>" + escapeHtml(v.judgment) + "</b></td></tr>";
+    });
+    html += "</tbody></table></div>";
+    el.innerHTML = html;
+  }
+
+  function buildFxPredVarTabs() {
+    var nav = document.getElementById("fxpred-var-tabs");
+    nav.innerHTML = "";
+    var fp = state.fxPredictors;
+    if (!fp) return;
+    var keys = Object.keys(fp.variables);
+    if (!state.fxPredVar || keys.indexOf(state.fxPredVar) === -1) state.fxPredVar = keys[0];
+    keys.forEach(function (key) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = fp.variables[key].label;
+      if (key === state.fxPredVar) btn.className = "active";
+      btn.addEventListener("click", function () {
+        state.fxPredVar = key;
+        Array.prototype.forEach.call(nav.querySelectorAll("button"), function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        renderFxPredCorrChart();
+      });
+      nav.appendChild(btn);
+    });
+  }
+
+  function renderFxPredCorrChart() {
+    var canvas = destroyFxChartById("fxpred-chart-corr");
+    var fp = state.fxPredictors;
+    if (!fp || !state.fxPredVar) { canvas.replaceWith(emptyMsg()); return; }
+    var fg = cssVar("--fg"), muted = cssVar("--muted"), border = cssVar("--border");
+    var v = fp.variables[state.fxPredVar];
+    var rc = v.rolling_corr_12m;
+    if (!rc || !rc.dates.length) { canvas.replaceWith(emptyMsg()); return; }
+    var data = rc.dates.map(function (d, i) { return { x: d, y: rc.corr[i] }; });
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: {
+        datasets: [
+          { label: "원/달러 vs " + v.label + " (12개월 롤링 상관계수)", data: data, borderColor: cssVar("--accent"), backgroundColor: cssVar("--accent"), pointRadius: 0, borderWidth: 2 },
+          { label: "0 기준선", data: [{ x: rc.dates[0], y: 0 }, { x: rc.dates[rc.dates.length - 1], y: 0 }], borderColor: muted, borderDash: [5, 4], borderWidth: 1, pointRadius: 0 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: true, labels: { color: fg, boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { type: "time", time: { unit: "month", displayFormats: { month: "yyyy-MM" } }, ticks: { color: muted, maxTicksLimit: 10, font: { size: 10 } }, grid: { color: border } },
+          y: { min: -1, max: 1, title: { display: true, text: "상관계수", color: muted, font: { size: 10 } }, ticks: { color: muted }, grid: { color: border } }
+        }
+      }
+    });
+    state.fxCharts.push(chart);
+  }
+
+  function renderFxPredBacktestTable() {
+    var el = document.getElementById("fxpred-backtest-table");
+    var fp = state.fxPredictors;
+    if (!fp) { el.innerHTML = ""; return; }
+    var vars = fp.variables;
+    var html = "<div style='overflow-x:auto;'><table class='market-table'><thead><tr><th>변수</th><th>상·하위 1/3 기준값</th><th>표본수</th><th>적중률</th>" +
+      "<th>평균 방향 수익률</th><th>평균/최악 역행폭</th><th>'항상 보유' 대비</th><th>이항검정 p값</th></tr></thead><tbody>";
+    Object.keys(vars).forEach(function (key) {
+      var v = vars[key];
+      var r = v.rule_backtest;
+      if (!r || !r.n) { html += "<tr><td>" + escapeHtml(v.label) + "</td><td colspan='7' class='muted'>표본 부족</td></tr>"; return; }
+      html += "<tr><td>" + escapeHtml(v.label) + (r.low_sample_caveat ? " <span class='muted'>(표본 30건 미만)</span>" : "") + "</td>" +
+        "<td>" + fmtNum(r.threshold_low, 4) + " / " + fmtNum(r.threshold_high, 4) + "</td>" +
+        "<td>" + r.n + "</td><td>" + fmtNum(r.hit_rate_pct, 1) + "%</td>" +
+        "<td>" + fmtNum(r.mean_directional_return_pct, 2) + "%</td>" +
+        "<td>" + (r.mean_adverse_excursion_pct != null ? fmtNum(r.mean_adverse_excursion_pct, 2) + "% / " + fmtNum(r.worst_adverse_excursion_pct, 2) + "%" : "-") + "</td>" +
+        "<td>" + (r.baseline_buy_and_hold_pct != null ? fmtNum(r.baseline_buy_and_hold_pct, 2) + "%" : "-") + "</td>" +
+        "<td>" + fmtNum(r.binom_p_value, 4) + "</td></tr>";
+    });
+    html += "</tbody></table></div>";
+    el.innerHTML = html;
+  }
+
+  function renderFxPredMultiTable() {
+    var el = document.getElementById("fxpred-multi-table");
+    var fp = state.fxPredictors;
+    if (!fp) { el.innerHTML = ""; return; }
+    var m = fp.multi_variable;
+    var oos = m.out_of_sample;
+    var html = "<div class='muted' style='margin-bottom:6px;'>선정 변수: " + m.selected_variables.map(function (k) { return escapeHtml(fp.variables[k] ? fp.variables[k].label : k); }).join(", ") +
+      " (" + escapeHtml(m.selection_method) + ")</div>";
+    if (!oos) {
+      html += "<div class='muted'>표본 부족으로 다중회귀 표본외 검정을 수행하지 못했습니다.</div>";
+      el.innerHTML = html;
+      return;
+    }
+    html += "<table class='market-table'><thead><tr><th>표본수</th><th>적중률</th><th>이항검정 p값</th><th>RMSE(모형)</th><th>RMSE(랜덤워크)</th><th>RMSE 비율</th></tr></thead><tbody>" +
+      "<tr><td>" + oos.n + "</td><td>" + fmtNum(oos.hit_rate_pct, 1) + "%</td><td>" + fmtNum(oos.binom_p_value, 4) + "</td>" +
+      "<td>" + fmtNum(oos.rmse_model, 5) + "</td><td>" + fmtNum(oos.rmse_naive_random_walk, 5) + "</td><td>" + fmtNum(oos.rmse_ratio, 4) + "</td></tr></tbody></table>";
+    el.innerHTML = html;
+  }
+
+  function renderFxPredMeta() {
+    var metaEl = document.getElementById("fxpred-meta");
+    var notEl = document.getElementById("fxpred-not-collected");
+    var fp = state.fxPredictors;
+    if (!fp) { metaEl.innerHTML = ""; notEl.innerHTML = ""; return; }
+    metaEl.innerHTML = "표본: " + fp.sample.start + " ~ " + fp.sample.end + " (" + fp.sample.n_months_krw + "개월) · 표본외 검정 학습 구간: " + fp.oos_train_window_months + "개월 롤링<br>" +
+      escapeHtml(fp.look_ahead_bias_note);
+    var nc = fp.candidate_variables_not_collected || {};
+    var parts = Object.keys(nc).map(function (k) { return "<li><b>" + escapeHtml(k) + "</b>: " + escapeHtml(nc[k]) + "</li>"; });
+    notEl.innerHTML = parts.length ? "<b>자동 수집 대상에서 제외한 후보</b><ul>" + parts.join("") + "</ul>" : "";
+  }
+
+  function renderFxPredTab() {
+    renderFxPredSummaryTable();
+    buildFxPredVarTabs();
+    renderFxPredCorrChart();
+    renderFxPredBacktestTable();
+    renderFxPredMultiTable();
+    renderFxPredMeta();
+  }
+
   function renderFxTab() {
     renderFxSummaryCards();
     buildFxPeriodTabs();
@@ -4643,6 +4823,7 @@
     renderFxRollingCharts();
     renderFxNotes();
     renderFxPosTab();
+    renderFxPredTab();
     renderFxPosJudgmentHistory();
   }
 

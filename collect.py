@@ -1642,6 +1642,13 @@ def main():
         if result.returncode != 0:
             print("경고: fx_position.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
 
+    fx_predictors_path = os.path.join(base_dir, "analysis", "fx_predictors.py")
+    if os.path.exists(fx_predictors_path):
+        print("\n=== analysis/fx_predictors.py 실행 ===")
+        result = subprocess.run([sys.executable, fx_predictors_path])
+        if result.returncode != 0:
+            print("경고: fx_predictors.py 실행 중 오류가 발생했습니다.", file=sys.stderr)
+
     export_path = os.path.join(base_dir, "export.py")
     if os.path.exists(export_path):
         print("\n=== export.py 실행 ===")

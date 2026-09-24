@@ -1,4 +1,4 @@
-"""'환율' 탭을 위한 일별 환율 수집.
+"""'환율' 탭을 위한 일별 환율 수집 + '선행지표 예측력 검정'용 후보 변수 수집.
 
 ECOS(원/달러·원/100엔·원/유로 매매기준율)와 FRED(달러지수 광의·엔/달러·
 달러/유로)를 일별로 받아 data/fx_daily.csv(긴 형식: 날짜|통화쌍|값|출처)에
@@ -12,6 +12,19 @@ ECOS(원/달러·원/100엔·원/유로 매매기준율)와 FRED(달러지수 �
 데이터 소스가 이전 값을 그대로 반복하는 경우가 있어) 경고만 남기고 그대로
 저장한다(ECOS/FRED 모두 vintage 정보가 없어 보류 대신 기록만 함 — 기존
 Eurostat/ECOS 정책값과 동일한 원칙).
+
+추가로 '선행지표 예측력 검정'(analysis/fx_predictors.py)이 쓰는 후보 변수
+(브렌트유·구리·위안화·VIX·한국 수출액·경상수지)도 같은 증분·반복값 원칙으로
+수집해 data/fx_predictors_raw.csv(긴 형식: 날짜|변수명|값|출처)에 저장한다.
+통화쌍이 아니라 원자재·환율·거시 변수가 섞여 있어 fx_daily.csv와는 다른
+파일에 둔다. 일간 변수(브렌트유·위안화·VIX)와 월간 변수(구리·수출액·
+경상수지)가 섞여 있으며, 날짜는 각 변수의 원래 주기 그대로 저장한다
+(월간 변수는 그 달 1일로 저장 — analysis/fx_predictors.py가 월별로만 쓴다).
+
+발틱운임지수(BDI)는 발틱거래소(Baltic Exchange) 유료 구독 데이터라 수집
+대상에서 제외했다. 무료 대체재로 상하이컨테이너운임지수(SCFI, 상하이해운
+거래소)를 확인했으나 로그인 후에만 수치가 보이는 유료성 페이지라 마찬가지로
+제외했다(작업보고서 참고).
 
 collect.py 흐름 끝에서 자동 실행된다.
 """
@@ -50,6 +63,30 @@ FRED_SERIES = {
 }
 ALL_PAIRS = list(ECOS_SERIES.keys()) + list(FRED_SERIES.keys())
 
+# ---- 선행지표 예측력 검정용 후보 변수 ----
+PREDICTOR_CSV_PATH = os.path.join(DATA_DIR, "fx_predictors_raw.csv")
+PREDICTOR_HEADER = ["날짜", "변수명", "값", "출처"]
+PREDICTOR_OBS_START = date(2021, 9, 1)
+
+FRED_PREDICTOR_DAILY = {
+    "브렌트유": ("DCOILBRENTEU", "https://fred.stlouisfed.org/series/DCOILBRENTEU"),
+    "위안화": ("DEXCHUS", "https://fred.stlouisfed.org/series/DEXCHUS"),
+    "VIX": ("VIXCLS", "https://fred.stlouisfed.org/series/VIXCLS"),
+    # forecast_collect.py도 DGS2를 모으지만 최근 760일(~25개월)만 유지하도록
+    # 설계돼 있어(시장금리-기준금리 스프레드 차트용) 표본외 검정에 필요한
+    # 36개월 이상의 전체 히스토리를 확보하려고 여기서 별도로 전체 기간 수집한다.
+    "미국국채2년": ("DGS2", "https://fred.stlouisfed.org/series/DGS2"),
+}
+FRED_PREDICTOR_MONTHLY = {
+    "구리": ("PCOPPUSDM", "https://fred.stlouisfed.org/series/PCOPPUSDM"),
+}
+ECOS_BOP_STAT_CODE = "301Y013"
+ECOS_PREDICTOR_MONTHLY = {
+    "한국수출액": ("110000", "https://ecos.bok.or.kr"),
+    "경상수지": ("000000", "https://ecos.bok.or.kr"),
+}
+ALL_PREDICTORS = list(FRED_PREDICTOR_DAILY.keys()) + list(FRED_PREDICTOR_MONTHLY.keys()) + list(ECOS_PREDICTOR_MONTHLY.keys())
+
 RESULTS = []
 
 
@@ -76,6 +113,36 @@ def write_daily_csv(rows):
 
 def last_date_for_pair(rows, pair):
     dates = [r["날짜"] for r in rows if r["통화쌍"] == pair]
+    return max(dates) if dates else None
+
+
+def next_month_start(d):
+    """d가 속한 달의 다음 달 1일. 월간 시리즈는 항상 그 달 1일로 오므로
+    (timedelta로 대충 30여 일을 더하면 FRED observation_start가 그 달 1일보다
+    뒤로 밀려 해당 달 관측치가 통째로 누락될 수 있어) 정확히 1일 단위로 옮긴다."""
+    if d.month == 12:
+        return date(d.year + 1, 1, 1)
+    return date(d.year, d.month + 1, 1)
+
+
+def read_predictor_csv():
+    if not os.path.exists(PREDICTOR_CSV_PATH):
+        return []
+    with open(PREDICTOR_CSV_PATH, encoding="utf-8-sig", newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def write_predictor_csv(rows):
+    rows_sorted = sorted(rows, key=lambda r: (r["변수명"], r["날짜"]))
+    with open(PREDICTOR_CSV_PATH, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=PREDICTOR_HEADER)
+        writer.writeheader()
+        for r in rows_sorted:
+            writer.writerow(r)
+
+
+def last_date_for_var(rows, name):
+    dates = [r["날짜"] for r in rows if r["변수명"] == name]
     return max(dates) if dates else None
 
 
@@ -144,6 +211,108 @@ def collect_fred_pairs(fred_key, existing_rows):
             log_result(f"FRED - {pair}", "성공", f"{n}건")
         except Exception as e:  # noqa: BLE001
             log_result(f"FRED - {pair}", "실패", str(e))
+    return added
+
+
+def collect_fred_predictor_daily(fred_key, existing_rows):
+    added = []
+    if not fred_key:
+        log_result("FRED 후보변수(일간)", "건너뜀", "FRED_API_KEY 없음")
+        return added
+    client = collect.FredClient(fred_key)
+    today = date.today()
+    for name, (series_id, source_url) in FRED_PREDICTOR_DAILY.items():
+        try:
+            last = last_date_for_var(existing_rows, name)
+            start = (datetime.strptime(last, "%Y-%m-%d").date() + timedelta(days=1)) if last else PREDICTOR_OBS_START
+            if start > today:
+                log_result(f"FRED - {name}", "성공", "0건(이미 최신)")
+                continue
+            values = client.latest_observations(series_id, start, today)
+            prev_val = None
+            if last:
+                prev_rows = [r for r in existing_rows if r["변수명"] == name and r["날짜"] == last]
+                if prev_rows:
+                    prev_val = float(prev_rows[0]["값"])
+            n = 0
+            for d in sorted(values.keys()):
+                v = float(values[d])
+                if prev_val is not None and v == prev_val:
+                    log_result(f"FRED - {name}", "반복값(참고)", f"{d}: {v} (직전과 동일, 그대로 저장)")
+                added.append({"날짜": d, "변수명": name, "값": str(round(v, 4)), "출처": source_url})
+                prev_val = v
+                n += 1
+            log_result(f"FRED - {name}", "성공", f"{n}건")
+        except Exception as e:  # noqa: BLE001
+            log_result(f"FRED - {name}", "실패", str(e))
+    return added
+
+
+def collect_fred_predictor_monthly(fred_key, existing_rows):
+    added = []
+    if not fred_key:
+        log_result("FRED 후보변수(월간)", "건너뜀", "FRED_API_KEY 없음")
+        return added
+    client = collect.FredClient(fred_key)
+    today = date.today()
+    for name, (series_id, source_url) in FRED_PREDICTOR_MONTHLY.items():
+        try:
+            last = last_date_for_var(existing_rows, name)
+            start = next_month_start(datetime.strptime(last, "%Y-%m-%d").date()) if last else PREDICTOR_OBS_START
+            if start > today:
+                log_result(f"FRED - {name}", "성공", "0건(이미 최신)")
+                continue
+            values = client.latest_observations(series_id, start, today)  # FRED가 월초 날짜로 월간 값을 내줌
+            prev_val = None
+            if last:
+                prev_rows = [r for r in existing_rows if r["변수명"] == name and r["날짜"] == last]
+                if prev_rows:
+                    prev_val = float(prev_rows[0]["값"])
+            n = 0
+            for d in sorted(values.keys()):
+                v = float(values[d])
+                if prev_val is not None and v == prev_val:
+                    log_result(f"FRED - {name}", "반복값(참고)", f"{d}: {v} (직전과 동일, 그대로 저장)")
+                added.append({"날짜": d, "변수명": name, "값": str(round(v, 4)), "출처": source_url})
+                prev_val = v
+                n += 1
+            log_result(f"FRED - {name}", "성공", f"{n}건")
+        except Exception as e:  # noqa: BLE001
+            log_result(f"FRED - {name}", "실패", str(e))
+    return added
+
+
+def collect_ecos_predictor_monthly(ecos_key, existing_rows):
+    added = []
+    if not ecos_key:
+        log_result("ECOS 후보변수", "건너뜀", "ECOS_API_KEY 없음")
+        return added
+    client = collect.EcosClient(ecos_key)
+    today = date.today()
+    for name, (item_code, source_url) in ECOS_PREDICTOR_MONTHLY.items():
+        try:
+            last = last_date_for_var(existing_rows, name)
+            start = next_month_start(datetime.strptime(last, "%Y-%m-%d").date()) if last else PREDICTOR_OBS_START
+            if start > today:
+                log_result(f"ECOS - {name}", "성공", "0건(이미 최신)")
+                continue
+            values = client.observations(ECOS_BOP_STAT_CODE, "M", start, today, [item_code])
+            prev_val = None
+            if last:
+                prev_rows = [r for r in existing_rows if r["변수명"] == name and r["날짜"] == last]
+                if prev_rows:
+                    prev_val = float(prev_rows[0]["값"])
+            n = 0
+            for d in sorted(values.keys()):
+                v = values[d]
+                if prev_val is not None and v == prev_val:
+                    log_result(f"ECOS - {name}", "반복값(참고)", f"{d.isoformat()}: {v} (직전과 동일, 그대로 저장)")
+                added.append({"날짜": d.isoformat(), "변수명": name, "값": str(round(v, 4)), "출처": source_url})
+                prev_val = v
+                n += 1
+            log_result(f"ECOS - {name}", "성공", f"{n}건")
+        except Exception as e:  # noqa: BLE001
+            log_result(f"ECOS - {name}", "실패", str(e))
     return added
 
 
@@ -216,6 +385,19 @@ def main():
     with open(JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
     print(f"=== {JSON_PATH} 생성 ===")
+
+    print("\n-- 선행지표 예측력 검정용 후보 변수 --")
+    existing_predictor_rows = read_predictor_csv()
+    print(f"기존 data/fx_predictors_raw.csv: {len(existing_predictor_rows)}행")
+    new_fred_daily = collect_fred_predictor_daily(fred_key, existing_predictor_rows)
+    new_fred_monthly = collect_fred_predictor_monthly(fred_key, existing_predictor_rows)
+    new_ecos_predictor = collect_ecos_predictor_monthly(ecos_key, existing_predictor_rows)
+    existing_predictor_keys = {(r["날짜"], r["변수명"]) for r in existing_predictor_rows}
+    all_new_predictor = new_fred_daily + new_fred_monthly + new_ecos_predictor
+    added_predictor = [r for r in all_new_predictor if (r["날짜"], r["변수명"]) not in existing_predictor_keys]
+    existing_predictor_rows.extend(added_predictor)
+    write_predictor_csv(existing_predictor_rows)
+    print(f"=== data/fx_predictors_raw.csv: 신규 {len(added_predictor)}행 추가, 총 {len(existing_predictor_rows)}행 ===")
 
     print("\n=== 수집 결과 요약 ===")
     for s, st, n in RESULTS:
