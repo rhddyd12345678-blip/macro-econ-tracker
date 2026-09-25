@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T22:08:37",
+  "generated_at": "2026-09-25T22:12:14",
   "monthly": {
     "원/달러": {
       "dates": [
@@ -31234,17 +31234,17 @@
     {
       "출처": "ECOS - 원/달러",
       "상태": "실패",
-      "비고": "ECOS API 오류: {'CODE': 'INFO-200', 'MESSAGE': '해당하는 데이터가 없습니다.'}"
+      "비고": "HTTPSConnectionPool(host='ecos.bok.or.kr', port=443): Max retries exceeded with url: /api/StatisticSearch/0M0FQXBCCV5FTXJEBFJ4/json/kr/1/6000/731Y001/D/20260924/20260925/0000001 (Caused by ConnectTimeoutError(<HTTPSConnection(host='ecos.bok.or.kr', port=443) at 0x7fd436b63e90>, 'Connection to ecos.bok.or.kr timed out. (connect timeout=30)'))"
     },
     {
       "출처": "ECOS - 원/100엔",
       "상태": "실패",
-      "비고": "ECOS API 오류: {'CODE': 'INFO-200', 'MESSAGE': '해당하는 데이터가 없습니다.'}"
+      "비고": "HTTPSConnectionPool(host='ecos.bok.or.kr', port=443): Max retries exceeded with url: /api/StatisticSearch/0M0FQXBCCV5FTXJEBFJ4/json/kr/1/6000/731Y001/D/20260924/20260925/0000002 (Caused by ConnectTimeoutError(<HTTPSConnection(host='ecos.bok.or.kr', port=443) at 0x7fd42fee7ad0>, 'Connection to ecos.bok.or.kr timed out. (connect timeout=30)'))"
     },
     {
       "출처": "ECOS - 원/유로",
       "상태": "실패",
-      "비고": "ECOS API 오류: {'CODE': 'INFO-200', 'MESSAGE': '해당하는 데이터가 없습니다.'}"
+      "비고": "HTTPSConnectionPool(host='ecos.bok.or.kr', port=443): Max retries exceeded with url: /api/StatisticSearch/0M0FQXBCCV5FTXJEBFJ4/json/kr/1/6000/731Y001/D/20260924/20260925/0000003 (Caused by ConnectTimeoutError(<HTTPSConnection(host='ecos.bok.or.kr', port=443) at 0x7fd42fd04d10>, 'Connection to ecos.bok.or.kr timed out. (connect timeout=30)'))"
     },
     {
       "출처": "FRED - 달러지수(광의)",

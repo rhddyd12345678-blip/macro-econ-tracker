@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T22:08:45",
+  "generated_at": "2026-09-25T22:13:20",
   "as_of": "2026-09-23",
   "sample": {
     "start": "2021-09-01",
@@ -15084,67 +15084,67 @@
       "date": "2026-10-02",
       "country": "미국",
       "indicator": "비농업고용",
-      "d_day": 8
+      "d_day": 7
     },
     {
       "date": "2026-10-02",
       "country": "미국",
       "indicator": "실업률",
-      "d_day": 8
+      "d_day": 7
     },
     {
       "date": "2026-10-02",
       "country": "일본",
       "indicator": "실업률",
-      "d_day": 8
+      "d_day": 7
     },
     {
       "date": "2026-10-02",
       "country": "한국",
       "indicator": "CPI 헤드라인",
-      "d_day": 8
+      "d_day": 7
     },
     {
       "date": "2026-10-02",
       "country": "한국",
       "indicator": "CPI 근원",
-      "d_day": 8
+      "d_day": 7
     },
     {
       "date": "2026-10-14",
       "country": "미국",
       "indicator": "CPI 헤드라인",
-      "d_day": 20
+      "d_day": 19
     },
     {
       "date": "2026-10-14",
       "country": "미국",
       "indicator": "CPI 근원",
-      "d_day": 20
+      "d_day": 19
     },
     {
       "date": "2026-10-16",
       "country": "한국",
       "indicator": "실업률",
-      "d_day": 22
+      "d_day": 21
     },
     {
       "date": "2026-10-22",
       "country": "한국",
       "indicator": "기준금리",
-      "d_day": 28
+      "d_day": 27
     },
     {
       "date": "2026-10-23",
       "country": "일본",
       "indicator": "CPI 헤드라인",
-      "d_day": 29
+      "d_day": 28
     },
     {
       "date": "2026-10-23",
       "country": "일본",
       "indicator": "CPI 근원",
-      "d_day": 29
+      "d_day": 28
     }
   ],
   "methodology_note": "이 데이터는 원/달러 환율의 과거 대비 위치와 과거 통계를 보여줄 뿐 향후 방향을 예측하지 않습니다. 단기 환율은 펀더멘털 모형이 단순 예측을 이기지 못한다는 연구 결과가 일반적이며, 고점·저점은 사후에만 확정됩니다. 표본은 제한적(2021-09~현재)이고 독립적인 국면은 이보다 훨씬 적습니다. 과거 최대 역행폭은 미래 손실의 상한이 아닙니다. 투자 판단과 그 결과는 본인 책임입니다."
