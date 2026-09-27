@@ -235,6 +235,29 @@ def parse_eurostat_directive(series_field):
 BOJ_MANUAL_PREFIX = "BOJ 공표자료"
 
 
+def _get_with_retry(session, url, params=None, timeout=30, max_retries=3):
+    """연결 타임아웃 등 전송 계층 오류에만 짧은 backoff로 재시도한다. HTTP
+    오류 상태코드(4xx/5xx)는 재시도하지 않고 응답 객체를 그대로 반환한다 —
+    FredClient의 vintage 조회처럼 호출부가 status_code를 직접 검사해 정상
+    흐름으로 처리하는 기존 로직이 있어, 여기서 raise_for_status를 먼저
+    걸면 그 로직이 깨진다(상태코드 판단·차단 판정은 항상 호출부 몫으로 남김).
+
+    2026-09-25·26 GitHub Actions 실행에서 ECOS API가 커넥션 타임아웃
+    (connect timeout=30s)으로 그 회차 전체에서 실패한 일이 있었는데(로컬
+    에서는 바로 재현 안 됨 — GitHub 실행기 IP 대역과 ECOS 사이의 일시적
+    네트워크 문제로 추정), 재시도가 없으면 이런 일시적 문제로도 해당 출처
+    데이터가 그 실행에서 통째로 빠진다. User-Agent 변경 같은 우회는 하지
+    않는다."""
+    last_exc = None
+    for attempt in range(max_retries):
+        try:
+            return session.get(url, params=params, timeout=timeout)
+        except requests.exceptions.RequestException as e:  # noqa: PERF203
+            last_exc = e
+            time.sleep(1 + attempt)
+    raise last_exc
+
+
 # ---------------------------------------------------------------------------
 # FRED API
 # ---------------------------------------------------------------------------
@@ -246,7 +269,7 @@ class FredClient:
 
     def _get(self, params):
         params = dict(params, api_key=self.api_key, file_type="json")
-        resp = self.session.get(FRED_BASE, params=params, timeout=30)
+        resp = _get_with_retry(self.session, FRED_BASE, params=params, timeout=30)
         time.sleep(0.1)
         return resp
 
@@ -375,7 +398,7 @@ class EcosClient:
             f"{ECOS_BASE}/StatisticSearch/{self.api_key}/json/kr/1/{count}/"
             f"{stat_code}/{cycle}/{_ecos_date(start, cycle)}/{_ecos_date(end, cycle)}/{parts}"
         )
-        resp = self.session.get(url, timeout=30)
+        resp = _get_with_retry(self.session, url, timeout=30)
         time.sleep(0.1)
         resp.raise_for_status()
         payload = resp.json()
@@ -417,7 +440,7 @@ class EstatClient:
             "cdTimeFrom": _estat_time_code(start),
             "cdTimeTo": _estat_time_code(end),
         }
-        resp = self.session.get(ESTAT_BASE, params=params, timeout=30)
+        resp = _get_with_retry(self.session, ESTAT_BASE, params=params, timeout=30)
         time.sleep(0.1)
         resp.raise_for_status()
         payload = resp.json()

@@ -39,6 +39,8 @@ import openpyxl  # noqa: E402
 import pandas as pd  # noqa: E402
 from dotenv import load_dotenv  # noqa: E402
 
+import collect  # noqa: E402  (_get_with_retry 재사용 — 연결 타임아웃 재시도)
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 CSV_PATH = os.path.join(DATA_DIR, "forecasts.csv")
@@ -65,6 +67,18 @@ IMF_COUNTRIES = {"한국": "KOR", "미국": "USA", "일본": "JPN", "독일": "D
 OECD_COUNTRIES = {"한국": "KOR", "미국": "USA", "일본": "JPN", "독일": "DEU", "프랑스": "FRA"}
 
 REQUEST_TIMEOUT = 30
+
+_SESSION = requests.Session()
+
+
+def _get(url, **kwargs):
+    """collect._get_with_retry로 연결 타임아웃 등 전송 계층 오류만 재시도한다
+    (HTTP 상태코드는 그대로 반환 — _is_blocked/raise_for_status 판정은 항상
+    호출부 몫). 2026-09-25·26 GitHub Actions 실행에서 ECOS API가 이런 이유로
+    통째로 실패한 적이 있어 추가했다."""
+    kwargs.setdefault("timeout", REQUEST_TIMEOUT)
+    return collect._get_with_retry(_SESSION, url, **kwargs)
+
 
 RESULTS = []  # [(출처, 상태, 비고)] — 상태: 성공/실패/차단/건너뜀
 
@@ -114,7 +128,7 @@ IMF_INDICATORS = {
 def collect_imf():
     rows = []
     try:
-        meta_resp = requests.get("https://www.imf.org/external/datamapper/api/v1/indicators", timeout=REQUEST_TIMEOUT)
+        meta_resp = _get("https://www.imf.org/external/datamapper/api/v1/indicators", timeout=REQUEST_TIMEOUT)
         if _is_blocked(meta_resp):
             log_result("IMF WEO DataMapper", "차단", f"HTTP {meta_resp.status_code}")
             return rows
@@ -132,7 +146,7 @@ def collect_imf():
     for label, code in IMF_INDICATORS.items():
         try:
             url = f"https://www.imf.org/external/datamapper/api/v1/{code}"
-            resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+            resp = _get(url, timeout=REQUEST_TIMEOUT)
             if _is_blocked(resp):
                 log_result(f"IMF WEO - {label}", "차단", f"HTTP {resp.status_code}")
                 continue
@@ -182,7 +196,7 @@ _OECD_VERSION_RE = re.compile(r'version="(\d+)\.(\d+)"')
 
 def _oecd_latest_version():
     url = "https://sdmx.oecd.org/public/rest/dataflow/OECD.ECO.MAD/DSD_EO@DF_EO/all?references=none&detail=allstubs"
-    resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+    resp = _get(url, timeout=REQUEST_TIMEOUT)
     if _is_blocked(resp):
         raise RuntimeError(f"차단됨 (HTTP {resp.status_code})")
     resp.raise_for_status()
@@ -214,7 +228,7 @@ def collect_oecd():
                     f"https://sdmx.oecd.org/public/rest/data/OECD.ECO.MAD,DSD_EO@DF_EO,{version}/"
                     f"{iso3}.{measure}.A?startPeriod={date.today().year - 1}&dimensionAtObservation=AllDimensions&format=jsondata"
                 )
-                resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+                resp = _get(url, timeout=REQUEST_TIMEOUT)
                 if resp.status_code == 404:
                     continue  # 해당 국가·지표 조합이 없을 수 있음(정상)
                 if _is_blocked(resp):
@@ -275,7 +289,7 @@ SEP_ROW_LABELS = {
 def collect_fed_sep():
     rows = []
     try:
-        cal_resp = requests.get("https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm", timeout=REQUEST_TIMEOUT)
+        cal_resp = _get("https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm", timeout=REQUEST_TIMEOUT)
         if _is_blocked(cal_resp):
             log_result("연준 SEP", "차단", f"캘린더 페이지 HTTP {cal_resp.status_code}")
             return rows
@@ -287,7 +301,7 @@ def collect_fed_sep():
             return rows
         latest = past_dates[-1]
         sep_url = f"https://www.federalreserve.gov/monetarypolicy/fomcprojtabl{latest}.htm"
-        resp = requests.get(sep_url, timeout=REQUEST_TIMEOUT)
+        resp = _get(sep_url, timeout=REQUEST_TIMEOUT)
         if _is_blocked(resp):
             log_result("연준 SEP", "차단", f"HTTP {resp.status_code}")
             return rows
@@ -373,7 +387,7 @@ def collect_ecb_projections():
     rows = []
     index_url = "https://www.ecb.europa.eu/press/projections/html/index.en.html"
     try:
-        resp = requests.get(index_url, timeout=REQUEST_TIMEOUT)
+        resp = _get(index_url, timeout=REQUEST_TIMEOUT)
         if _is_blocked(resp):
             log_result("ECB staff projections", "차단", f"HTTP {resp.status_code}")
             return rows
@@ -393,7 +407,7 @@ def collect_ecb_projections():
     )
 
     try:
-        xresp = requests.get(xlsx_url, timeout=REQUEST_TIMEOUT)
+        xresp = _get(xlsx_url, timeout=REQUEST_TIMEOUT)
         if _is_blocked(xresp):
             log_result("ECB staff projections", "차단", f"Excel HTTP {xresp.status_code}")
             return rows
@@ -460,7 +474,7 @@ def collect_philly_fed_spf():
     for label, (fname, col_this, col_next) in SPF_FILES.items():
         url = SPF_BASE + fname
         try:
-            resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+            resp = _get(url, timeout=REQUEST_TIMEOUT)
             if _is_blocked(resp):
                 log_result(f"필라델피아 연준 SPF - {label}", "차단", f"HTTP {resp.status_code}")
                 continue
@@ -525,7 +539,7 @@ def collect_ecb_spf():
     rows = []
     url = "https://data-api.ecb.europa.eu/service/data/SPF/Q.U2.HICP.POINT.P1Y0?format=csvdata"
     try:
-        resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+        resp = _get(url, timeout=REQUEST_TIMEOUT)
         if _is_blocked(resp):
             log_result("ECB SPF", "차단", "data-api.ecb.europa.eu WAF 차단 — forecasts_manual.csv에 수동 입력 필요")
             return rows
@@ -552,7 +566,7 @@ def collect_ny_fed_sme():
     """다음 FOMC 목표금리 확률분포(구간별 %)와 올해·내년 연말 목표금리 중간값
     (path of modes 중위수)을 가장 최근 공개된 SME 데이터 파일에서 뽑는다."""
     try:
-        idx_resp = requests.get(SME_INDEX_URL, timeout=REQUEST_TIMEOUT)
+        idx_resp = _get(SME_INDEX_URL, timeout=REQUEST_TIMEOUT)
         if _is_blocked(idx_resp):
             log_result("뉴욕연준 SME", "차단", f"HTTP {idx_resp.status_code}")
             return None
@@ -570,7 +584,7 @@ def collect_ny_fed_sme():
     file_url = "https://www.newyorkfed.org" + file_path
 
     try:
-        resp = requests.get(file_url, timeout=REQUEST_TIMEOUT)
+        resp = _get(file_url, timeout=REQUEST_TIMEOUT)
         if _is_blocked(resp) or "spreadsheet" not in (resp.headers.get("Content-Type") or ""):
             log_result("뉴욕연준 SME", "차단", f"HTTP {resp.status_code}, 파일을 받지 못함")
             return None
@@ -675,7 +689,7 @@ def collect_ecos_market_rates(ecos_key):
     for label, item_code in ECOS_MARKET_SERIES.items():
         try:
             url = f"https://ecos.bok.or.kr/api/StatisticSearch/{ecos_key}/json/kr/1/1000/817Y002/D/{start}/{end}/{item_code}"
-            resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+            resp = _get(url, timeout=REQUEST_TIMEOUT)
             if _is_blocked(resp):
                 log_result(f"ECOS - {label}", "차단", f"HTTP {resp.status_code}")
                 continue
@@ -731,7 +745,7 @@ def collect_fred_market_rates(fred_key):
                 "observation_start": start,
                 "observation_end": end,
             }
-            resp = requests.get(url, params=params, timeout=REQUEST_TIMEOUT)
+            resp = _get(url, params=params, timeout=REQUEST_TIMEOUT)
             if _is_blocked(resp):
                 log_result(f"FRED - {label}", "차단", f"HTTP {resp.status_code}")
                 continue
