@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T22:07:51",
+  "generated_at": "2026-09-28T22:08:16",
   "sample": {
     "start": "2021-09-01",
     "end": "2026-08-01",
@@ -249,7 +249,7 @@
         "worst_adverse_excursion_pct": -6.605,
         "threshold_high": 0.0256,
         "threshold_low": -0.0472,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "브렌트유": {
@@ -490,16 +490,16 @@
         ]
       },
       "rule_backtest": {
-        "n": 39,
-        "hit_rate_pct": 56.4,
-        "mean_directional_return_pct": 0.177,
-        "binom_p_value": 0.5224,
+        "n": 40,
+        "hit_rate_pct": 55.0,
+        "mean_directional_return_pct": 0.128,
+        "binom_p_value": 0.6358,
         "low_sample_caveat": false,
-        "mean_adverse_excursion_pct": -1.565,
+        "mean_adverse_excursion_pct": -1.596,
         "worst_adverse_excursion_pct": -6.975,
         "threshold_high": 0.0376,
         "threshold_low": -0.0426,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "구리": {
@@ -744,7 +744,7 @@
         "worst_adverse_excursion_pct": -5.693,
         "threshold_high": 0.0293,
         "threshold_low": -0.0086,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "위안화": {
@@ -985,16 +985,16 @@
         ]
       },
       "rule_backtest": {
-        "n": 39,
-        "hit_rate_pct": 46.2,
-        "mean_directional_return_pct": -0.294,
-        "binom_p_value": 0.7493,
+        "n": 40,
+        "hit_rate_pct": 47.5,
+        "mean_directional_return_pct": -0.242,
+        "binom_p_value": 0.8746,
         "low_sample_caveat": false,
-        "mean_adverse_excursion_pct": -2.141,
+        "mean_adverse_excursion_pct": -2.102,
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 0.0027,
         "threshold_low": -0.0031,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "VIX": {
@@ -1235,16 +1235,16 @@
         ]
       },
       "rule_backtest": {
-        "n": 39,
-        "hit_rate_pct": 41.0,
-        "mean_directional_return_pct": -0.884,
-        "binom_p_value": 0.3368,
+        "n": 40,
+        "hit_rate_pct": 42.5,
+        "mean_directional_return_pct": -0.817,
+        "binom_p_value": 0.4296,
         "low_sample_caveat": false,
-        "mean_adverse_excursion_pct": -2.275,
+        "mean_adverse_excursion_pct": -2.233,
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 0.0538,
         "threshold_low": -0.0738,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "한국수출액YoY": {
@@ -1434,7 +1434,7 @@
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 8.8243,
         "threshold_low": -0.6076,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "경상수지": {
@@ -1679,7 +1679,7 @@
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 3290.2,
         "threshold_low": -1696.1,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "미국국채2년": {
@@ -1929,7 +1929,7 @@
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 0.1378,
         "threshold_low": -0.0314,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     },
     "한미정책금리차": {
@@ -2166,16 +2166,16 @@
         ]
       },
       "rule_backtest": {
-        "n": 58,
-        "hit_rate_pct": 53.4,
-        "mean_directional_return_pct": 0.104,
-        "binom_p_value": 0.694,
+        "n": 59,
+        "hit_rate_pct": 52.5,
+        "mean_directional_return_pct": 0.072,
+        "binom_p_value": 0.7948,
         "low_sample_caveat": false,
-        "mean_adverse_excursion_pct": -1.589,
+        "mean_adverse_excursion_pct": -1.61,
         "worst_adverse_excursion_pct": -6.975,
         "threshold_high": 0.0,
         "threshold_low": 0.0,
-        "baseline_buy_and_hold_pct": 0.345
+        "baseline_buy_and_hold_pct": 0.31
       }
     }
   },
