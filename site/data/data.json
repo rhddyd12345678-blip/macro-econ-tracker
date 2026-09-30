@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T22:08:49",
+  "generated_at": "2026-09-30T22:08:27",
   "indicators": [
     {
       "country": "미국",
@@ -14777,6 +14777,14 @@
       "indicator": "CPI 근원",
       "value": 1.7,
       "release_date": "2026-09-18",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "value": 3.0076,
+      "release_date": "2026-09-30",
       "freq": "월간"
     }
   ]

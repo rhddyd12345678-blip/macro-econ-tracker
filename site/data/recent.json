@@ -11,6 +11,12 @@
       "indicator": "CPI 근원",
       "date": "2026-08-01",
       "added_date": "2026-09-18"
+    },
+    {
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "date": "2026-08-01",
+      "added_date": "2026-09-30"
     }
   ]
 }
