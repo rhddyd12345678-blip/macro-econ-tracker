@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T22:08:27",
+  "generated_at": "2026-10-01T22:07:59",
   "indicators": [
     {
       "country": "미국",
@@ -14785,6 +14785,54 @@
       "indicator": "PCE 근원",
       "value": 3.0076,
       "release_date": "2026-09-30",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "미국",
+      "indicator": "WTI",
+      "value": 97.31,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "미국",
+      "indicator": "국채10년",
+      "value": 4.99,
+      "release_date": "2026-10-01",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "독일",
+      "indicator": "실업률",
+      "value": 4.0,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "독일",
+      "indicator": "브렌트",
+      "value": 114.08,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "프랑스",
+      "indicator": "실업률",
+      "value": 8.2,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "프랑스",
+      "indicator": "브렌트",
+      "value": 114.08,
+      "release_date": null,
       "freq": "월간"
     }
   ]

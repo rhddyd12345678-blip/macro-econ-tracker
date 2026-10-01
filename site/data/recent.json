@@ -17,6 +17,42 @@
       "indicator": "PCE 근원",
       "date": "2026-08-01",
       "added_date": "2026-09-30"
+    },
+    {
+      "country": "미국",
+      "indicator": "WTI",
+      "date": "2026-09-01",
+      "added_date": "2026-10-01"
+    },
+    {
+      "country": "미국",
+      "indicator": "국채10년",
+      "date": "2026-09-01",
+      "added_date": "2026-10-01"
+    },
+    {
+      "country": "독일",
+      "indicator": "실업률",
+      "date": "2026-08-01",
+      "added_date": "2026-10-01"
+    },
+    {
+      "country": "독일",
+      "indicator": "브렌트",
+      "date": "2026-09-01",
+      "added_date": "2026-10-01"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "실업률",
+      "date": "2026-08-01",
+      "added_date": "2026-10-01"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "브렌트",
+      "date": "2026-09-01",
+      "added_date": "2026-10-01"
     }
   ]
 }
