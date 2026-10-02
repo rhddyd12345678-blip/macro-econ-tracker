@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T22:07:59",
+  "generated_at": "2026-10-02T22:08:01",
   "indicators": [
     {
       "country": "미국",
@@ -14832,6 +14832,54 @@
       "country": "프랑스",
       "indicator": "브렌트",
       "value": 114.08,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "미국",
+      "indicator": "비농업고용",
+      "value": 159044.0,
+      "release_date": "2026-10-02",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "미국",
+      "indicator": "실업률",
+      "value": 4.2,
+      "release_date": "2026-10-02",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "독일",
+      "indicator": "HICP 헤드라인",
+      "value": 3.3,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "독일",
+      "indicator": "HICP 근원",
+      "value": 2.5,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "프랑스",
+      "indicator": "HICP 헤드라인",
+      "value": 3.4,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "프랑스",
+      "indicator": "HICP 근원",
+      "value": 1.7,
       "release_date": null,
       "freq": "월간"
     }

@@ -53,6 +53,42 @@
       "indicator": "브렌트",
       "date": "2026-09-01",
       "added_date": "2026-10-01"
+    },
+    {
+      "country": "미국",
+      "indicator": "비농업고용",
+      "date": "2026-09-01",
+      "added_date": "2026-10-02"
+    },
+    {
+      "country": "미국",
+      "indicator": "실업률",
+      "date": "2026-09-01",
+      "added_date": "2026-10-02"
+    },
+    {
+      "country": "독일",
+      "indicator": "HICP 헤드라인",
+      "date": "2026-09-01",
+      "added_date": "2026-10-02"
+    },
+    {
+      "country": "독일",
+      "indicator": "HICP 근원",
+      "date": "2026-09-01",
+      "added_date": "2026-10-02"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "HICP 헤드라인",
+      "date": "2026-09-01",
+      "added_date": "2026-10-02"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "HICP 근원",
+      "date": "2026-09-01",
+      "added_date": "2026-10-02"
     }
   ]
 }
