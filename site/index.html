@@ -1085,6 +1085,7 @@
     indicators: [],
     observations: [],
     events: [],
+    rateEvents: [],
     recent: [],
     analysis: null,
     forecasts: null,
@@ -1172,6 +1173,42 @@
       return r.json();
     });
   }
+  function loadText(path) {
+    return fetch(path).then(function (r) {
+      if (!r.ok) throw new Error(path + " 로드 실패 (" + r.status + ")");
+      return r.text();
+    });
+  }
+  // 그래프 세로 이벤트선용 CSV(날짜,국가,제목,설명). 쉼표가 포함된 필드는
+  // 큰따옴표로 감싸는 것을 지원하는 최소한의 RFC4180식 파서.
+  function parseCsvLine(line) {
+    var out = [], cur = "", inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+      if (inQuotes) {
+        if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+        else if (ch === '"') { inQuotes = false; }
+        else { cur += ch; }
+      } else {
+        if (ch === '"') inQuotes = true;
+        else if (ch === ",") { out.push(cur); cur = ""; }
+        else cur += ch;
+      }
+    }
+    out.push(cur);
+    return out;
+  }
+  function parseEventsCsv(text) {
+    var lines = text.split(/\r?\n/).filter(function (l) { return l.length > 0; });
+    if (!lines.length) return [];
+    var header = parseCsvLine(lines[0]);
+    return lines.slice(1).map(function (line) {
+      var cols = parseCsvLine(line);
+      var row = {};
+      header.forEach(function (h, i) { row[h] = cols[i] !== undefined ? cols[i] : ""; });
+      return { date: row["날짜"], country: row["국가"], title: row["제목"], desc: row["설명"] };
+    }).filter(function (e) { return !!e.date; });
+  }
 
   Promise.all([
     loadJSON("data/data.json"),
@@ -1182,13 +1219,15 @@
     loadJSON("data/fx.json").catch(function () { return null; }),
     loadJSON("data/fx_analysis.json").catch(function () { return null; }),
     loadJSON("data/fx_position.json").catch(function () { return null; }),
-    loadJSON("data/fx_predictors.json").catch(function () { return null; })
+    loadJSON("data/fx_predictors.json").catch(function () { return null; }),
+    loadText("data/events.csv").catch(function () { return ""; })
   ]).then(function (results) {
     var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
     var fx = results[5], fxAnalysis = results[6], fxPosition = results[7], fxPredictors = results[8];
     state.indicators = data.indicators || [];
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
+    state.rateEvents = parseEventsCsv(results[9] || "");
     state.recent = recent.entries || recent.events || [];
     state.analysis = analysis;
     state.fx = fx;
@@ -1755,7 +1794,10 @@
     var chart = new Chart(c.canvas.getContext("2d"), {
       type: "line",
       data: { datasets: datasets },
-      options: baseOptions(unit, { legend: datasets.length > 1 })
+      options: baseOptions(unit, {
+        legend: datasets.length > 1,
+        events: state.rateEvents.filter(function (e) { return e.country === country; })
+      })
     });
     state.charts.push(chart);
   }
@@ -1768,6 +1810,49 @@
   }
 
   var AXIS_MIN = "2021-09-01";
+
+  // 금리 전환 시점 등을 세로 점선 + 짧은 라벨로 표시하는 Chart.js 플러그인.
+  // data/events.csv(사용자 편집)에서 읽은 이벤트를 쓰며, 이벤트가 없는
+  // 차트에는 아무 영향을 주지 않는다.
+  function shortEventLabel(title) {
+    return (title || "").replace(/^(한국|미국|일본|독일|프랑스)\s*/, "").replace(/^금리\s*/, "");
+  }
+  var EventLinesPlugin = {
+    id: "eventLines",
+    afterDraw: function (chart) {
+      var popts = (chart.options.plugins && chart.options.plugins.eventLines) || {};
+      var events = popts.events || [];
+      if (!events.length) return;
+      var xScale = chart.scales.x;
+      if (!xScale) return;
+      var area = chart.chartArea;
+      var ctx = chart.ctx;
+      var muted = cssVar("--muted");
+      ctx.save();
+      ctx.font = "9px sans-serif";
+      events.forEach(function (e) {
+        var px = xScale.getPixelForValue(e.date);
+        if (!isFinite(px) || px < area.left || px > area.right) return;
+        ctx.strokeStyle = muted;
+        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(px, area.top);
+        ctx.lineTo(px, area.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = muted;
+        ctx.textBaseline = "top";
+        var label = e.shortLabel || "";
+        var tw = ctx.measureText(label).width;
+        var tx = px + 3;
+        if (tx + tw > area.right) tx = px - 3 - tw;
+        ctx.fillText(label, tx, area.top + 2);
+      });
+      ctx.restore();
+    }
+  };
+  Chart.register(EventLinesPlugin);
 
   function baseOptions(unit, opts) {
     opts = opts || {};
@@ -1783,6 +1868,9 @@
           callbacks: { label: tooltipLabel(unit) },
           titleColor: fg, bodyColor: fg,
           backgroundColor: cssVar("--card-bg"), borderColor: border, borderWidth: 1
+        },
+        eventLines: {
+          events: (opts.events || []).map(function (e) { return { date: e.date, shortLabel: shortEventLabel(e.title) }; })
         }
       },
       scales: {
