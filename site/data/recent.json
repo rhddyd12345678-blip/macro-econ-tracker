@@ -89,6 +89,18 @@
       "indicator": "HICP 근원",
       "date": "2026-09-01",
       "added_date": "2026-10-02"
+    },
+    {
+      "country": "한국",
+      "indicator": "CPI 헤드라인",
+      "date": "2026-09-01",
+      "added_date": "2026-10-04"
+    },
+    {
+      "country": "한국",
+      "indicator": "CPI 근원",
+      "date": "2026-09-01",
+      "added_date": "2026-10-04"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T22:08:01",
+  "generated_at": "2026-10-04T02:53:02",
   "indicators": [
     {
       "country": "미국",
@@ -14881,6 +14881,22 @@
       "indicator": "HICP 근원",
       "value": 1.7,
       "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "한국",
+      "indicator": "CPI 헤드라인",
+      "value": 2.88,
+      "release_date": "2026-10-02",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "한국",
+      "indicator": "CPI 근원",
+      "value": 2.73,
+      "release_date": "2026-10-02",
       "freq": "월간"
     }
   ]
