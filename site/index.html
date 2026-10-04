@@ -1467,7 +1467,8 @@
       ctx.save();
       ctx.font = "9px sans-serif";
       events.forEach(function (e) {
-        var px = xScale.getPixelForValue(e.date);
+        // time 축은 문자열을 그대로 받으면 NaN이 되므로 축 어댑터로 먼저 파싱한다.
+        var px = xScale.getPixelForValue(xScale.parse(e.date));
         if (!isFinite(px) || px < area.left || px > area.right) return;
         ctx.strokeStyle = muted;
         ctx.setLineDash([4, 3]);
