@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T22:08:50",
+  "generated_at": "2026-10-05T22:09:05",
   "as_of": "2026-10-02",
   "sample": {
     "start": "2021-09-01",
@@ -3909,7 +3909,12 @@
         "2026-09-18",
         "2026-09-21",
         "2026-09-22",
-        "2026-09-23"
+        "2026-09-23",
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-02"
       ],
       "krw_usd_index": [
         100.0,
@@ -5110,7 +5115,12 @@
         118.705,
         119.006,
         119.049,
-        116.959
+        116.959,
+        116.271,
+        116.959,
+        116.821,
+        116.589,
+        116.925
       ],
       "dollar_index_index": [
         100.0,
@@ -6311,7 +6321,12 @@
         105.883,
         105.784,
         105.954,
-        106.418
+        106.418,
+        106.93,
+        107.226,
+        107.173,
+        107.898,
+        107.541
       ],
       "won_strength_index": [
         100.0,
@@ -7512,33 +7527,38 @@
         112.11,
         112.499,
         112.359,
-        109.906
+        109.906,
+        108.735,
+        109.077,
+        109.003,
+        108.055,
+        108.726
       ]
     },
     "contributions": {
       "1m": {
-        "start_date": "2026-08-24",
-        "end_date": "2026-09-23",
-        "total_pct": -1.706,
-        "dollar_factor_pct": 1.519,
-        "won_factor_pct": -3.177,
-        "dollar_factor_share_of_log": -0.876
+        "start_date": "2026-09-02",
+        "end_date": "2026-10-02",
+        "total_pct": -0.781,
+        "dollar_factor_pct": 2.409,
+        "won_factor_pct": -3.115,
+        "dollar_factor_share_of_log": -3.036
       },
       "3m": {
-        "start_date": "2026-06-23",
-        "end_date": "2026-09-23",
-        "total_pct": -11.441,
-        "dollar_factor_pct": -0.775,
-        "won_factor_pct": -10.749,
-        "dollar_factor_share_of_log": 0.064
+        "start_date": "2026-07-02",
+        "end_date": "2026-10-02",
+        "total_pct": -12.532,
+        "dollar_factor_pct": 0.576,
+        "won_factor_pct": -13.033,
+        "dollar_factor_share_of_log": -0.043
       },
       "6m": {
-        "start_date": "2026-03-23",
-        "end_date": "2026-09-23",
-        "total_pct": -9.024,
-        "dollar_factor_pct": 0.15,
-        "won_factor_pct": -9.16,
-        "dollar_factor_share_of_log": -0.016
+        "start_date": "2026-04-02",
+        "end_date": "2026-10-02",
+        "total_pct": -9.829,
+        "dollar_factor_pct": 0.732,
+        "won_factor_pct": -10.484,
+        "dollar_factor_share_of_log": -0.07
       }
     }
   },
@@ -7846,9 +7866,9 @@
         0.537,
         0.65,
         0.697,
-        0.685
+        0.686
       ],
-      "latest": 0.685
+      "latest": 0.686
     }
   },
   "volatility": {
@@ -15140,67 +15160,67 @@
       "date": "2026-10-14",
       "country": "미국",
       "indicator": "CPI 헤드라인",
-      "d_day": 10
+      "d_day": 9
     },
     {
       "date": "2026-10-14",
       "country": "미국",
       "indicator": "CPI 근원",
-      "d_day": 10
+      "d_day": 9
     },
     {
       "date": "2026-10-16",
       "country": "한국",
       "indicator": "실업률",
-      "d_day": 12
+      "d_day": 11
     },
     {
       "date": "2026-10-22",
       "country": "한국",
       "indicator": "기준금리",
+      "d_day": 17
+    },
+    {
+      "date": "2026-10-23",
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
       "d_day": 18
     },
     {
       "date": "2026-10-23",
       "country": "일본",
-      "indicator": "CPI 헤드라인",
-      "d_day": 19
-    },
-    {
-      "date": "2026-10-23",
-      "country": "일본",
       "indicator": "CPI 근원",
-      "d_day": 19
+      "d_day": 18
     },
     {
       "date": "2026-10-28",
       "country": "미국",
       "indicator": "정책금리(상단)",
-      "d_day": 24
+      "d_day": 23
     },
     {
       "date": "2026-10-30",
       "country": "일본",
       "indicator": "정책금리",
-      "d_day": 26
+      "d_day": 25
     },
     {
       "date": "2026-10-30",
       "country": "일본",
       "indicator": "실업률",
-      "d_day": 26
+      "d_day": 25
     },
     {
       "date": "2026-11-03",
       "country": "한국",
       "indicator": "CPI 헤드라인",
-      "d_day": 30
+      "d_day": 29
     },
     {
       "date": "2026-11-03",
       "country": "한국",
       "indicator": "CPI 근원",
-      "d_day": 30
+      "d_day": 29
     }
   ],
   "methodology_note": "이 데이터는 원/달러 환율의 과거 대비 위치와 과거 통계를 보여줄 뿐 향후 방향을 예측하지 않습니다. 단기 환율은 펀더멘털 모형이 단순 예측을 이기지 못한다는 연구 결과가 일반적이며, 고점·저점은 사후에만 확정됩니다. 표본은 제한적(2021-09~현재)이고 독립적인 국면은 이보다 훨씬 적습니다. 과거 최대 역행폭은 미래 손실의 상한이 아닙니다. 투자 판단과 그 결과는 본인 책임입니다."
