@@ -183,6 +183,12 @@
 2026-08-15,필라델피아 연준(SPF),설문컨센서스,미국,소비자물가상승률(CPI),2027,2.33,https://www.philadelphiafed.org/surveys-and-data/data-files
 2026-08-15,필라델피아 연준(SPF),설문컨센서스,미국,실업률,2026,4.275,https://www.philadelphiafed.org/surveys-and-data/data-files
 2026-08-15,필라델피아 연준(SPF),설문컨센서스,미국,실업률,2027,4.3,https://www.philadelphiafed.org/surveys-and-data/data-files
+2026-09-01,FRED,시장가격,미국,국채(2년),2026-09,4.6514,https://fred.stlouisfed.org/series/DGS2
+2026-09-01,FRED,시장가격,미국,국채(3개월),2026-09,3.9424,https://fred.stlouisfed.org/series/DTB3
+2026-09-01,FRED,시장가격,미국,기대인플레이션(10년),2026-09,2.351,https://fred.stlouisfed.org/series/T10YIE
+2026-09-01,FRED,시장가격,미국,기대인플레이션(5년),2026-09,2.3624,https://fred.stlouisfed.org/series/T5YIE
+2026-09-01,한국은행(ECOS),시장가격,한국,국고채(3년),2026-09,3.9905,https://ecos.bok.or.kr
+2026-09-01,한국은행(ECOS),시장가격,한국,통안증권(1년),2026-09,3.3777,https://ecos.bok.or.kr
 2026-09-10,ECB,기관전망,유로존,HICP상승률,2026,3.0,https://www.ecb.europa.eu/pub/pdf/other/ecb.projections202609_ecbstaff_annex~ce449cbf17.en.xlsx
 2026-09-10,ECB,기관전망,유로존,HICP상승률,2027,2.5,https://www.ecb.europa.eu/pub/pdf/other/ecb.projections202609_ecbstaff_annex~ce449cbf17.en.xlsx
 2026-09-10,ECB,기관전망,유로존,실질GDP성장률,2026,0.9,https://www.ecb.europa.eu/pub/pdf/other/ecb.projections202609_ecbstaff_annex~ce449cbf17.en.xlsx

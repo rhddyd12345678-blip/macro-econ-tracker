@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T22:08:21",
+  "generated_at": "2026-10-08T19:58:57",
   "indicators": [
     {
       "country": "미국",
@@ -287,7 +287,7 @@
       "indicator": "국채10년",
       "freq": "월간",
       "unit": "% (월평균)",
-      "source": "OECD"
+      "source": "한국은행"
     }
   ],
   "observations": [
@@ -14897,6 +14897,22 @@
       "indicator": "CPI 근원",
       "value": 2.73,
       "release_date": "2026-10-02",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "한국",
+      "indicator": "국채10년",
+      "value": 4.29,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "한국",
+      "indicator": "국채10년",
+      "value": 4.45,
+      "release_date": null,
       "freq": "월간"
     }
   ]
