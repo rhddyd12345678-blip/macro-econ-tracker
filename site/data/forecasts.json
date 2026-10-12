@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-11T00:39:02",
+  "generated_at": "2026-10-12T00:56:27",
   "rows": [
     {
       "발표일": "2024-08-01",
@@ -4118,6 +4118,426 @@
       "비고": ""
     },
     {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "한국",
+      "지표": "실질GDP성장률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 1.942,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "한국",
+      "지표": "실질GDP성장률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 2.63,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "미국",
+      "지표": "실질GDP성장률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 1.799,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "미국",
+      "지표": "실질GDP성장률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 1.95,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "일본",
+      "지표": "실질GDP성장률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 0.753,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "일본",
+      "지표": "실질GDP성장률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 0.61,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "독일",
+      "지표": "실질GDP성장률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 1.12,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "독일",
+      "지표": "실질GDP성장률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 0.656,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
+      "지표": "실질GDP성장률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 0.815,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
+      "지표": "실질GDP성장률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 0.652,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "한국",
+      "지표": "실업률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 2.707,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "한국",
+      "지표": "실업률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 2.81,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "미국",
+      "지표": "실업률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 4.338,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "미국",
+      "지표": "실업률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 4.357,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "일본",
+      "지표": "실업률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 2.72,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "일본",
+      "지표": "실업률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 2.737,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "독일",
+      "지표": "실업률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 3.763,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "독일",
+      "지표": "실업률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 3.956,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
+      "지표": "실업률",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 8.238,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
+      "지표": "실업률",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 8.326,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "한국",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 2.858,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "한국",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 2.872,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "미국",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 3.66,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "미국",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 3.66,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "일본",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 2.014,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "일본",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 1.403,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "독일",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 2.237,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "독일",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 2.237,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2027 (Economic Outlook 119)",
+      "전망치": 2.237,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
+      "발표일": "2026-10-12",
+      "기관": "OECD",
+      "종류": "기관전망",
+      "국가": "프랑스",
+      "지표": "단기금리(정책금리 근사)",
+      "대상기간": "2026 (Economic Outlook 119)",
+      "전망치": 2.237,
+      "응답비율_동결": null,
+      "응답비율_인상": null,
+      "응답비율_인하": null,
+      "출처URL": "https://www.oecd.org/en/publications/oecd-economic-outlook_16097408.html",
+      "비고": ""
+    },
+    {
       "발표일": "2026-08-25",
       "기관": "금융투자협회 BMSI",
       "종류": "설문컨센서스",
@@ -4945,11 +5365,11 @@
     }
   ],
   "sme": {
-    "survey_release_date": "2026-07-15",
+    "survey_release_date": "2026-09-02",
     "source_url": "https://www.newyorkfed.org/markets/survey_market_participants",
-    "file_url": "https://www.newyorkfed.org/medialibrary/media/markets/survey/2026/jul-2026-data.xlsx",
+    "file_url": "https://www.newyorkfed.org/medialibrary/media/markets/survey/2026/sep-2026-data.xlsx",
     "next_meeting": {
-      "meeting_date": "2026-09-16",
+      "meeting_date": "2026-10-28",
       "buckets": [
         {
           "range": "<= 2.50%",
@@ -4979,25 +5399,25 @@
           "range": "3.26 - 3.50%",
           "low": 0.0326,
           "high": 0.035,
-          "prob": 4.0
+          "prob": 2.0
         },
         {
           "range": "3.51 - 3.75%",
           "low": 0.0351,
           "high": 0.0375,
-          "prob": 61.0
+          "prob": 44.0
         },
         {
           "range": "3.76 - 4.00%",
           "low": 0.0376,
           "high": 0.04,
-          "prob": 29.0
+          "prob": 41.0
         },
         {
           "range": "4.01 - 4.25%",
           "low": 0.0401,
           "high": 0.0425,
-          "prob": 5.0
+          "prob": 12.0
         },
         {
           "range": "4.26 - 4.50%",
@@ -5026,9 +5446,39 @@
   },
   "collection_results": [
     {
-      "출처": "기관 전망 전체",
-      "상태": "건너뜀",
-      "비고": "월요일이 아님(주 1회만 조회)"
+      "출처": "IMF WEO DataMapper",
+      "상태": "성공",
+      "비고": "30건"
+    },
+    {
+      "출처": "OECD Economic Outlook",
+      "상태": "성공",
+      "비고": "30건 (dataflow v1.5)"
+    },
+    {
+      "출처": "연준 SEP",
+      "상태": "성공",
+      "비고": "10건 (2026-09-16 발표분)"
+    },
+    {
+      "출처": "ECB staff projections",
+      "상태": "성공",
+      "비고": "4건 (유로존 집계, 국가별 분해 없음)"
+    },
+    {
+      "출처": "필라델피아 연준 SPF",
+      "상태": "성공",
+      "비고": "4건"
+    },
+    {
+      "출처": "ECB SPF",
+      "상태": "차단",
+      "비고": "data-api.ecb.europa.eu WAF 차단 — forecasts_manual.csv에 수동 입력 필요"
+    },
+    {
+      "출처": "뉴욕연준 SME",
+      "상태": "성공",
+      "비고": "2026-09-02 발표분, 파일 sep-2026"
     },
     {
       "출처": "ECOS 시장금리",
