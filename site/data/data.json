@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T02:49:35",
+  "generated_at": "2026-10-14T00:50:11",
   "indicators": [
     {
       "country": "미국",
@@ -14912,6 +14912,22 @@
       "country": "한국",
       "indicator": "국채10년",
       "value": 4.45,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "독일",
+      "indicator": "국채10년",
+      "value": 3.47,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "프랑스",
+      "indicator": "국채10년",
+      "value": 4.44,
       "release_date": null,
       "freq": "월간"
     }

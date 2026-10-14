@@ -113,6 +113,18 @@
       "indicator": "국채10년",
       "date": "2026-09-01",
       "added_date": "2026-10-08"
+    },
+    {
+      "country": "독일",
+      "indicator": "국채10년",
+      "date": "2026-09-01",
+      "added_date": "2026-10-14"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "국채10년",
+      "date": "2026-09-01",
+      "added_date": "2026-10-14"
     }
   ]
 }
