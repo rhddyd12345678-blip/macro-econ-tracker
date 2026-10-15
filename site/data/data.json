@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T00:50:11",
+  "generated_at": "2026-10-15T00:16:30",
   "indicators": [
     {
       "country": "미국",
@@ -14929,6 +14929,22 @@
       "indicator": "국채10년",
       "value": 4.44,
       "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "미국",
+      "indicator": "CPI 헤드라인",
+      "value": 3.7172,
+      "release_date": "2026-10-14",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "미국",
+      "indicator": "CPI 근원",
+      "value": 2.5658,
+      "release_date": "2026-10-14",
       "freq": "월간"
     }
   ]
