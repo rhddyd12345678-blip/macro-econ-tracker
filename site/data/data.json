@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T00:16:30",
+  "generated_at": "2026-10-16T00:02:59",
   "indicators": [
     {
       "country": "미국",
@@ -14945,6 +14945,22 @@
       "indicator": "CPI 근원",
       "value": 2.5658,
       "release_date": "2026-10-14",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "일본",
+      "indicator": "실업률",
+      "value": 2.5,
+      "release_date": "2026-10-02",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "일본",
+      "indicator": "국채10년",
+      "value": 3.05,
+      "release_date": null,
       "freq": "월간"
     }
   ]

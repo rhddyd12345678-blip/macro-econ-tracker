@@ -137,6 +137,18 @@
       "indicator": "CPI 근원",
       "date": "2026-09-01",
       "added_date": "2026-10-15"
+    },
+    {
+      "country": "일본",
+      "indicator": "실업률",
+      "date": "2026-08-01",
+      "added_date": "2026-10-16"
+    },
+    {
+      "country": "일본",
+      "indicator": "국채10년",
+      "date": "2026-09-01",
+      "added_date": "2026-10-16"
     }
   ]
 }
