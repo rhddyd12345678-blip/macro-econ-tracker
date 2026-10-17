@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T00:02:59",
+  "generated_at": "2026-10-17T00:08:13",
   "indicators": [
     {
       "country": "미국",
@@ -14952,7 +14952,7 @@
       "country": "일본",
       "indicator": "실업률",
       "value": 2.5,
-      "release_date": "2026-10-02",
+      "release_date": null,
       "freq": "월간"
     },
     {
@@ -14961,6 +14961,22 @@
       "indicator": "국채10년",
       "value": 3.05,
       "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "한국",
+      "indicator": "취업자수",
+      "value": 29266.0,
+      "release_date": "2026-10-16",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "한국",
+      "indicator": "실업률",
+      "value": 2.6,
+      "release_date": "2026-10-16",
       "freq": "월간"
     }
   ]

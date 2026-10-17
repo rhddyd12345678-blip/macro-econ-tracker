@@ -149,6 +149,18 @@
       "indicator": "국채10년",
       "date": "2026-09-01",
       "added_date": "2026-10-16"
+    },
+    {
+      "country": "한국",
+      "indicator": "취업자수",
+      "date": "2026-09-01",
+      "added_date": "2026-10-17"
+    },
+    {
+      "country": "한국",
+      "indicator": "실업률",
+      "date": "2026-09-01",
+      "added_date": "2026-10-17"
     }
   ]
 }
