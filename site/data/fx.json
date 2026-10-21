@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T00:53:50",
+  "generated_at": "2026-10-21T00:38:09",
   "monthly": {
     "원/달러": {
       "dates": [
@@ -6153,30 +6153,6 @@
       {
         "date": "2026-10-08",
         "value": 1339.2
-      },
-      {
-        "date": "2026-10-12",
-        "value": 1338.0
-      },
-      {
-        "date": "2026-10-13",
-        "value": 1335.8
-      },
-      {
-        "date": "2026-10-14",
-        "value": 1340.5
-      },
-      {
-        "date": "2026-10-15",
-        "value": 1338.6
-      },
-      {
-        "date": "2026-10-16",
-        "value": 1348.5
-      },
-      {
-        "date": "2026-10-19",
-        "value": 1342.4
       }
     ],
     "원/100엔": [
@@ -11183,30 +11159,6 @@
       {
         "date": "2026-10-08",
         "value": 847.46
-      },
-      {
-        "date": "2026-10-12",
-        "value": 845.42
-      },
-      {
-        "date": "2026-10-13",
-        "value": 842.3
-      },
-      {
-        "date": "2026-10-14",
-        "value": 846.57
-      },
-      {
-        "date": "2026-10-15",
-        "value": 846.65
-      },
-      {
-        "date": "2026-10-16",
-        "value": 853.02
-      },
-      {
-        "date": "2026-10-19",
-        "value": 850.24
       }
     ],
     "원/유로": [
@@ -16213,30 +16165,6 @@
       {
         "date": "2026-10-08",
         "value": 1500.04
-      },
-      {
-        "date": "2026-10-12",
-        "value": 1498.43
-      },
-      {
-        "date": "2026-10-13",
-        "value": 1490.42
-      },
-      {
-        "date": "2026-10-14",
-        "value": 1500.96
-      },
-      {
-        "date": "2026-10-15",
-        "value": 1495.48
-      },
-      {
-        "date": "2026-10-16",
-        "value": 1512.14
-      },
-      {
-        "date": "2026-10-19",
-        "value": 1505.17
       }
     ],
     "달러지수(광의)": [
@@ -31620,16 +31548,16 @@
   },
   "latest": {
     "원/달러": {
-      "date": "2026-10-19",
-      "value": 1342.4
+      "date": "2026-10-08",
+      "value": 1339.2
     },
     "원/100엔": {
-      "date": "2026-10-19",
-      "value": 850.24
+      "date": "2026-10-08",
+      "value": 847.46
     },
     "원/유로": {
-      "date": "2026-10-19",
-      "value": 1505.17
+      "date": "2026-10-08",
+      "value": 1500.04
     },
     "달러지수(광의)": {
       "date": "2026-10-16",
@@ -31647,18 +31575,18 @@
   "collection_results": [
     {
       "출처": "ECOS - 원/달러",
-      "상태": "성공",
-      "비고": "6건"
+      "상태": "실패",
+      "비고": "HTTPSConnectionPool(host='ecos.bok.or.kr', port=443): Max retries exceeded with url: /api/StatisticSearch/0M0FQXBCCV5FTXJEBFJ4/json/kr/1/6000/731Y001/D/20261009/20261021/0000001 (Caused by ConnectTimeoutError(<HTTPSConnection(host='ecos.bok.or.kr', port=443) at 0x7f969ca1f450>, 'Connection to ecos.bok.or.kr timed out. (connect timeout=30)'))"
     },
     {
       "출처": "ECOS - 원/100엔",
-      "상태": "성공",
-      "비고": "6건"
+      "상태": "실패",
+      "비고": "HTTPSConnectionPool(host='ecos.bok.or.kr', port=443): Max retries exceeded with url: /api/StatisticSearch/0M0FQXBCCV5FTXJEBFJ4/json/kr/1/6000/731Y001/D/20261009/20261021/0000002 (Caused by ConnectTimeoutError(<HTTPSConnection(host='ecos.bok.or.kr', port=443) at 0x7f969ca1f8d0>, 'Connection to ecos.bok.or.kr timed out. (connect timeout=30)'))"
     },
     {
       "출처": "ECOS - 원/유로",
-      "상태": "성공",
-      "비고": "6건"
+      "상태": "실패",
+      "비고": "HTTPSConnectionPool(host='ecos.bok.or.kr', port=443): Max retries exceeded with url: /api/StatisticSearch/0M0FQXBCCV5FTXJEBFJ4/json/kr/1/6000/731Y001/D/20261009/20261021/0000003 (Caused by ConnectTimeoutError(<HTTPSConnection(host='ecos.bok.or.kr', port=443) at 0x7f969ca2e690>, 'Connection to ecos.bok.or.kr timed out. (connect timeout=30)'))"
     },
     {
       "출처": "FRED - 달러지수(광의)",
