@@ -161,6 +161,42 @@
       "indicator": "실업률",
       "date": "2026-09-01",
       "added_date": "2026-10-17"
+    },
+    {
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "date": "2026-09-01",
+      "added_date": "2026-10-23"
+    },
+    {
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "date": "2026-09-01",
+      "added_date": "2026-10-23"
+    },
+    {
+      "country": "일본",
+      "indicator": "두바이유",
+      "date": "2026-08-01",
+      "added_date": "2026-10-23"
+    },
+    {
+      "country": "일본",
+      "indicator": "두바이유",
+      "date": "2026-09-01",
+      "added_date": "2026-10-23"
+    },
+    {
+      "country": "한국",
+      "indicator": "두바이유",
+      "date": "2026-08-01",
+      "added_date": "2026-10-23"
+    },
+    {
+      "country": "한국",
+      "indicator": "두바이유",
+      "date": "2026-09-01",
+      "added_date": "2026-10-23"
     }
   ]
 }

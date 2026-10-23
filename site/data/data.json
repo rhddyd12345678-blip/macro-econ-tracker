@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T00:23:15",
+  "generated_at": "2026-10-23T00:22:05",
   "indicators": [
     {
       "country": "미국",
@@ -14977,6 +14977,54 @@
       "indicator": "실업률",
       "value": 2.6,
       "release_date": "2026-10-16",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "value": 2.1,
+      "release_date": "2026-10-23",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "value": 2.1,
+      "release_date": "2026-10-23",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "일본",
+      "indicator": "두바이유",
+      "value": 88.0533,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "일본",
+      "indicator": "두바이유",
+      "value": 111.8252,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-08-01",
+      "country": "한국",
+      "indicator": "두바이유",
+      "value": 88.0533,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "한국",
+      "indicator": "두바이유",
+      "value": 111.8252,
+      "release_date": null,
       "freq": "월간"
     }
   ]

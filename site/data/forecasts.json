@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T00:23:19",
+  "generated_at": "2026-10-23T00:22:10",
   "rows": [
     {
       "발표일": "2024-08-01",
@@ -5036,24 +5036,9 @@
       "비고": "50건(월평균)"
     },
     {
-      "출처": "FRED - 국채(2년)",
-      "상태": "실패",
-      "비고": "Expecting value: line 1 column 1 (char 0)"
-    },
-    {
-      "출처": "FRED - 국채(3개월)",
-      "상태": "실패",
-      "비고": "Expecting value: line 1 column 1 (char 0)"
-    },
-    {
-      "출처": "FRED - 기대인플레이션(5년)",
-      "상태": "실패",
-      "비고": "Expecting value: line 1 column 1 (char 0)"
-    },
-    {
-      "출처": "FRED - 기대인플레이션(10년)",
-      "상태": "실패",
-      "비고": "Expecting value: line 1 column 1 (char 0)"
+      "출처": "FRED 시장금리",
+      "상태": "성공",
+      "비고": "100건(월평균)"
     }
   ]
 }
