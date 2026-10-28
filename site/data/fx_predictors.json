@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T01:04:33",
+  "generated_at": "2026-10-28T00:55:31",
   "sample": {
     "start": "2021-09-01",
     "end": "2026-09-01",
@@ -252,14 +252,14 @@
       "rule_backtest": {
         "n": 40,
         "hit_rate_pct": 60.0,
-        "mean_directional_return_pct": 0.691,
+        "mean_directional_return_pct": 0.694,
         "binom_p_value": 0.2682,
         "low_sample_caveat": false,
         "mean_adverse_excursion_pct": -1.386,
         "worst_adverse_excursion_pct": -6.605,
         "threshold_high": 0.0327,
         "threshold_low": -0.0464,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "브렌트유": {
@@ -507,14 +507,14 @@
       "rule_backtest": {
         "n": 40,
         "hit_rate_pct": 55.0,
-        "mean_directional_return_pct": 0.228,
+        "mean_directional_return_pct": 0.232,
         "binom_p_value": 0.6358,
         "low_sample_caveat": false,
         "mean_adverse_excursion_pct": -1.488,
         "worst_adverse_excursion_pct": -6.605,
         "threshold_high": 0.0396,
         "threshold_low": -0.0396,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "구리": {
@@ -769,7 +769,7 @@
         "worst_adverse_excursion_pct": -5.693,
         "threshold_high": 0.0297,
         "threshold_low": -0.0081,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "위안화": {
@@ -1017,14 +1017,14 @@
       "rule_backtest": {
         "n": 40,
         "hit_rate_pct": 50.0,
-        "mean_directional_return_pct": -0.152,
+        "mean_directional_return_pct": -0.155,
         "binom_p_value": 1.0,
         "low_sample_caveat": false,
         "mean_adverse_excursion_pct": -2.068,
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 0.0024,
         "threshold_low": -0.0032,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "VIX": {
@@ -1279,7 +1279,7 @@
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 0.0526,
         "threshold_low": -0.0705,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "한국수출액YoY": {
@@ -1474,7 +1474,7 @@
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 9.1361,
         "threshold_low": -0.0028,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "경상수지": {
@@ -1724,7 +1724,7 @@
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 3508.0,
         "threshold_low": -1689.9333,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "미국국채2년": {
@@ -1972,14 +1972,14 @@
       "rule_backtest": {
         "n": 40,
         "hit_rate_pct": 52.5,
-        "mean_directional_return_pct": -0.082,
+        "mean_directional_return_pct": -0.079,
         "binom_p_value": 0.8746,
         "low_sample_caveat": false,
         "mean_adverse_excursion_pct": -1.798,
         "worst_adverse_excursion_pct": -7.219,
         "threshold_high": 0.1454,
         "threshold_low": -0.0312,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     },
     "한미정책금리차": {
@@ -2223,14 +2223,14 @@
       "rule_backtest": {
         "n": 60,
         "hit_rate_pct": 53.3,
-        "mean_directional_return_pct": 0.122,
+        "mean_directional_return_pct": 0.12,
         "binom_p_value": 0.6989,
         "low_sample_caveat": false,
         "mean_adverse_excursion_pct": -1.584,
         "worst_adverse_excursion_pct": -6.975,
         "threshold_high": 0.0,
         "threshold_low": 0.0,
-        "baseline_buy_and_hold_pct": 0.269
+        "baseline_buy_and_hold_pct": 0.271
       }
     }
   },
