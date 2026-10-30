@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T01:29:55",
+  "generated_at": "2026-10-30T01:31:00",
   "indicators": [
     {
       "country": "미국",
@@ -15033,6 +15033,22 @@
       "indicator": "실질GDP 성장률",
       "value": 0.97,
       "release_date": "2026-10-27",
+      "freq": "분기"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "value": 3.1212,
+      "release_date": "2026-10-29",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-07-01",
+      "country": "미국",
+      "indicator": "실질GDP 성장률",
+      "value": 3.4,
+      "release_date": "2026-10-29",
       "freq": "분기"
     }
   ]

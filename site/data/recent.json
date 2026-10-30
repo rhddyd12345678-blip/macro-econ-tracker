@@ -203,6 +203,18 @@
       "indicator": "실질GDP 성장률",
       "date": "2026-07-01",
       "added_date": "2026-10-27"
+    },
+    {
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "date": "2026-09-01",
+      "added_date": "2026-10-30"
+    },
+    {
+      "country": "미국",
+      "indicator": "실질GDP 성장률",
+      "date": "2026-07-01",
+      "added_date": "2026-10-30"
     }
   ]
 }
