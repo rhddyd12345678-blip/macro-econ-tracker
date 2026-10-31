@@ -215,6 +215,30 @@
       "indicator": "실질GDP 성장률",
       "date": "2026-07-01",
       "added_date": "2026-10-30"
+    },
+    {
+      "country": "독일",
+      "indicator": "실업률",
+      "date": "2026-09-01",
+      "added_date": "2026-10-31"
+    },
+    {
+      "country": "독일",
+      "indicator": "실질GDP 성장률",
+      "date": "2026-07-01",
+      "added_date": "2026-10-31"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "실업률",
+      "date": "2026-09-01",
+      "added_date": "2026-10-31"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "실질GDP 성장률",
+      "date": "2026-07-01",
+      "added_date": "2026-10-31"
     }
   ]
 }

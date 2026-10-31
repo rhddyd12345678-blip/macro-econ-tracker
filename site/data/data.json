@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T01:31:00",
+  "generated_at": "2026-10-31T01:23:46",
   "indicators": [
     {
       "country": "미국",
@@ -15049,6 +15049,38 @@
       "indicator": "실질GDP 성장률",
       "value": 3.4,
       "release_date": "2026-10-29",
+      "freq": "분기"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "독일",
+      "indicator": "실업률",
+      "value": 4.1,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-07-01",
+      "country": "독일",
+      "indicator": "실질GDP 성장률",
+      "value": 0.2,
+      "release_date": null,
+      "freq": "분기"
+    },
+    {
+      "date": "2026-09-01",
+      "country": "프랑스",
+      "indicator": "실업률",
+      "value": 8.5,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-07-01",
+      "country": "프랑스",
+      "indicator": "실질GDP 성장률",
+      "value": -0.1,
+      "release_date": null,
       "freq": "분기"
     }
   ]
