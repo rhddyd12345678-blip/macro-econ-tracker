@@ -239,6 +239,24 @@
       "indicator": "실질GDP 성장률",
       "date": "2026-07-01",
       "added_date": "2026-10-31"
+    },
+    {
+      "country": "미국",
+      "indicator": "WTI",
+      "date": "2026-10-01",
+      "added_date": "2026-11-01"
+    },
+    {
+      "country": "독일",
+      "indicator": "브렌트",
+      "date": "2026-10-01",
+      "added_date": "2026-11-01"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "브렌트",
+      "date": "2026-10-01",
+      "added_date": "2026-11-01"
     }
   ]
 }

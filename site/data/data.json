@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T01:23:46",
+  "generated_at": "2026-11-01T00:39:14",
   "indicators": [
     {
       "country": "미국",
@@ -15082,6 +15082,30 @@
       "value": -0.1,
       "release_date": null,
       "freq": "분기"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "미국",
+      "indicator": "WTI",
+      "value": 101.38,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "독일",
+      "indicator": "브렌트",
+      "value": 124.83,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "프랑스",
+      "indicator": "브렌트",
+      "value": 124.83,
+      "release_date": null,
+      "freq": "월간"
     }
   ]
 }
