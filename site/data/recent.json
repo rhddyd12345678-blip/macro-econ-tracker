@@ -257,6 +257,18 @@
       "indicator": "브렌트",
       "date": "2026-10-01",
       "added_date": "2026-11-01"
+    },
+    {
+      "country": "미국",
+      "indicator": "국채10년",
+      "date": "2026-10-01",
+      "added_date": "2026-11-03"
+    },
+    {
+      "country": "한국",
+      "indicator": "국채10년",
+      "date": "2026-10-01",
+      "added_date": "2026-11-03"
     }
   ]
 }

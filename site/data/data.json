@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T01:12:32",
+  "generated_at": "2026-11-03T03:16:48",
   "indicators": [
     {
       "country": "미국",
@@ -15104,6 +15104,22 @@
       "country": "프랑스",
       "indicator": "브렌트",
       "value": 124.83,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "미국",
+      "indicator": "국채10년",
+      "value": 5.13,
+      "release_date": "2026-11-02",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "한국",
+      "indicator": "국채10년",
+      "value": 4.21,
       "release_date": null,
       "freq": "월간"
     }
