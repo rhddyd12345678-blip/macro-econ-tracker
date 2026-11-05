@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T01:51:54",
+  "generated_at": "2026-11-05T01:58:22",
   "sample": {
     "start": "2021-09-01",
     "end": "2026-10-01",
@@ -266,7 +266,7 @@
       "label": "브렌트유",
       "transform": "logret",
       "contemporaneous": {
-        "corr": 0.016,
+        "corr": 0.017,
         "n": 61
       },
       "leading_regression": {
@@ -506,7 +506,7 @@
           0.01,
           -0.093,
           -0.221,
-          -0.183
+          -0.182
         ]
       },
       "rule_backtest": {
@@ -1301,21 +1301,21 @@
       "label": "한국 수출액(전년동월비)",
       "transform": "level",
       "contemporaneous": {
-        "corr": -0.075,
-        "n": 48
+        "corr": -0.158,
+        "n": 49
       },
       "leading_regression": {
         "1m": {
-          "beta": -0.00018181608540081376,
-          "const": 0.0013808364668871388,
-          "se": 0.00016775326442860293,
-          "se_ols": 0.00013198661993454102,
-          "t": -1.0838303863719807,
-          "t_ols": -1.3775342189305686,
-          "p": 0.278440009701185,
-          "p_ols": 0.1750128803560282,
-          "r2": 0.03961786192945038,
-          "n": 48,
+          "beta": -0.00018274675035092426,
+          "const": 0.0013835840154772443,
+          "se": 0.00013670252186029797,
+          "se_ols": 0.00011785255897999087,
+          "t": -1.3368206223560442,
+          "t_ols": -1.5506387976009175,
+          "p": 0.18128119598816927,
+          "p_ols": 0.1276965062669874,
+          "r2": 0.048669283585206835,
+          "n": 49,
           "hac_lags": 3
         },
         "2m": {
@@ -1346,18 +1346,18 @@
         }
       },
       "granger": {
-        "n": 48,
-        "lag1_p": 0.2448,
-        "lag2_p": 0.6132,
-        "lag3_p": 0.627
+        "n": 49,
+        "lag1_p": 0.2133,
+        "lag2_p": 0.5316,
+        "lag3_p": 0.5861
       },
       "out_of_sample": {
-        "n": 11,
-        "hit_rate_pct": 63.6,
-        "binom_p_value": 0.5488,
-        "rmse_model": 0.02531,
-        "rmse_naive_random_walk": 0.02484,
-        "rmse_ratio": 1.0192,
+        "n": 12,
+        "hit_rate_pct": 66.7,
+        "binom_p_value": 0.3877,
+        "rmse_model": 0.02494,
+        "rmse_naive_random_walk": 0.02575,
+        "rmse_ratio": 0.9687,
         "dates": [
           "2025-10-01",
           "2025-11-01",
@@ -1369,7 +1369,8 @@
           "2026-05-01",
           "2026-06-01",
           "2026-07-01",
-          "2026-08-01"
+          "2026-08-01",
+          "2026-09-01"
         ],
         "predicted": [
           0.00189,
@@ -1382,7 +1383,8 @@
           0.00533,
           0.00507,
           0.00934,
-          -0.0002
+          -0.0002,
+          -0.0138
         ],
         "actual": [
           0.0224,
@@ -1395,10 +1397,11 @@
           0.00182,
           0.02465,
           -0.01975,
-          -0.06279
+          -0.06279,
+          -0.03422
         ]
       },
-      "judgment": "예측력 확인 안 됨",
+      "judgment": "경계",
       "rolling_corr_12m": {
         "dates": [
           "2023-08-01",
@@ -1437,7 +1440,8 @@
           "2026-05-01",
           "2026-06-01",
           "2026-07-01",
-          "2026-08-01"
+          "2026-08-01",
+          "2026-09-01"
         ],
         "corr": [
           0.413,
@@ -1476,19 +1480,20 @@
           -0.008,
           0.086,
           -0.14,
-          -0.408
+          -0.408,
+          -0.523
         ]
       },
       "rule_backtest": {
-        "n": 32,
-        "hit_rate_pct": 46.9,
-        "mean_directional_return_pct": -0.04,
-        "binom_p_value": 0.8601,
+        "n": 33,
+        "hit_rate_pct": 45.5,
+        "mean_directional_return_pct": -0.091,
+        "binom_p_value": 0.7283,
         "low_sample_caveat": false,
-        "mean_adverse_excursion_pct": -1.738,
+        "mean_adverse_excursion_pct": -1.765,
         "worst_adverse_excursion_pct": -7.219,
-        "threshold_high": 9.1361,
-        "threshold_low": -0.0028,
+        "threshold_high": 9.588,
+        "threshold_low": 0.602,
         "baseline_buy_and_hold_pct": 0.284
       }
     },
@@ -1496,21 +1501,21 @@
       "label": "경상수지",
       "transform": "diff",
       "contemporaneous": {
-        "corr": 0.093,
-        "n": 59
+        "corr": 0.014,
+        "n": 60
       },
       "leading_regression": {
         "1m": {
-          "beta": 3.618311024651229e-07,
-          "const": 0.002127559776444772,
-          "se": 3.560627632081858e-07,
-          "se_ols": 5.339110269077626e-07,
-          "t": 1.0162003440207097,
-          "t_ols": 0.6776992499307045,
-          "p": 0.3095339926278804,
-          "p_ols": 0.5007041222009915,
-          "r2": 0.007993074454535232,
-          "n": 59,
+          "beta": 1.8953750665871417e-07,
+          "const": 0.0018855877114914675,
+          "se": 3.510371769309339e-07,
+          "se_ols": 5.041291358609154e-07,
+          "t": 0.5399357079948413,
+          "t_ols": 0.37597014966222037,
+          "p": 0.5892413712824869,
+          "p_ols": 0.7083107991247102,
+          "r2": 0.002431205068301412,
+          "n": 60,
           "hac_lags": 3
         },
         "2m": {
@@ -1541,18 +1546,18 @@
         }
       },
       "granger": {
-        "n": 59,
-        "lag1_p": 0.6235,
-        "lag2_p": 0.0508,
-        "lag3_p": 0.0598
+        "n": 60,
+        "lag1_p": 0.6709,
+        "lag2_p": 0.0625,
+        "lag3_p": 0.0636
       },
       "out_of_sample": {
-        "n": 22,
-        "hit_rate_pct": 59.1,
-        "binom_p_value": 0.5235,
-        "rmse_model": 0.02218,
-        "rmse_naive_random_walk": 0.02171,
-        "rmse_ratio": 1.0218,
+        "n": 23,
+        "hit_rate_pct": 56.5,
+        "binom_p_value": 0.6776,
+        "rmse_model": 0.02315,
+        "rmse_naive_random_walk": 0.0224,
+        "rmse_ratio": 1.0337,
         "dates": [
           "2024-11-01",
           "2024-12-01",
@@ -1575,7 +1580,8 @@
           "2026-05-01",
           "2026-06-01",
           "2026-07-01",
-          "2026-08-01"
+          "2026-08-01",
+          "2026-09-01"
         ],
         "predicted": [
           0.00394,
@@ -1599,7 +1605,8 @@
           -0.00247,
           0.00799,
           0.01211,
-          -0.00021
+          -0.00021,
+          0.00459
         ],
         "actual": [
           0.02351,
@@ -1623,7 +1630,8 @@
           0.00182,
           0.02465,
           -0.01975,
-          -0.06279
+          -0.06279,
+          -0.03422
         ]
       },
       "judgment": "예측력 확인 안 됨",
@@ -1676,7 +1684,8 @@
           "2026-05-01",
           "2026-06-01",
           "2026-07-01",
-          "2026-08-01"
+          "2026-08-01",
+          "2026-09-01"
         ],
         "corr": [
           0.49,
@@ -1726,19 +1735,20 @@
           0.115,
           0.299,
           0.438,
-          0.238
+          0.238,
+          0.052
         ]
       },
       "rule_backtest": {
         "n": 40,
-        "hit_rate_pct": 42.5,
-        "mean_directional_return_pct": 0.002,
-        "binom_p_value": 0.4296,
+        "hit_rate_pct": 40.0,
+        "mean_directional_return_pct": -0.073,
+        "binom_p_value": 0.2682,
         "low_sample_caveat": false,
-        "mean_adverse_excursion_pct": -1.714,
+        "mean_adverse_excursion_pct": -1.78,
         "worst_adverse_excursion_pct": -7.219,
-        "threshold_high": 3508.0,
-        "threshold_low": -1689.9333,
+        "threshold_high": 3647.0,
+        "threshold_low": -1683.7667,
         "baseline_buy_and_hold_pct": 0.284
       }
     },
@@ -2261,23 +2271,19 @@
   },
   "multi_variable": {
     "selected_variables": [
-      "위안화",
-      "VIX",
-      "구리"
+      "한국수출액YoY"
     ],
-    "selection_method": "위 기준을 만족하는 변수가 없어 동시점 상관 절대값 상위 3개로 대체",
+    "selection_method": "개별 검정에서 '예측력 확인' 또는 '경계'로 나온 변수",
     "out_of_sample": {
       "variables": [
-        "위안화",
-        "VIX",
-        "구리"
+        "한국수출액YoY"
       ],
-      "n": 23,
-      "hit_rate_pct": 52.2,
-      "binom_p_value": 1.0,
-      "rmse_model": 0.02394,
-      "rmse_naive_random_walk": 0.0224,
-      "rmse_ratio": 1.0689
+      "n": 12,
+      "hit_rate_pct": 66.7,
+      "binom_p_value": 0.3877,
+      "rmse_model": 0.02494,
+      "rmse_naive_random_walk": 0.02575,
+      "rmse_ratio": 0.9687
     }
   },
   "candidate_variables_not_collected": {

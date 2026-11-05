@@ -281,6 +281,30 @@
       "indicator": "CPI 근원",
       "date": "2026-10-01",
       "added_date": "2026-11-04"
+    },
+    {
+      "country": "독일",
+      "indicator": "HICP 헤드라인",
+      "date": "2026-10-01",
+      "added_date": "2026-11-05"
+    },
+    {
+      "country": "독일",
+      "indicator": "HICP 근원",
+      "date": "2026-10-01",
+      "added_date": "2026-11-05"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "HICP 헤드라인",
+      "date": "2026-10-01",
+      "added_date": "2026-11-05"
+    },
+    {
+      "country": "프랑스",
+      "indicator": "HICP 근원",
+      "date": "2026-10-01",
+      "added_date": "2026-11-05"
     }
   ]
 }

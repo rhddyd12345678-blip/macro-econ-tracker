@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T01:51:54",
+  "generated_at": "2026-11-05T01:58:22",
   "indicators": [
     {
       "country": "미국",
@@ -15137,6 +15137,38 @@
       "indicator": "CPI 근원",
       "value": 2.78,
       "release_date": "2026-11-03",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "독일",
+      "indicator": "HICP 헤드라인",
+      "value": 2.8,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "독일",
+      "indicator": "HICP 근원",
+      "value": 2.3,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "프랑스",
+      "indicator": "HICP 헤드라인",
+      "value": 3.8,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "프랑스",
+      "indicator": "HICP 근원",
+      "value": 2.0,
+      "release_date": null,
       "freq": "월간"
     }
   ]
