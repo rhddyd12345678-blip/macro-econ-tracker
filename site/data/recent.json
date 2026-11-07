@@ -305,6 +305,18 @@
       "indicator": "HICP 근원",
       "date": "2026-10-01",
       "added_date": "2026-11-05"
+    },
+    {
+      "country": "미국",
+      "indicator": "비농업고용",
+      "date": "2026-10-01",
+      "added_date": "2026-11-07"
+    },
+    {
+      "country": "미국",
+      "indicator": "실업률",
+      "date": "2026-10-01",
+      "added_date": "2026-11-07"
     }
   ]
 }

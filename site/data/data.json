@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T01:58:54",
+  "generated_at": "2026-11-07T01:33:17",
   "indicators": [
     {
       "country": "미국",
@@ -15169,6 +15169,22 @@
       "indicator": "HICP 근원",
       "value": 2.0,
       "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "미국",
+      "indicator": "비농업고용",
+      "value": 159293.0,
+      "release_date": "2026-11-06",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "미국",
+      "indicator": "실업률",
+      "value": 4.1,
+      "release_date": "2026-11-06",
       "freq": "월간"
     }
   ]
