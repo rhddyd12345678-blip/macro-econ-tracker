@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T01:41:06",
+  "generated_at": "2026-11-12T02:40:13",
   "indicators": [
     {
       "country": "미국",
@@ -15185,6 +15185,22 @@
       "indicator": "실업률",
       "value": 4.1,
       "release_date": "2026-11-06",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "한국",
+      "indicator": "취업자수",
+      "value": 29179.0,
+      "release_date": "2026-11-11",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "한국",
+      "indicator": "실업률",
+      "value": 2.5,
+      "release_date": "2026-11-11",
       "freq": "월간"
     }
   ]

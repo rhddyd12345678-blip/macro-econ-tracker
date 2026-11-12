@@ -317,6 +317,18 @@
       "indicator": "실업률",
       "date": "2026-10-01",
       "added_date": "2026-11-07"
+    },
+    {
+      "country": "한국",
+      "indicator": "취업자수",
+      "date": "2026-10-01",
+      "added_date": "2026-11-12"
+    },
+    {
+      "country": "한국",
+      "indicator": "실업률",
+      "date": "2026-10-01",
+      "added_date": "2026-11-12"
     }
   ]
 }
