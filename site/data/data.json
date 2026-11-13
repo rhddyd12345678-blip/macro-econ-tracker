@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T02:40:13",
+  "generated_at": "2026-11-13T02:21:21",
   "indicators": [
     {
       "country": "미국",
@@ -15201,6 +15201,22 @@
       "indicator": "실업률",
       "value": 2.5,
       "release_date": "2026-11-11",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "독일",
+      "indicator": "국채10년",
+      "value": 3.42,
+      "release_date": null,
+      "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "프랑스",
+      "indicator": "국채10년",
+      "value": 4.89,
+      "release_date": null,
       "freq": "월간"
     }
   ]
