@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-15T01:30:04",
+  "generated_at": "2026-11-16T01:32:29",
   "indicators": [
     {
       "country": "미국",
@@ -15218,6 +15218,14 @@
       "value": 4.89,
       "release_date": null,
       "freq": "월간"
+    },
+    {
+      "date": "2026-07-01",
+      "country": "일본",
+      "indicator": "실질GDP 성장률",
+      "value": -0.02,
+      "release_date": "2026-11-16",
+      "freq": "분기"
     }
   ]
 }
