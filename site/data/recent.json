@@ -347,6 +347,18 @@
       "indicator": "실질GDP 성장률",
       "date": "2026-07-01",
       "added_date": "2026-11-16"
+    },
+    {
+      "country": "일본",
+      "indicator": "실업률",
+      "date": "2026-09-01",
+      "added_date": "2026-11-17"
+    },
+    {
+      "country": "일본",
+      "indicator": "국채10년",
+      "date": "2026-10-01",
+      "added_date": "2026-11-17"
     }
   ]
 }
