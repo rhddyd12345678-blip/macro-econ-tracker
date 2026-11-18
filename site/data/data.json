@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T04:18:19",
+  "generated_at": "2026-11-18T03:17:48",
   "indicators": [
     {
       "country": "미국",
@@ -15232,7 +15232,7 @@
       "country": "일본",
       "indicator": "실업률",
       "value": 2.4,
-      "release_date": "2026-10-30",
+      "release_date": null,
       "freq": "월간"
     },
     {
