@@ -347,6 +347,18 @@
       "indicator": "국채10년",
       "date": "2026-10-01",
       "added_date": "2026-11-17"
+    },
+    {
+      "country": "일본",
+      "indicator": "CPI 헤드라인",
+      "date": "2026-10-01",
+      "added_date": "2026-11-20"
+    },
+    {
+      "country": "일본",
+      "indicator": "CPI 근원",
+      "date": "2026-10-01",
+      "added_date": "2026-11-20"
     }
   ]
 }
