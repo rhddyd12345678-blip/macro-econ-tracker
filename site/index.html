@@ -502,6 +502,14 @@
   .simple-headline { font-size: 20px; font-weight: 800; line-height: 1.5; margin: 6px 0 4px; text-wrap: balance; }
   .simple-subline { color: var(--muted); font-size: 12.5px; margin-bottom: 18px; }
 
+  /* 자세히 보기 모드: 쉬운 요약(질문 카드·한 줄 설명)은 숨기고 상세 화면만 보여준다.
+     금리 탭의 시장 전망 막대와 4사분면 전망 입력, 환율 판단 기록은 상세에도 필요해서 남긴다. */
+  body.detail-mode #view-country-simple,
+  body.detail-mode #view-link-simple,
+  body.detail-mode #view-fx-simple,
+  body.detail-mode #view-rate-simple > .simple-headline,
+  body.detail-mode #view-rate-simple > .simple-subline,
+  body.detail-mode #rate-dday-cards { display: none !important; }
   .qcard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin-bottom: 20px; }
   .qcard {
     background: var(--card-bg); border: 1px solid var(--border); border-radius: 13px;
@@ -1300,7 +1308,10 @@
     });
     document.getElementById("detail-toggle").addEventListener("change", function (e) {
       state.detailMode = e.target.checked;
+      // 자세히 보기를 켜면 쉬운 질문 카드는 숨기고 상세 화면만 남긴다(CSS: body.detail-mode)
+      document.body.classList.toggle("detail-mode", state.detailMode);
       applySimpleTab();
+      window.scrollTo(0, 0);
     });
   }
 
