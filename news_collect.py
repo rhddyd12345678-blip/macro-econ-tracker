@@ -114,12 +114,12 @@ def find_movers(observations, today):
         g = group_of(indicator)
         if abs(diff) < SMALL[g]:
             continue
-        rel = last.get("release_date") or last["date"]
+        rel = (last.get("release_date") or "")[:10] or None
         try:
-            rel_d = date.fromisoformat(rel[:10])
+            start, _ = news_window({"release_date": rel, "date": last["date"], "freq": last.get("freq")})
         except ValueError:
             continue
-        if (today - rel_d).days > RECENT_RELEASE_DAYS:
+        if (today - start).days > RECENT_RELEASE_DAYS:
             continue
         # 유가처럼 여러 나라에 같은 시계열이 있으면 한 번만
         dup = (indicator, last["date"], round(last["value"], 6), round(prev["value"], 6))
@@ -128,8 +128,9 @@ def find_movers(observations, today):
         seen.add(dup)
         movers.append({
             "key": f"{country}|{indicator}|{last['date']}",
-            "country": country, "indicator": indicator,
-            "date": last["date"], "release_date": rel[:10],
+            # 유가는 나라와 무관한 국제 가격이라 나라 대신 '국제'로 표시
+            "country": "국제" if indicator in OIL else country, "indicator": indicator,
+            "date": last["date"], "release_date": rel, "freq": last.get("freq"),
             "value": round(last["value"], 4), "prev": round(prev["value"], 4),
             "diff": round(diff, 4), "unit": unit,
             "scaled": abs(diff) / BIG[g],
@@ -138,9 +139,26 @@ def find_movers(observations, today):
     return movers[:MAX_MOVERS]
 
 
+def _add_months(d, n):
+    y, mo = divmod(d.month - 1 + n, 12)
+    return date(d.year + y, mo + 1, 1)
+
+
 def news_window(m):
-    rel = date.fromisoformat(m["release_date"])
-    return rel - timedelta(days=3), rel + timedelta(days=5)
+    """뉴스를 찾을 기간.
+    - 발표일이 있으면 발표일 3일 전 ~ 5일 후.
+    - 발표일이 없으면(OECD·Eurostat 경유 등) 기준 기간이 끝나기 3일 전부터 45일(분기 지표는 60일).
+      기준월 날짜를 발표일로 쓰면 안 된다 — 10월 물가는 10월 1일에 발표되지 않는다."""
+    if m.get("release_date"):
+        rel = date.fromisoformat(m["release_date"][:10])
+        return rel - timedelta(days=3), rel + timedelta(days=5)
+    base = date.fromisoformat(m["date"][:10])
+    # 속보치(예: 유로존 물가)는 기준월 말일 무렵 나오므로 끝나기 3일 전부터 찾는다
+    if m.get("freq") == "분기":
+        end_of_period = _add_months(base, 3)
+        return end_of_period - timedelta(days=3), end_of_period + timedelta(days=60)
+    end_of_period = _add_months(base, 1)
+    return end_of_period - timedelta(days=3), end_of_period + timedelta(days=45)
 
 
 # ---- 뉴스 검색 ----
@@ -261,8 +279,14 @@ OUTPUT_SCHEMA = {
 
 def describe_change(m):
     sign = "+" if m["diff"] > 0 else ""
+    start, end = news_window(m)
+    if m.get("release_date"):
+        when = f'발표일 {m["release_date"]}'
+    else:
+        when = (f'발표일 정보 없음 — 기준 기간이 끝난 뒤({start}~{end}) 나온 기사를 찾았어요. '
+                f'속보치·확정치 기사가 섞일 수 있어요')
     return (f'{m["country"]} {m["indicator"]}: {m["prev"]} → {m["value"]} '
-            f'({sign}{round(m["diff"], 2)}{m["unit"]}), 기준월 {m["date"][:7]}, 발표일 {m["release_date"]}')
+            f'({sign}{round(m["diff"], 2)}{m["unit"]}), 기준 기간 {m["date"][:7]}, {when}')
 
 
 def ask_claude(client, m, candidates):
