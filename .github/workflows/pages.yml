@@ -19,12 +19,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  # 업로드와 배포를 별도 job으로 나눈다. 한 job 안에서 연달아 실행하면
+  # 배포 단계가 방금 올린 artifact를 아직 못 찾는 경우가 있었다(2026-11-23, 11-24).
+  build:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: 저장소 체크아웃
         uses: actions/checkout@v7
@@ -37,6 +36,13 @@ jobs:
         with:
           path: site
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: 배포
         id: deployment
         uses: actions/deploy-pages@v5
