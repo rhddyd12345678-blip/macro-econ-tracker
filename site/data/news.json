@@ -1,7 +1,38 @@
 {
- "generated_at": "2026-11-24 07:49",
+ "generated_at": "2026-11-24 08:16",
  "model": "claude-opus-5-5",
  "items": [
+  {
+   "key": "한국|두바이유|2026-09-01",
+   "country": "국제",
+   "indicator": "두바이유",
+   "date": "2026-09-01",
+   "release_date": null,
+   "value": 111.8252,
+   "prev": 88.0533,
+   "diff": 26.9972,
+   "unit": "%",
+   "provider": "구글 뉴스",
+   "checked_at": "2026-11-24",
+   "articles": [
+    {
+     "title": "East of Suez: Dubai crude rebounds, Asian gasoline run continues",
+     "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQNVRtXzdVMnVWVzZqLWZkcnJvdk9QRmllbGhPT21xOFpKUGtKU3cwMjVNSlVnaHBNT0xlVEJzZ1RrZHUwdlJKQU5rNXN4STlpU0NOTnNpSU5NRzU3MnZQVkJPLXdnVVN5aVA1WVFvdDlEUU5XbFItcXJiTGtXaGcybGw5SWNqUnRvSmNhc3hLa0VjVk13dzZkWUsxdHpjOGVGT1BGRHJnc00?oc=5",
+     "source": "Quantum Commodity Intelligence",
+     "published": "2026-10-01"
+    },
+    {
+     "title": "PTT forecasts Dubai crude at US$95-105 amid Middle East tensions",
+     "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1NTGRqQ05aSjlxbFhEZUppM0pDa3FjMlo4Q0YtZGhRNzB4ZEszVGppNEEtbTN2d0RZTVhTa3M2bUZLelUxMTVUdWRfUktPS2RrN01tSXFmQVV3NkxZdVdEUzJkeE96VzA?oc=5",
+     "source": "Nation Thailand",
+     "published": "2026-10-03"
+    }
+   ],
+   "ai": true,
+   "status": "review",
+   "summary": "9월 두바이유 가격이 크게 올랐고, 비슷한 시기에 중동 긴장 속에서 두바이유가 다시 올랐다는 보도가 함께 나왔어요.",
+   "reason": "[3]과 [2]는 9월 말~10월 초에 두바이유를 직접 다룬 기사지만, 발표일 정보가 없고 제목만으로는 9월 월평균 27% 상승을 다룬 기사인지 확인할 수 없어요. [6]의 '유가 28% 급등'은 이번 변화와 맞을 수 있지만 한국 수입물가 기사라서 제외했으니, 사람이 확인해 주세요."
+  },
   {
    "key": "미국|실질GDP 성장률|2026-07-01",
    "country": "미국",
@@ -22,54 +53,47 @@
      "published": "2026-10-29"
     },
     {
-     "title": "US economy beats forecasts to grow at 3.4% rate in third quarter",
-     "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOMEF0eF9hbDVjcmptcUxza3p4ZDkxeVc1Wlc0aDBmMDdJeW0xSkdvTnJqSkc4elNBaFhkSGFjWWhSQnJyd1RPN2ZGSF9ielZJdjNmZjRjYklvYWdoX1RrQjFqQmw4MUxWV1ZYQ3dreFR4NFBxTEVIZkswVFRyamo1WFBaYzA?oc=5",
-     "source": "Financial Times",
-     "published": "2026-10-29"
-    },
-    {
      "title": "US Economy Grows a Faster-Than-Expected 3.4%, Most in a Year",
      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOUFh4bnBMRG5WMnJ2SGxxY1ZReEdVN2k5RGRFUmZqZUN4U3NTMVRNUXlaY0ZfV3VoT3hTQ0VyRkxQZk5KaUFfUUJPVDNtNWtKWDQzSC16WE1kVllma2NpQWNqRDdTUE5FaTZfVXl6b09UUko2T2h5a0QxdTZIb3VtM2pkMDFKOHNvU2FqekdtOGNQSXd2RHJ3VEhPQno5a1BMdlNiVlNqSEV2WktBNWc?oc=5",
      "source": "Bloomberg.com",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "US economy beats forecasts to grow at 3.4% rate in third quarter",
+     "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOMEF0eF9hbDVjcmptcUxza3p4ZDkxeVc1Wlc0aDBmMDdJeW0xSkdvTnJqSkc4elNBaFhkSGFjWWhSQnJyd1RPN2ZGSF9ielZJdjNmZjRjYklvYWdoX1RrQjFqQmw4MUxWV1ZYQ3dreFR4NFBxTEVIZkswVFRyamo1WFBaYzA?oc=5",
+     "source": "Financial Times",
      "published": "2026-10-29"
     }
    ],
    "ai": true,
    "status": "linked",
-   "summary": "발표 당일에 미국 3분기 경제가 3.4% 성장했고 소비와 AI 투자가 탄탄했다는 보도가 함께 나왔어요.",
-   "reason": "발표일 당일 기사들이 미국 3분기 실질GDP 3.4% 성장을 직접 다루고 있고, 지표 수치(3.4)와도 맞아서 수치가 명시된 AP·FT·Bloomberg 기사를 골랐습니다."
+   "summary": "같은 날 미국 경제가 3분기에 3.4% 성장했다는 보도가 나왔고, 소비와 AI 투자가 탄탄했다는 소식도 있었어요.",
+   "reason": "발표일 당일에 나온 AP·Bloomberg·FT 기사가 지표 값과 같은 미국 3분기 GDP 3.4% 성장을 제목에서 직접 다루고 있어요. 기준 기간 2026-07은 3분기에 해당하고, 회계연도 기준 2.2%를 다룬 [7]번 기사는 고르지 않았어요."
   },
   {
    "key": "독일|브렌트|2026-10-01",
-   "country": "독일",
+   "country": "국제",
    "indicator": "브렌트",
    "date": "2026-10-01",
-   "release_date": "2026-10-01",
+   "release_date": null,
    "value": 124.83,
    "prev": 114.08,
    "diff": 9.4232,
    "unit": "%",
    "provider": "구글 뉴스",
    "checked_at": "2026-11-24",
-   "articles": [
-    {
-     "title": "Dated Brent Above $120 Signals a Serious Oil Squeeze",
-     "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNZTRtWjItNTByemhMREx4TU5lR0lqZFFSem1nYjZ3bXdSTUJudjlicTdUVVdNaHRkaVZLUWF6ZXhGem16bHpiNGlaZ1U3MjBCbVZhQmlFLWdQVldaRDMwMjhsQ09INnVwQ2FtRnZqSUQzQVM1ZDNoX1FpTkcwb0xsNmY4OGVEcDdidjZMVGpsUFJhTmNrQ3VMSDBn0gGfAUFVX3lxTE16LXdFYXBkV05DU0dJZnlxQXMtZTRxT1B4VDMyN3NIR2I5X0hWNnFjTHdLM0RFaUItOVBxaDVyd0RYRDRzZ0tpVk53dVN1blc4cGlOb0lkWWxBOXU1U3haUHZ0YnRGdDdUYm9uTktmendqLVQwYlk1SDJ3SXhMOUJZRV9vNWpOYzgyN3QyQUJJUWhsVFEtSWNwSEVrV2Y1aw?oc=5",
-     "source": "Crude Oil Prices Today | OilPrice.com",
-     "published": "2026-10-02"
-    }
-   ],
+   "articles": [],
    "ai": true,
-   "status": "review",
-   "summary": "같은 시기에 브렌트유 현물 가격이 120달러를 넘어 공급이 빠듯하다는 보도가 함께 나왔어요.",
-   "reason": "[3]은 브렌트 가격 120달러 돌파를 다뤄 124.83 상승과 맞지만, 독일 지표로 분류된 점이 어색하고 같은 날 나온 [10]은 브렌트가 96달러로 떨어졌다고 해 기준 시점이나 가격 종류가 다를 수 있으니 사람이 확인해야 합니다."
+   "status": "none",
+   "summary": "",
+   "reason": "후보 기사는 모두 브렌트유를 다루지만 2026년 11월의 하락(90달러 아래로 하락 등)을 보도한 것이라, 10월 기준 114.08→124.83 상승과는 시기·방향·가격 수준이 맞지 않아 직접 관련 기사가 없다고 봤어요(가격 수준 차이가 커서 데이터 단위나 기준도 한 번 확인해 보는 게 좋겠어요)."
   },
   {
    "key": "미국|WTI|2026-10-01",
-   "country": "미국",
+   "country": "국제",
    "indicator": "WTI",
    "date": "2026-10-01",
-   "release_date": "2026-10-01",
+   "release_date": null,
    "value": 101.38,
    "prev": 97.31,
    "diff": 4.1825,
@@ -78,35 +102,29 @@
    "checked_at": "2026-11-24",
    "articles": [
     {
-     "title": "WTI Whipsaws as Gulf Supply Improves and Middle East Risk Returns",
-     "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPeENQdEQ1S2xlY04xT0M5NWVuRy1yWl8zR0hxQ0gwdFlzWHV2cVl5cjNtLXFjRWw5VFJWaEdUZS02REtUTExPYV9zcGdYTndRZE56YVNJb2dlRU41ZzVnMkZLRXk1MVUwbzZXaXl2MEI0WC1iV3ZhYThfZUpOenZIMWkxSHZLOU1Oc0VoQ1p0bk40WnlPOXlHY2RCeTUwNGZRU1RyTXlaQUJ4ZjlVRFVPVG9WNNIBuAFBVV95cUxNZFlrVG82elVPbE4zZ2RTRXBMek9xeFl3NjlXZjY4eHo1aUhlVWVUWDdGUktvQlFNZnR3d2M2MjlUaDk4UnR3UFVHUnlQaGFYVmFkZWZOMXNFaXhFWGN6dHVJbWFBbHlXS0t2anNiUlpKXzM3Yl8xT2p5dWhXZU0xclJGeXV0OUowaTdLVFNPaU9fLUxOMDZuY001Mk93d1B3bFlWM1JDRlZhZERyWDB4a3NoTGpPTHB0?oc=5",
-     "source": "Crude Oil Prices Today | OilPrice.com",
-     "published": "2026-10-02"
+     "title": "WTI Crude Oil Price Forecast: Can Oil Hold $100 After OPEC+ Decision and Ahead of US Midterms?",
+     "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPa2gxZW1UQVRBUWZMTy0wZmZ0UEhHdXB4Vm5oVzhwcWdRV0lFNmhDcFlTY0gtMll2QVQ4UFFfQ2lncHF3UE9kY1VmQVNJWk9SQmJ2UlA0SWRLeFFqYlcyNVJmbFVJRVNPUzNFUy1vMFVSV0FCcVNtTjFvUnVRZDN6VFBYa3c?oc=5",
+     "source": "Mitrade",
+     "published": "2026-11-02"
     },
     {
-     "title": "WTI Sinks Nearly 4% as EU Weighs Emergency Stockpile Release",
-     "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPNTk4dHJLTzhaY3VKeW9BV0Ftdm5oYXVJNWpGLTFDclpfdVhvb3BmM2I3NWh2RGREdDIzbmU1UW1qa3lmYlhmQ0Z4YkxrdjdDNmF2WDl6WDNMcjBoeGRSWHhQZ21yeERqUGpPT21ocDNOdVJxbEVLeWIwaEtsVG9GZC1ZXzZDaEVwcTZwYm1sSzdMUDZMRXhsNG9URDhZbzFXSllqTzNSdnJDd1AzdUtDRE9tTXhjQdIBuwFBVV95cUxNaTFBTXNLTk50eTY4cDk4dEI5RTEzVmU4dHZtZXR4VHV0Zk5QU01jSFNCTDhYRTBMWGpvR2JXVVdlZnI1UWRaLVhENXUxRGhHOG9ZTmZNck1LYmNHV0x2b1gtVlpLT1Z0THEzdzZLcmNzakpEQ3VlV0x4amNSTFY4QWpGalUyR0FFREE4NVBWYVFOb3F1SUNjZVRnYndBWGp1aFlBWldVX2VjNWVVOXVQaHVLVHpPRDdteTlr?oc=5",
-     "source": "Crude Oil Prices Today | OilPrice.com",
-     "published": "2026-10-02"
-    },
-    {
-     "title": "Crude Oil Cuts Losses as Traders Eye G-7 Fuel Release",
-     "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTnJNODFJQ0xlUm8zN2FkRzN6RUZRbzhPRlg2c3h3QmpyOUhKNy1UY3IwQ2d5OUltaDNIS1BjdmVQZ2RSLWsxb1hwRkNESFBSSXdOVXNOU0RNd1d4ZWY1N0JMY0M4VFNBYkpYRUE4VzdJVnB3Z0VidGVraER4SUctdk10cGFxZnYybmpvTFAxdW84MXVYOU9nTGp3WGY4LWpjcmxHMQ?oc=5",
-     "source": "WSJ",
-     "published": "2026-10-02"
+     "title": "Oil prices edge lower as renewed U.S.-Iran peace efforts ease supply fears",
+     "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE4zdnNES2VLOVNQbEJKcncxMVlyamQxU3Jfa0o1MjFNd21YLTZ5dWJKWmpQbnNiWkhGY3Y5QXFXeXZnSU5zQ0VoSHc0QnllUFNNdk1qUkdnSEZGZk15cHAzMnFub0dhSGQ2S2V0Tm9vMNIBdEFVX3lxTE83QURjQjVBRjdxbTJrR0lsWnpKcHNWU1hBNy1Bdnk4VktjTmE1NXp6WWJqLXltUk93OWxRbndlQ1hZaFcwTm9xZ0dBM1phR0VCSVVqT3hFaUJ6ME5GNy1vUExkTW9ja0lsZjhSYWFKeVVqUUlj?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-29"
     }
    ],
    "ai": true,
    "status": "review",
-   "summary": "같은 시기에 WTI 가격이 크게 출렁였다는 보도와 유럽의 비축유 방출 검토 소식이 함께 나왔어요.",
-   "reason": "발표일 바로 다음 날 나온 미국 WTI 기사들이지만 대부분 가격 하락이나 낙폭 축소를 다뤄서, +4.18% 상승과 방향이 맞는지 사람이 확인해야 합니다."
+   "summary": "10월 국제유가(WTI)가 올랐는데, 10월 말~11월 초에는 유가가 100달러 선을 지킬지 묻는 보도가 나왔어요.",
+   "reason": "후보 기사는 모두 기준 기간(2026-10)이 끝난 뒤의 WTI 기사이고, 대부분 11월 하락을 다뤄서 10월 상승을 직접 설명하는 기사가 없어요. 그나마 10월 말 시점인 [10]과 100달러 선을 다룬 [7]을 골랐지만 연관성이 약해 사람이 확인해야 해요."
   },
   {
    "key": "독일|HICP 헤드라인|2026-10-01",
    "country": "독일",
    "indicator": "HICP 헤드라인",
    "date": "2026-10-01",
-   "release_date": "2026-10-01",
+   "release_date": null,
    "value": 2.8,
    "prev": 3.3,
    "diff": -0.5,
@@ -115,59 +133,28 @@
    "checked_at": "2026-11-24",
    "articles": [
     {
-     "title": "German inflation comes in above forecasts 📈 EURUSD jumps slightly",
-     "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQVWFrTUZkSjE3UnJiLUxZRTNIeU5iSE9fcFFRLUVuSXA2bV9rM1R0dmpycWJtUVBmcUdkSENGWXFnS21RZGN4c0NtWm00ZEJYV2pQNnFQc2M3V2xWYUptM05jOWM2UUxhLVRqYVlXZVpNU2FWU1dXeHYyeVJUeVRFcUNfeTVMYUZGRzBjQTZKZXVtS2RfTXpELWF1MkZlQ243Q0NPQVVMTUxwaVROWDJ2UWk5NWtobDZfNU1IemJB?oc=5",
-     "source": "XTB.com",
-     "published": "2026-09-30"
+     "title": "Inflation rate decreases, energy continues to drive inflation despite fuel discount - Inflation rate at +2.8% in October 2026 - German Statistical Office | Kurzy.cz",
+     "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOLUFuTV8wU1JMMHVXNTRGb0l6cUJPZFNMcHdOM1FJbW1QQ2dzVFlaMHF1T3V1UF84dGdRdXBJQ3JYRU81RFdpVncyMlFRVF9BUVBYU21WQk9FUGliTlB2QWZkS2E1eUxOMnc3VzBIdGZteE5mckJHN0lWV041YWJFcTZkMUtXVDQ3S1FmUFd3Ujk2d0NPcEdZd1JUakM2SHZyOEp1bzhNZGt2NWViV0dCb0FyT29kUmlQeklZMndZdkVIZw?oc=5",
+     "source": "Zprávy Kurzy.cz",
+     "published": "2026-11-11"
     },
     {
-     "title": "Heads up: Germany September CPI expected to show inflation back above 3%",
-     "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOZldrVURtSS1BcnlhVnBMbGVRWXRtTmRlLUlBV191LWVNT3U1dVdkZlh1c2tuR3dDWFZUN2llME0wRHNLcWMzTnNudTRaX3k4M1NMQlB2U1YySW40T2QzdTNiVXF6UE9pbkNycGRqSTZYdmRPYkZyRS1yc0V6T1dVQmp5SFZzc1lsZ29GTG85NWEwXzBwWkY5UVl6d0JIbS11dTE4VQ?oc=5",
-     "source": "investingLive",
-     "published": "2026-09-29"
+     "title": "Germany's October inflation stands at 2.8%",
+     "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOVUZ4Z3JiOU5rVUwyXzdsT2ptdldRS2JyOFd5UG1JeC1XMHhqVjlDSVZhQ2IwU1pHN2Y5dWpTWnQwNUFodFhWdUZjNXpvWkdUdGk4SVJrUDl2NklRdmFmLUgyeGpqd3h3eDZGNU9rNjJfTGdjYl9JaWUtQnpxWkRMRWw2N29TRUpncnlSbXFXdi03a2o2SmdYSEZSVUV5V25keFhTMlVLMnZSNC1mSFB4d0Y0QmF2ekk?oc=5",
+     "source": "Fibre2Fashion",
+     "published": "2026-11-20"
+    },
+    {
+     "title": "Euro remains on its back foot as German CPI confirms easing price pressures",
+     "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNdlNsVFllX0RSQWhKOEpNWXBJbEJRN2Q2QXg1ZHRUaUl0cWtNSU5ZbkhlYVpSYmtUQ2l5cEFwQUNrT1RkdURmNUdjZWZBQVFKbWRPTEtiUTJhWGpPTEhWWXdjNG5NMzdBZG1ia0ZPTW9qTjV3ZzRCQi12cHFUQWZja0dBNWlXWU55UFF4MkU1M1hUZUpVNkRIb1ZDZDJBb3A2Y1dwSk4ybkdWN1JYWnl6YXoyeFJaaHRKVlE?oc=5",
+     "source": "FXStreet",
+     "published": "2026-11-11"
     }
    ],
    "ai": true,
    "status": "review",
-   "summary": "같은 시기에 독일 물가 발표 기사가 나왔는데, 물가가 예상보다 높게 나왔다는 내용이라 지표 하락과 방향이 달라요.",
-   "reason": "[2]·[3]은 독일 물가 기사지만 둘 다 물가 상승(예상치 상회, 3% 재돌파)을 말해 이번 하락(3.3→2.8)과 맞지 않습니다. 또 발표일(10-01)은 9월분 발표 시점인데 기준월은 2026-10으로 되어 있어 데이터 확인이 필요합니다."
-  },
-  {
-   "key": "프랑스|국채10년|2026-10-01",
-   "country": "프랑스",
-   "indicator": "국채10년",
-   "date": "2026-10-01",
-   "release_date": "2026-10-01",
-   "value": 4.89,
-   "prev": 4.44,
-   "diff": 0.45,
-   "unit": "%p",
-   "provider": "구글 뉴스",
-   "checked_at": "2026-11-24",
-   "articles": [
-    {
-     "title": "France's borrowing rate keeps rising, hitting its highest level since 2002",
-     "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPY3JtX1AyWC1JaWk3RThHT1RqVnA3b1drRi16QUo0RlhfVjFrTFV1ZmE1cldwdEJBMXotRmswV0J3SGhZR2RJTHJEYlZBS3VMcnl3YjgwWXZQak9Cd29jekU0UmV2SmhGb3UxNlEycGcwdG42ZkVXT181dFV4NXZJT0tZUjZyTWRHel9FS2lxWlV0VkRpVWxmTVY3WXFXSWFGZnc?oc=5",
-     "source": "Yahoo Finance",
-     "published": "2026-10-01"
-    },
-    {
-     "title": "Bond rout pauses after French and UK yields hit decades-long highs",
-     "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQMjVvMXp0TUQxSjdqU0JsUlpPWHRSSzdIbk5Zck5kV2dKd05RUVZiaDJYZm9aTERub3diVFpOOWRaVUpLYklCb0lRT1NmZDFncTRabERuQWt5MWFjVDVCdS1OSkctWFdmMXQydzhObmtUR3VLX050Tm5zMWplYjJqYURvbjM2WnZPajdqWjlKQWdVQW9EZk51a1NvWnBTQnZ5WmFCTExRRFBBTjlrUkg0X25BYUw3VzFjcERN?oc=5",
-     "source": "Euronews.com",
-     "published": "2026-10-02"
-    },
-    {
-     "title": "France’s 10-Year Bond Risk Premium Rises to 120 Basis Points",
-     "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOZ2RNRndMNF9GTFBoQktDZnBNNFVlc2s5QnNEbDd6RmVrU0tRZS1nbjgtNmxCZjVKU2tDdnZyYVBkRklkLXR3TmpYNTNnS1FySDA3M1V2YUtNYm96N00zeHgtSFowT0pGQVRKQkJYWDE1UTVnNXRvdWg1YnBiM1FjYkFLajR4STkxU1d0TUIwSVlfUHA3dHNUaVFGcTJYS2VkT3B3a1lyT2dmYWRETkpjSQ?oc=5",
-     "source": "Bloomberg.com",
-     "published": "2026-09-30"
-    }
-   ],
-   "ai": true,
-   "status": "linked",
-   "summary": "같은 시기에 프랑스 국채 금리가 2002년 이후 가장 높은 수준에 이르렀다는 보도가 나왔어요.",
-   "reason": "발표일 당일(10-01)과 앞뒤 하루 사이에 나온 기사 [5]·[6]·[1]은 모두 프랑스 10년물 국채 금리 상승을 직접 다루고 있고, 미국 국채를 다룬 [2]·[8]·[9]와 발표일에서 며칠 떨어진 기사는 고르지 않았습니다."
+   "summary": "같은 시기에 독일 10월 물가 상승률이 2.8%로 낮아졌다는 확정 보도가 함께 나왔어요.",
+   "reason": "독일 10월 물가 상승률이 2.8%로 확정됐고 상승세가 완화됐다는 기사가 발표 시점과 수치 모두에 맞지만, 제목만으로는 이 수치가 HICP인지 국내 CPI인지 구분할 수 없어 사람이 확인해야 합니다."
   }
  ]
 }
