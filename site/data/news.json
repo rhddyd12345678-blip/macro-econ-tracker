@@ -1,38 +1,7 @@
 {
- "generated_at": "2026-11-24 08:16",
+ "generated_at": "2026-11-24 08:18",
  "model": "claude-opus-5-5",
  "items": [
-  {
-   "key": "한국|두바이유|2026-09-01",
-   "country": "국제",
-   "indicator": "두바이유",
-   "date": "2026-09-01",
-   "release_date": null,
-   "value": 111.8252,
-   "prev": 88.0533,
-   "diff": 26.9972,
-   "unit": "%",
-   "provider": "구글 뉴스",
-   "checked_at": "2026-11-24",
-   "articles": [
-    {
-     "title": "East of Suez: Dubai crude rebounds, Asian gasoline run continues",
-     "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQNVRtXzdVMnVWVzZqLWZkcnJvdk9QRmllbGhPT21xOFpKUGtKU3cwMjVNSlVnaHBNT0xlVEJzZ1RrZHUwdlJKQU5rNXN4STlpU0NOTnNpSU5NRzU3MnZQVkJPLXdnVVN5aVA1WVFvdDlEUU5XbFItcXJiTGtXaGcybGw5SWNqUnRvSmNhc3hLa0VjVk13dzZkWUsxdHpjOGVGT1BGRHJnc00?oc=5",
-     "source": "Quantum Commodity Intelligence",
-     "published": "2026-10-01"
-    },
-    {
-     "title": "PTT forecasts Dubai crude at US$95-105 amid Middle East tensions",
-     "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1NTGRqQ05aSjlxbFhEZUppM0pDa3FjMlo4Q0YtZGhRNzB4ZEszVGppNEEtbTN2d0RZTVhTa3M2bUZLelUxMTVUdWRfUktPS2RrN01tSXFmQVV3NkxZdVdEUzJkeE96VzA?oc=5",
-     "source": "Nation Thailand",
-     "published": "2026-10-03"
-    }
-   ],
-   "ai": true,
-   "status": "review",
-   "summary": "9월 두바이유 가격이 크게 올랐고, 비슷한 시기에 중동 긴장 속에서 두바이유가 다시 올랐다는 보도가 함께 나왔어요.",
-   "reason": "[3]과 [2]는 9월 말~10월 초에 두바이유를 직접 다룬 기사지만, 발표일 정보가 없고 제목만으로는 9월 월평균 27% 상승을 다룬 기사인지 확인할 수 없어요. [6]의 '유가 28% 급등'은 이번 변화와 맞을 수 있지만 한국 수입물가 기사라서 제외했으니, 사람이 확인해 주세요."
-  },
   {
    "key": "미국|실질GDP 성장률|2026-07-01",
    "country": "미국",
@@ -53,22 +22,22 @@
      "published": "2026-10-29"
     },
     {
-     "title": "US Economy Grows a Faster-Than-Expected 3.4%, Most in a Year",
-     "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOUFh4bnBMRG5WMnJ2SGxxY1ZReEdVN2k5RGRFUmZqZUN4U3NTMVRNUXlaY0ZfV3VoT3hTQ0VyRkxQZk5KaUFfUUJPVDNtNWtKWDQzSC16WE1kVllma2NpQWNqRDdTUE5FaTZfVXl6b09UUko2T2h5a0QxdTZIb3VtM2pkMDFKOHNvU2FqekdtOGNQSXd2RHJ3VEhPQno5a1BMdlNiVlNqSEV2WktBNWc?oc=5",
-     "source": "Bloomberg.com",
-     "published": "2026-10-29"
-    },
-    {
      "title": "US economy beats forecasts to grow at 3.4% rate in third quarter",
      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOMEF0eF9hbDVjcmptcUxza3p4ZDkxeVc1Wlc0aDBmMDdJeW0xSkdvTnJqSkc4elNBaFhkSGFjWWhSQnJyd1RPN2ZGSF9ielZJdjNmZjRjYklvYWdoX1RrQjFqQmw4MUxWV1ZYQ3dreFR4NFBxTEVIZkswVFRyamo1WFBaYzA?oc=5",
      "source": "Financial Times",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "US Economy Grows a Faster-Than-Expected 3.4%, Most in a Year",
+     "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOUFh4bnBMRG5WMnJ2SGxxY1ZReEdVN2k5RGRFUmZqZUN4U3NTMVRNUXlaY0ZfV3VoT3hTQ0VyRkxQZk5KaUFfUUJPVDNtNWtKWDQzSC16WE1kVllma2NpQWNqRDdTUE5FaTZfVXl6b09UUko2T2h5a0QxdTZIb3VtM2pkMDFKOHNvU2FqekdtOGNQSXd2RHJ3VEhPQno5a1BMdlNiVlNqSEV2WktBNWc?oc=5",
+     "source": "Bloomberg.com",
      "published": "2026-10-29"
     }
    ],
    "ai": true,
    "status": "linked",
-   "summary": "같은 날 미국 경제가 3분기에 3.4% 성장했다는 보도가 나왔고, 소비와 AI 투자가 탄탄했다는 소식도 있었어요.",
-   "reason": "발표일 당일에 나온 AP·Bloomberg·FT 기사가 지표 값과 같은 미국 3분기 GDP 3.4% 성장을 제목에서 직접 다루고 있어요. 기준 기간 2026-07은 3분기에 해당하고, 회계연도 기준 2.2%를 다룬 [7]번 기사는 고르지 않았어요."
+   "summary": "발표일에 미국 3분기 경제가 3.4% 성장해 예상보다 빨랐다는 보도가 함께 나왔어요.",
+   "reason": "세 기사 모두 발표일(2026-10-29)에 나왔고, 제목에서 미국 3분기 실질GDP 3.4% 성장을 직접 언급해 지표 값(3.4)과 기준 기간(7월이 속한 3분기)이 일치합니다."
   },
   {
    "key": "독일|브렌트|2026-10-01",
@@ -82,11 +51,30 @@
    "unit": "%",
    "provider": "구글 뉴스",
    "checked_at": "2026-11-24",
-   "articles": [],
+   "articles": [
+    {
+     "title": "Brent crude oil tops $116, a six-month high, as tensions swell in the Middle East",
+     "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNSVBHUDhjeG5sQkpOblUzQm9hSTdWRkduWHJwNXdibUgyM1FHNEtJeFpnWEVQclk1czRKV2hLbHNGS2FYem5sRzJ0N0sxakctZld4QmN4UnozQ2h3ZGFBcE1NZDdESDVRTkVQSTRVMUdxbUtHTnk2anV6Z3h4cmtmOU5COXTSAYoBQVVfeXFMT1RHRzc0UlM1VlFlakxiSU51Mk9FTXNoYndtX2tpb3RNQVNRQ1J5dGs2YnFYQUFxa0I3UUV4OHNkZFBRTVhGcjJ2SWpuQldna1VuM2VqQngyMHJXTW1YWXlPbUY4UE9CZklMbFdwQzdiMGlhS0xteVoydTEwNGlKdzhDSFRKQnZiNXJR?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-23"
+    },
+    {
+     "title": "Global Oil Price Hits $116 a Barrel, Highest Since April",
+     "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxONjZmQ1hOTHp4RFVzdWVRRWdzYnFPeEExcnNLS3J3RlRlc3A1OVprRXoxck1hUy1iejdTSGtucjFVSFFSQzFSelg3ZjFmRzNPSDlMdU1OX3F1YUJmZVBjNnY2Ykx3LTV4Q2VBZHRkQmJqcTRubnpqSTFKa1V5b24walJCTC1nT2ZfQ1hJalg4aHo?oc=5",
+     "source": "The New York Times",
+     "published": "2026-10-23"
+    },
+    {
+     "title": "Brent Hits $114 as Houthi Attacks Threaten Saudi Energy Infrastructure",
+     "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNVXp4ZEdPLTA3dlp1dndrT0JRWGF6UlRQaXAybzkwZl9iQVc1SHlXQzllV2FuaHhEUVotUEVpcU9ZNnJjMlBMRFFMMnlkeUhlT0FQVHE0Rms5bWhOb1BpYWdwTDgyblNYZ01YZ2tmWmFzUC05aDV4dW1pUXdiTFhfSjV2RW8zSzVnM0Myd2FTX0l3bTQ4bXdpWjBNODlyWm5wLTRfU0VnNXdIRk5jVnRBaGtBazUxUVd2enNxeVl5WFJ1cVXSAcgBQVVfeXFMT1BKTTBwRTFqOXJSbEZ3UTZVT3dkanlreS1FeXpKOHZVZXptZG0tR2tYdEpZVTY4RDdLbDlfXzRBLUNxeG41T2lLUGVlTVVzMGxWY29MNzFsZk9aa3A0eE05TENDQ05uNGZVc25VdE1QN2JRZXpiZmdqa3l1UVk3T2htaURPSVgxdENrN2pTa1kwS05pZG5SaGxoby12S18yaGo2aHZHdHRGLXI1dFhsem5QcXVsMzBTazdjZXFMRndWbEVXdHM2bTQ?oc=5",
+     "source": "Crude Oil Prices Today | OilPrice.com",
+     "published": "2026-10-23"
+    }
+   ],
    "ai": true,
-   "status": "none",
-   "summary": "",
-   "reason": "후보 기사는 모두 브렌트유를 다루지만 2026년 11월의 하락(90달러 아래로 하락 등)을 보도한 것이라, 10월 기준 114.08→124.83 상승과는 시기·방향·가격 수준이 맞지 않아 직접 관련 기사가 없다고 봤어요(가격 수준 차이가 커서 데이터 단위나 기준도 한 번 확인해 보는 게 좋겠어요)."
+   "status": "linked",
+   "summary": "같은 시기에 중동 긴장이 커지면서 브렌트유가 배럴당 116달러를 넘어 6개월 만에 가장 높아졌다는 보도가 나왔어요.",
+   "reason": "기준 달(2026-10) 안에 나온 세 기사가 브렌트유 또는 국제유가가 114~116달러로 올라 수개월 만에 최고를 찍었다고 직접 다뤄서 평균값 상승과 잘 맞아요. 하락 기사([0], [9])와 일반 해설 기사([7], [8])는 뺐어요."
   },
   {
    "key": "미국|WTI|2026-10-01",
@@ -102,22 +90,22 @@
    "checked_at": "2026-11-24",
    "articles": [
     {
-     "title": "WTI Crude Oil Price Forecast: Can Oil Hold $100 After OPEC+ Decision and Ahead of US Midterms?",
-     "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPa2gxZW1UQVRBUWZMTy0wZmZ0UEhHdXB4Vm5oVzhwcWdRV0lFNmhDcFlTY0gtMll2QVQ4UFFfQ2lncHF3UE9kY1VmQVNJWk9SQmJ2UlA0SWRLeFFqYlcyNVJmbFVJRVNPUzNFUy1vMFVSV0FCcVNtTjFvUnVRZDN6VFBYa3c?oc=5",
-     "source": "Mitrade",
-     "published": "2026-11-02"
+     "title": "WTI Crude Oil futures rise as Gulf tensions support prices.",
+     "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNSk1WUGFoQ05xRDZnemJOMWFpd0dmY0tOdE5ZZ0RCMHNQZ3JhR1dEY2VnNndUeE1kUk1SZEx6NlY1c2RlRWpmTy1oUWZOeVg5aENNZmV2VnZLUmEtM29jc1pXcllsM3NRRHI5UVI2U2Jka2hlM3pvQXJrWk1kcUVFYVRlaWlEN2pEMzVOdFIwRk9ZbUY1VkoxNjN2aG01M0JGQ2lsdGxBNmREZzhMUjhrcg?oc=5",
+     "source": "CME Group",
+     "published": "2026-10-13"
     },
     {
-     "title": "Oil prices edge lower as renewed U.S.-Iran peace efforts ease supply fears",
-     "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE4zdnNES2VLOVNQbEJKcncxMVlyamQxU3Jfa0o1MjFNd21YLTZ5dWJKWmpQbnNiWkhGY3Y5QXFXeXZnSU5zQ0VoSHc0QnllUFNNdk1qUkdnSEZGZk15cHAzMnFub0dhSGQ2S2V0Tm9vMNIBdEFVX3lxTE83QURjQjVBRjdxbTJrR0lsWnpKcHNWU1hBNy1Bdnk4VktjTmE1NXp6WWJqLXltUk93OWxRbndlQ1hZaFcwTm9xZ0dBM1phR0VCSVVqT3hFaUJ6ME5GNy1vUExkTW9ja0lsZjhSYWFKeVVqUUlj?oc=5",
-     "source": "CNBC",
-     "published": "2026-10-29"
+     "title": "WTI Outpaces Brent as U.S. Crude Draw Ignites Fresh Buying",
+     "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNUWJwTVY4OXFvOEthai1sbzhKanQ4SGR1dGFLMTRLQjRPR3BIV0lMVEpwb2pxd0VWVmtZWHRRYVVINWk0MDRmbG5EQ0NXaTNRMFF2bXZya1EtNUhXTmxJdFdJd0Rra3FoOUFOZ2RjODFHcTdZUzF4YjJpUGJQNzhmWENDTE40anRrS0NqNUZZTUdONm8zZldvT3VnNDBvOXJNOFlDa0JCMNIBrAFBVV95cUxPbXZYNms5REZOcWlEZENnQnhKSHpIdTJLVU81UWlTMWMtd1p5WmZnX2pyMGJWN2loSV9VVklXMnJZanY4MEpRTzhwNFJaSDQyVllXWmJPY1dpSDZfeWs2dEFLS3ZvNHFYSWtGS3ZfajhnWjI4X29YdkFLclBPSmlIZklKdTN5eVh0cExFM3BQVzlKelU5VU1wY2ZkdzlMZGNrMThrQS05R0xGMUtJ?oc=5",
+     "source": "Crude Oil Prices Today | OilPrice.com",
+     "published": "2026-10-15"
     }
    ],
    "ai": true,
-   "status": "review",
-   "summary": "10월 국제유가(WTI)가 올랐는데, 10월 말~11월 초에는 유가가 100달러 선을 지킬지 묻는 보도가 나왔어요.",
-   "reason": "후보 기사는 모두 기준 기간(2026-10)이 끝난 뒤의 WTI 기사이고, 대부분 11월 하락을 다뤄서 10월 상승을 직접 설명하는 기사가 없어요. 그나마 10월 말 시점인 [10]과 100달러 선을 다룬 [7]을 골랐지만 연관성이 약해 사람이 확인해야 해요."
+   "status": "linked",
+   "summary": "10월 WTI 평균값이 올랐는데, 같은 시기에 걸프 지역 긴장과 미국 원유 재고 감소 소식이 함께 나왔어요.",
+   "reason": "기준 기간 안에 나온 [4](10-13)와 [3](10-15)은 WTI 가격이 오른 일을 직접 다뤄 월평균 상승 방향과 맞고, Brent만 다룬 기사([9])와 WTI 하락 기사([10], [0], [11]), 일반 정보·과거 사례 기사는 고르지 않았어요."
   },
   {
    "key": "독일|HICP 헤드라인|2026-10-01",
@@ -145,16 +133,53 @@
      "published": "2026-11-20"
     },
     {
-     "title": "Euro remains on its back foot as German CPI confirms easing price pressures",
-     "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNdlNsVFllX0RSQWhKOEpNWXBJbEJRN2Q2QXg1ZHRUaUl0cWtNSU5ZbkhlYVpSYmtUQ2l5cEFwQUNrT1RkdURmNUdjZWZBQVFKbWRPTEtiUTJhWGpPTEhWWXdjNG5NMzdBZG1ia0ZPTW9qTjV3ZzRCQi12cHFUQWZja0dBNWlXWU55UFF4MkU1M1hUZUpVNkRIb1ZDZDJBb3A2Y1dwSk4ybkdWN1JYWnl6YXoyeFJaaHRKVlE?oc=5",
-     "source": "FXStreet",
-     "published": "2026-11-11"
+     "title": "Germany's October inflation seen at 2.8%",
+     "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOYkVzVDBqOTl1YU9NcnRNdE5LWUxzX0xkd0wwTi1QNWEwMmpBZjVPWXJTRGtiTWloa2kyei11Q2RWWnVsQndTQms4OXR6OHhaR2JUUFVicEZRUkJjS014cTRJNHVvMlNZY053bWdGT0RQVlZzR3pYeWhONWJNdFBSZXdneUhvZ3Q2dkI2dmlMdFFjOUN1OWdLTEVIY2pockNVbzJFYm54Q0RSVk1LQVdPMw?oc=5",
+     "source": "Fibre2Fashion",
+     "published": "2026-11-01"
     }
    ],
    "ai": true,
    "status": "review",
-   "summary": "같은 시기에 독일 10월 물가 상승률이 2.8%로 낮아졌다는 확정 보도가 함께 나왔어요.",
-   "reason": "독일 10월 물가 상승률이 2.8%로 확정됐고 상승세가 완화됐다는 기사가 발표 시점과 수치 모두에 맞지만, 제목만으로는 이 수치가 HICP인지 국내 CPI인지 구분할 수 없어 사람이 확인해야 합니다."
+   "summary": "같은 시기에 독일의 10월 물가상승률이 2.8%로 낮아졌다는 보도가 함께 나왔어요.",
+   "reason": "세 기사 모두 독일 10월 물가상승률 2.8%를 다뤄 수치는 지표와 맞지만, 제목만으로는 독일 통계청 기준 CPI인지 HICP인지 알 수 없어 사람이 확인해야 합니다."
+  },
+  {
+   "key": "프랑스|국채10년|2026-10-01",
+   "country": "프랑스",
+   "indicator": "국채10년",
+   "date": "2026-10-01",
+   "release_date": null,
+   "value": 4.89,
+   "prev": 4.44,
+   "diff": 0.45,
+   "unit": "%p",
+   "provider": "구글 뉴스",
+   "checked_at": "2026-11-24",
+   "articles": [
+    {
+     "title": "French 10-year bond yields hit 5%, highest since 2002",
+     "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOYXc5VF91b3J6TjJpdkR6VFR1SUtTX1VUY1ZTUFBTNXFIT3ZZQ3RBMTVPaDNjMVNZbzRqcGdqRjRXcFhEQjRZd0V6R2ZRZVJwOHdmeHl5LWhva0Y3c285ZUNuaG80bWxBNUMyczhxWWdPd0NZZlNUTVJmUEszM1dCMzU2dU43ZzJ0bHNMQVF5cjgzZWZMUWViWE5aeWc3NUYwSkE?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-21"
+    },
+    {
+     "title": "French 10-year bond yield hits 5% for first time since 2002 amid unrest",
+     "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9IUktuMWpyQnBWOUFSNDdoeG9mdWUtLTJCOFZxSnphZVo2Mm9icFFoZDJtaDZIZzYwQzNfa3hxY0RVcUk5OXlabVEwT2Z1eGVQbXh4QWZVaTc3Z090SE5JdDdxTXRtYlhncUFQXy10Wmo?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-21"
+    },
+    {
+     "title": "France's 10-year bond yield surpasses 5% mark for first time since 2002",
+     "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQTmIxUWx6OWRLOW55S1NEM2htMlNOZU11RUltdm5mUWVPM3VZVDNlSVJCTTItX0ZMTy1vSkpoYk5IclRzd1lfYjJ4NzRoUHotSC1TRHpCNTRvdVJ3SjJtUzdXZy1Bc1J4LVNBUEl3bWtXU1lJTkdJaUVvUHh4SlJMV3pPdWx0bGJsMTg2Ylk3MVhOV3VBZm5mMVhxZTg3RXFjU0JCaFJBcWR6SU5MSm5MTDJaSERJMUpZOHI3eGRtXzNtOXNTWW1XQVM1SUhLOG5FdmhOLTBOdC0wM1JoSlV3RzlwUGdidw?oc=5",
+     "source": "Le Monde.fr",
+     "published": "2026-10-21"
+    }
+   ],
+   "ai": true,
+   "status": "linked",
+   "summary": "같은 달에 프랑스 10년 만기 국채 금리가 2002년 이후 처음으로 5%를 넘었다는 보도가 함께 나왔어요.",
+   "reason": "0·1·5번은 기준 기간 안인 2026-10-21에 나온 기사이고, 프랑스 10년물 금리가 5%를 넘었다고 직접 다뤄 월평균 상승(+0.45%p)과 맞아요. 3·6번은 미국 국채 기사이고, 나머지는 확산 우려나 시장 일반 분석이라 고르지 않았어요."
   }
  ]
 }

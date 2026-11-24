@@ -55,6 +55,7 @@ THRESHOLD_GROUP = {
 BIG = {"default": 1.0, "rate_level": 0.5, "price_level": 5.0}
 SMALL = {"default": 0.3, "rate_level": 0.25, "price_level": 1.5}
 OIL = {"WTI", "두바이유", "브렌트"}
+MONTHLY_AVERAGE = OIL | {"국채10년"}  # 월평균으로 집계되는 지표
 
 # ---- 검색어 ----
 COUNTRY_EN = {"미국": "US", "일본": "Japan", "독일": "Germany", "프랑스": "France", "한국": "South Korea"}
@@ -116,7 +117,8 @@ def find_movers(observations, today):
             continue
         rel = (last.get("release_date") or "")[:10] or None
         try:
-            start, _ = news_window({"release_date": rel, "date": last["date"], "freq": last.get("freq")})
+            start, _ = news_window({"release_date": rel, "date": last["date"], "freq": last.get("freq"),
+                                    "indicator": indicator})
         except ValueError:
             continue
         if (today - start).days > RECENT_RELEASE_DAYS:
@@ -149,10 +151,13 @@ def news_window(m):
     - 발표일이 있으면 발표일 3일 전 ~ 5일 후.
     - 발표일이 없으면(OECD·Eurostat 경유 등) 기준 기간이 끝나기 3일 전부터 45일(분기 지표는 60일).
       기준월 날짜를 발표일로 쓰면 안 된다 — 10월 물가는 10월 1일에 발표되지 않는다."""
+    base = date.fromisoformat(m["date"][:10])
+    # 유가·국채금리는 '월평균' 값이라 그 달 안에 나온 기사가 관련 있다
+    if m.get("indicator") in MONTHLY_AVERAGE:
+        return base, _add_months(base, 1) + timedelta(days=2)
     if m.get("release_date"):
         rel = date.fromisoformat(m["release_date"][:10])
         return rel - timedelta(days=3), rel + timedelta(days=5)
-    base = date.fromisoformat(m["date"][:10])
     # 속보치(예: 유로존 물가)는 기준월 말일 무렵 나오므로 끝나기 3일 전부터 찾는다
     if m.get("freq") == "분기":
         end_of_period = _add_months(base, 3)
@@ -280,7 +285,9 @@ OUTPUT_SCHEMA = {
 def describe_change(m):
     sign = "+" if m["diff"] > 0 else ""
     start, end = news_window(m)
-    if m.get("release_date"):
+    if m["indicator"] in MONTHLY_AVERAGE:
+        when = f'한 달 평균값이라 그 달({start}~{end}) 안에 나온 기사를 찾았어요'
+    elif m.get("release_date"):
         when = f'발표일 {m["release_date"]}'
     else:
         when = (f'발표일 정보 없음 — 기준 기간이 끝난 뒤({start}~{end}) 나온 기사를 찾았어요. '
