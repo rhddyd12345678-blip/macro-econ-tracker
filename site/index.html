@@ -1306,10 +1306,15 @@
     Array.prototype.forEach.call(document.querySelectorAll("#simple-nav button[data-simple]"), function (b) {
       b.addEventListener("click", function () { setSimpleTab(b.dataset.simple); });
     });
+    // 지난번 "자세히 보기" 선택을 기억해 둔다(저장소를 못 쓰면 꺼진 상태로 시작)
+    try { state.detailMode = localStorage.getItem("mt_detail_mode") === "1"; } catch (err) { state.detailMode = false; }
+    document.getElementById("detail-toggle").checked = state.detailMode;
+    document.body.classList.toggle("detail-mode", state.detailMode);
     document.getElementById("detail-toggle").addEventListener("change", function (e) {
       state.detailMode = e.target.checked;
       // 자세히 보기를 켜면 쉬운 질문 카드는 숨기고 상세 화면만 남긴다(CSS: body.detail-mode)
       document.body.classList.toggle("detail-mode", state.detailMode);
+      try { localStorage.setItem("mt_detail_mode", state.detailMode ? "1" : "0"); } catch (err) { /* ignore */ }
       applySimpleTab();
       window.scrollTo(0, 0);
     });
