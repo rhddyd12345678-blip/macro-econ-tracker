@@ -3,7 +3,12 @@ name: 매크로 지표 자동 업데이트
 on:
   schedule:
     - cron: "0 22 * * *"  # UTC 22:00 = KST 07:00
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_news:
+        description: "뉴스 연결을 이전 결과 없이 전부 다시 판단"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -47,6 +52,7 @@ jobs:
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           DISABLE_AUTOUPDATER: "1"
+          NEWS_FORCE: ${{ inputs.force_news && '1' || '' }}
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
         run: python3 news_collect.py

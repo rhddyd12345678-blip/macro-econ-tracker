@@ -377,7 +377,9 @@ def main():
     log(f"뉴스를 붙일 지표 {len(movers)}개: " + ", ".join(m["key"] for m in movers))
 
     previous = {}
-    if os.path.exists(NEWS_JSON):
+    if os.environ.get("NEWS_FORCE") == "1":
+        log("NEWS_FORCE=1 → 이전 결과를 쓰지 않고 전부 다시 판단해요")
+    elif os.path.exists(NEWS_JSON):
         try:
             for it in json.load(open(NEWS_JSON, encoding="utf-8")).get("items", []):
                 previous[it["key"]] = it
