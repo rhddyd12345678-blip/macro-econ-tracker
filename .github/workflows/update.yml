@@ -31,11 +31,22 @@ jobs:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
         run: python3 collect.py | tee /tmp/collect_output.log
 
+      - name: Node 설치 (Claude Code CLI용)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Claude Code CLI 설치
+        continue-on-error: true
+        run: npm install -g @anthropic-ai/claude-code@2.1.331
+
       - name: 같은 시기 뉴스 연결 (news_collect.py)
         # 뉴스는 부가 기능이라 실패해도 지표 업데이트는 계속한다
+        # AI는 Claude 구독 토큰(claude setup-token, 1년 유효)으로 돌린다 — API 과금 없음
         continue-on-error: true
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          DISABLE_AUTOUPDATER: "1"
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
         run: python3 news_collect.py

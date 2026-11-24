@@ -299,6 +299,48 @@ def ask_claude(client, m, candidates):
         return None
 
 
+def ask_claude_cli(m, candidates):
+    """Claude 구독(Max 등)으로 돌리는 경로: Claude Code CLI 헤드리스 모드.
+    CLAUDE_CODE_OAUTH_TOKEN(`claude setup-token`으로 만든 1년 토큰)으로 인증한다.
+    ANTHROPIC_API_KEY가 환경에 있으면 CLI가 그 키(API 과금)를 먼저 쓰므로 자식 프로세스에서는 지운다."""
+    import subprocess
+    import tempfile
+
+    lines = [f"[{i}] {c['published']} | {c['source']} | {c['title']}"
+             + (f" | {c['snippet']}" if c.get("snippet") else "")
+             for i, c in enumerate(candidates)]
+    user = "지표 변화:\n" + describe_change(m) + "\n\n뉴스 후보:\n" + "\n".join(lines)
+    env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
+    env["DISABLE_AUTOUPDATER"] = "1"
+    cmd = [
+        "claude", "-p", "아래 지표 변화와 뉴스 후보를 규칙대로 판단해 JSON으로만 답해.",
+        "--model", MODEL,
+        "--system-prompt", SYSTEM_PROMPT,
+        "--tools", "",
+        "--max-turns", "3",
+        "--output-format", "json",
+        "--json-schema", json.dumps(OUTPUT_SCHEMA),
+    ]
+    try:
+        # 저장소 밖(빈 임시 폴더)에서 실행해 프로젝트 설정·훅을 읽지 않게 한다
+        with tempfile.TemporaryDirectory() as tmp:
+            p = subprocess.run(cmd, input=user, capture_output=True, text=True,
+                               timeout=300, env=env, cwd=tmp)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        log(f"Claude CLI 실행 실패: {e!r}")
+        return None
+    try:
+        out = json.loads(p.stdout)
+    except json.JSONDecodeError:
+        log(f"Claude CLI 출력 파싱 실패 (exit {p.returncode}): {p.stdout[:200]} {p.stderr[:200]}")
+        return None
+    result = out.get("structured_output")
+    if not isinstance(result, dict):
+        log(f"Claude CLI 결과 없음 (exit {p.returncode}): {str(out.get('result'))[:200]}")
+        return None
+    return result
+
+
 def check_result(result, candidates, banned):
     """Claude 결과를 코드로 다시 검사한다. 어기면 '확인 필요'로 내린다."""
     flags = []
@@ -342,12 +384,18 @@ def main():
         except (OSError, ValueError, KeyError):
             previous = {}
 
+    # AI 경로 선택: 구독 토큰(CLI)이 있으면 그걸 우선, 없으면 API 키(SDK), 둘 다 없으면 AI 없이
     client = None
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    use_cli = bool(os.environ.get("CLAUDE_CODE_OAUTH_TOKEN")) or os.environ.get("NEWS_AI") == "cli"
+    if use_cli:
+        client = "cli"
+        log("Claude 구독(Claude Code CLI)으로 연결해요")
+    elif os.environ.get("ANTHROPIC_API_KEY"):
         import anthropic
         client = anthropic.Anthropic()
+        log("Claude API 키로 연결해요")
     else:
-        log("ANTHROPIC_API_KEY 없음 → 기사 후보만 모으고 연결 문장은 만들지 않아요")
+        log("Claude 인증 정보 없음 → 기사 후보만 모으고 연결 문장은 만들지 않아요")
 
     banned = load_banned_phrases()
     items, calls = [], 0
@@ -372,7 +420,7 @@ def main():
                          "articles": candidates[:MAX_PICK]})
         else:
             calls += 1
-            result = ask_claude(client, m, candidates)
+            result = ask_claude_cli(m, candidates) if client == "cli" else ask_claude(client, m, candidates)
             if result is None:
                 item.update({"status": "review", "summary": "", "reason": "AI 응답을 받지 못했어요",
                              "articles": candidates[:MAX_PICK]})
