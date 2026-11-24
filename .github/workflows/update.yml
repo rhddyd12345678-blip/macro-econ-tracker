@@ -31,6 +31,15 @@ jobs:
           ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
         run: python3 collect.py | tee /tmp/collect_output.log
 
+      - name: 같은 시기 뉴스 연결 (news_collect.py)
+        # 뉴스는 부가 기능이라 실패해도 지표 업데이트는 계속한다
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: python3 news_collect.py
+
       - name: 변경 여부 확인
         id: diff
         run: |

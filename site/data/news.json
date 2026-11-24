@@ -1,0 +1,191 @@
+{
+ "generated_at": "2026-11-24 07:34",
+ "model": null,
+ "items": [
+  {
+   "key": "미국|실질GDP 성장률|2026-07-01",
+   "country": "미국",
+   "indicator": "실질GDP 성장률",
+   "date": "2026-07-01",
+   "release_date": "2026-10-29",
+   "value": 3.4,
+   "prev": 1.5,
+   "diff": 1.9,
+   "unit": "%p",
+   "provider": "구글 뉴스",
+   "checked_at": "2026-11-24",
+   "articles": [
+    {
+     "title": "U.S. Economy Accelerated This Summer Despite High Gas Prices",
+     "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBqZFZmSEdkY01hT3RMQm9xUDZLbWRvanI3M3EwVUFVVzRiZVB6ZGVEdExtWmhzQ2lFd2xER2RtSUU5NE14dWNyVVBxdnNNdnRnM3Rtd1hCTGFERFVnV3VZY3d3Tlo0dzIwSUE?oc=5",
+     "source": "WSJ",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "Consumers and A.I. Spending Push U.S. Economic Growth Higher",
+     "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5hWjFpUjZyQ0d1ZlRFNVlnTzFDMURuVDZOZ3pqaGg2UmppclZEclgwTFNQQmNFY0JpYzdmWms0Yjd3X3RsS2pDTlZXOTNkRU9fUk0yanVlclh6UmlkYWtNWFRDQzVBMEJMWjVKYXZBSW9KOS0zRVhxVzdQMA?oc=5",
+     "source": "The New York Times",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "Robust consumer spending, AI-related investment power US economy in third quarter",
+     "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNd0JuSzdaWWtxaGJGdW5CV0pONGc2dlpzMVJnaGl2UUIwQmtkc1FNSUVNQzhxTFRycVZ4dGpRaVlvbGdraXBWenkzY1otSno3TC1zWTlQUmFRandmM0hlSm14a1pfWTJMNjdNclo5bFlFQWt3UlpIcFlPY3RtZzBQVXhKUzVPSWMxUXZFckNVM3ZXZEU?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-29"
+    }
+   ],
+   "ai": false,
+   "status": "review",
+   "summary": "",
+   "reason": "AI 연결 전이라 관련 여부를 확인하지 않은 검색 결과예요"
+  },
+  {
+   "key": "독일|브렌트|2026-10-01",
+   "country": "독일",
+   "indicator": "브렌트",
+   "date": "2026-10-01",
+   "release_date": "2026-10-01",
+   "value": 124.83,
+   "prev": 114.08,
+   "diff": 9.4232,
+   "unit": "%",
+   "provider": "구글 뉴스",
+   "checked_at": "2026-11-24",
+   "articles": [
+    {
+     "title": "Crude oil prices and refinery margins generally increased throughout the third quarter",
+     "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE5KRmxycVhJeUlHVmVsTnlsQXgtdFpsQ1BYaUxiUjF3bjZuYmFfUHlQY3JTdHBkMEJwVWJOUmpjM2hjNXl2X1BwVFJwQVlCUGlSXzBfWEVOZU9UQVVuN0xjdEJCVQ?oc=5",
+     "source": "U.S. Energy Information Administration (EIA) (.gov)",
+     "published": "2026-10-05"
+    },
+    {
+     "title": "Analysts raise 2026 oil forecasts on prolonged Gulf disruption: Reuters poll",
+     "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOb1lVNHRnWlpZc2Q4anY4a2dCTndQN3JKSWdTSkVkRGNfdWxra2xlVDAtUGJqOGVBUURGZjh0YUxaSzNpZktWTkFoSG1EUV84SkI5WF9nWVRZXzRNd3pxZWZJOFIwNU5veE9naWlaMGhMV3Vjclc3c3Uzc1pxXzhCaTl4OTktdzVONHlNMTBpYTBBUVRrT3VMeWdyUW1UWUtycWlWa1BtUjdWNjdiV0cxdQ?oc=5",
+     "source": "Reuters",
+     "published": "2026-09-30"
+    },
+    {
+     "title": "Brent oil jumps more than 4% as U.S. reportedly sends third aircraft carrier to Middle East",
+     "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5yODZYTkUzZ09LMVducjBvQ1czQUc2WFdZNmVuUUpDVnpZMEJfMGhpWkkzQlRLUGprcDNielYycW8xYU5peDhhcy1pbzNJUVo1YkV0MjktUVliQ3NTc1ZNOXpDSUtubXZIYnBGOS04NDTSAXZBVV95cUxOQU83cmR3ZHl6YWl1V2RNcFRXbzJqRkFKZktLMkVobTBKMGxibmxDcEQwWjFqdXFQcFozSUVpVUhvZF85SDNCQzZxVk42RjdTWXdWcXd6SkNmWWlLVy1iT0l0NHlRUHNJOG5UZEQ5NlhoMHNmWnVB?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-01"
+    }
+   ],
+   "ai": false,
+   "status": "review",
+   "summary": "",
+   "reason": "AI 연결 전이라 관련 여부를 확인하지 않은 검색 결과예요"
+  },
+  {
+   "key": "미국|WTI|2026-10-01",
+   "country": "미국",
+   "indicator": "WTI",
+   "date": "2026-10-01",
+   "release_date": "2026-10-01",
+   "value": 101.38,
+   "prev": 97.31,
+   "diff": 4.1825,
+   "unit": "%",
+   "provider": "구글 뉴스",
+   "checked_at": "2026-11-24",
+   "articles": [
+    {
+     "title": "Crude Oil Cuts Losses as Traders Eye G-7 Fuel Release",
+     "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTnJNODFJQ0xlUm8zN2FkRzN6RUZRbzhPRlg2c3h3QmpyOUhKNy1UY3IwQ2d5OUltaDNIS1BjdmVQZ2RSLWsxb1hwRkNESFBSSXdOVXNOU0RNd1d4ZWY1N0JMY0M4VFNBYkpYRUE4VzdJVnB3Z0VidGVraER4SUctdk10cGFxZnYybmpvTFAxdW84MXVYOU9nTGp3WGY4LWpjcmxHMQ?oc=5",
+     "source": "WSJ",
+     "published": "2026-10-02"
+    },
+    {
+     "title": "WTI Sinks Nearly 4% as EU Weighs Emergency Stockpile Release",
+     "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPNTk4dHJLTzhaY3VKeW9BV0Ftdm5oYXVJNWpGLTFDclpfdVhvb3BmM2I3NWh2RGREdDIzbmU1UW1qa3lmYlhmQ0Z4YkxrdjdDNmF2WDl6WDNMcjBoeGRSWHhQZ21yeERqUGpPT21ocDNOdVJxbEVLeWIwaEtsVG9GZC1ZXzZDaEVwcTZwYm1sSzdMUDZMRXhsNG9URDhZbzFXSllqTzNSdnJDd1AzdUtDRE9tTXhjQdIBuwFBVV95cUxNaTFBTXNLTk50eTY4cDk4dEI5RTEzVmU4dHZtZXR4VHV0Zk5QU01jSFNCTDhYRTBMWGpvR2JXVVdlZnI1UWRaLVhENXUxRGhHOG9ZTmZNck1LYmNHV0x2b1gtVlpLT1Z0THEzdzZLcmNzakpEQ3VlV0x4amNSTFY4QWpGalUyR0FFREE4NVBWYVFOb3F1SUNjZVRnYndBWGp1aFlBWldVX2VjNWVVOXVQaHVLVHpPRDdteTlr?oc=5",
+     "source": "Crude Oil Prices Today | OilPrice.com",
+     "published": "2026-10-02"
+    },
+    {
+     "title": "Oil and gas activity increases despite cost pressures, longer supplier delivery times",
+     "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA3bEViaWRKem5STThFZ1J2NlhvMlE0TUZmUzY3NmhvejZJZE9WQXM3MV9PdTUycVRTeWpLX1oxTE9DM25CdnBaek81QmM5VGN1TnF4S3pvb1NiY1dzTWZYMW5NTHBSMnc?oc=5",
+     "source": "Federal Reserve Bank of Dallas",
+     "published": "2026-09-30"
+    }
+   ],
+   "ai": false,
+   "status": "review",
+   "summary": "",
+   "reason": "AI 연결 전이라 관련 여부를 확인하지 않은 검색 결과예요"
+  },
+  {
+   "key": "독일|HICP 헤드라인|2026-10-01",
+   "country": "독일",
+   "indicator": "HICP 헤드라인",
+   "date": "2026-10-01",
+   "release_date": "2026-10-01",
+   "value": 2.8,
+   "prev": 3.3,
+   "diff": -0.5,
+   "unit": "%p",
+   "provider": "구글 뉴스",
+   "checked_at": "2026-11-24",
+   "articles": [
+    {
+     "title": "Eurozone Inflation Hits 3.8%, Adding Pressure on the ECB to Raise Interest Rates Again",
+     "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPb0tPaHlVRThPT2NpTHEwcnF5QWlJZE45cXlKRU1MNDJhZ3RQQkFka24xbVdQZjhvZ01BdVJOQlVrLW00V0JCNzVNYk44SjRzcTVzbG01NmVaNXJDbVV1NHVOcWdPQTRQeUpzb1FpemFwc1dxQkVyOTZJelRXcWt0WC1VZE1vNXdTVEtDbGhGTDE0X1k0aDZUekllbjJwa3gzLUNvZVBkX2JiYmtQUVE?oc=5",
+     "source": "Morningstar",
+     "published": "2026-10-02"
+    },
+    {
+     "title": "Higher euro area inflation, but it remains an energy story",
+     "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5rM0pja0hFWHFKR2pXdkpvYS1iOHVNUVNEMlFNY2QxSDRvYnZTNkY0WHlJZmVNLWdfWTMyWDJJWHE2WFR3YUxfMnlZR1liRzd6dUVRSGowTFdXVWprUGlybmllbVpBSFk1d1VOV20xSTdvZHBIejVr?oc=5",
+     "source": "MUFG Research",
+     "published": "2026-09-30"
+    },
+    {
+     "title": "Heads up: Germany September CPI expected to show inflation back above 3%",
+     "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOZldrVURtSS1BcnlhVnBMbGVRWXRtTmRlLUlBV191LWVNT3U1dVdkZlh1c2tuR3dDWFZUN2llME0wRHNLcWMzTnNudTRaX3k4M1NMQlB2U1YySW40T2QzdTNiVXF6UE9pbkNycGRqSTZYdmRPYkZyRS1yc0V6T1dVQmp5SFZzc1lsZ29GTG85NWEwXzBwWkY5UVl6d0JIbS11dTE4VQ?oc=5",
+     "source": "investingLive",
+     "published": "2026-09-29"
+    }
+   ],
+   "ai": false,
+   "status": "review",
+   "summary": "",
+   "reason": "AI 연결 전이라 관련 여부를 확인하지 않은 검색 결과예요"
+  },
+  {
+   "key": "프랑스|국채10년|2026-10-01",
+   "country": "프랑스",
+   "indicator": "국채10년",
+   "date": "2026-10-01",
+   "release_date": "2026-10-01",
+   "value": 4.89,
+   "prev": 4.44,
+   "diff": 0.45,
+   "unit": "%p",
+   "provider": "구글 뉴스",
+   "checked_at": "2026-11-24",
+   "articles": [
+    {
+     "title": "French bond contagion fears are rattling the euro",
+     "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOU2I0a3Vldm9aWFp4WTFxOHFSR1lBMVFsYThLV1JqZnF2SWY5anFKZzVPTW9mVWNFUEJQOHRUYjNFOVFsNXBjQ253Y09QdV8tNTVsMGZfejgyb0o0Q09SMUJYQ0hjWm1PbkpHSHRja1VQeFBlZkI5YlhWR1VidVhLQWVob0RKN2ZkSUJ5VThTRTdLcGR0TXR0aXp3?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-06"
+    },
+    {
+     "title": "France’s 10-Year Bond Risk Premium Rises to 120 Basis Points",
+     "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOZ2RNRndMNF9GTFBoQktDZnBNNFVlc2s5QnNEbDd6RmVrU0tRZS1nbjgtNmxCZjVKU2tDdnZyYVBkRklkLXR3TmpYNTNnS1FySDA3M1V2YUtNYm96N00zeHgtSFowT0pGQVRKQkJYWDE1UTVnNXRvdWg1YnBiM1FjYkFLajR4STkxU1d0TUIwSVlfUHA3dHNUaVFGcTJYS2VkT3B3a1lyT2dmYWRETkpjSQ?oc=5",
+     "source": "Bloomberg.com",
+     "published": "2026-09-30"
+    },
+    {
+     "title": "U.S. Bond Yields Hit Highest Level Since 2002",
+     "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNQnJCNkJ1amNqVkhnUnRoYy1TN0t0ZkxmSFlqSVY5aXQzVUpCanhTamN2eDBDNjhmeTNnSUw2V2xDODV4UWJZTE5YcE5WZWFuaGJBX3U0NjV3ZWluZVVXRVdCLWdtV3gwSF9jRzVpNEpoSU9NeVdTNVpqeFVtT3RUVXh4Yw?oc=5",
+     "source": "The New York Times",
+     "published": "2026-10-01"
+    }
+   ],
+   "ai": false,
+   "status": "review",
+   "summary": "",
+   "reason": "AI 연결 전이라 관련 여부를 확인하지 않은 검색 결과예요"
+  }
+ ]
+}

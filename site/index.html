@@ -541,6 +541,21 @@
   .simple-strip li:first-child { border-top: none; }
   .simple-strip li .dir-mark { font-weight: 700; flex-shrink: 0; }
   .simple-strip .empty-note { color: var(--muted); font-size: 13px; }
+  /* 이번에 달라진 것 + 같은 시기 뉴스 */
+  .simple-strip li.mover-item { display: block; padding: 9px 0; }
+  .mover-line { display: flex; gap: 8px; align-items: baseline; font-weight: 600; }
+  .mover-news { margin: 6px 0 0 20px; font-size: 12.5px; line-height: 1.6; }
+  .mover-news.muted, .mover-news .muted { color: var(--muted); }
+  .news-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; margin-right: 6px; }
+  .news-badge.linked { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .news-badge.review { color: #b45309; background: color-mix(in srgb, #d97706 15%, transparent); cursor: help; }
+  .news-summary { color: var(--fg); }
+  .simple-strip ul.news-links { margin: 4px 0 0; padding-left: 16px; list-style: disc; font-size: 12.5px; }
+  .simple-strip ul.news-links li { display: list-item; border-top: none; padding: 1px 0; }
+  .news-links a { color: var(--accent); text-decoration: none; overflow-wrap: anywhere; }
+  .news-links a:hover { text-decoration: underline; }
+  .news-reason { margin-top: 3px; font-size: 11.5px; }
+  .movers-note { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
 
   /* 용어 툴팁 */
   .term {
@@ -656,6 +671,7 @@
     <div class="simple-strip">
       <h3>이번에 달라진 것</h3>
       <ul id="home-movers"></ul>
+      <div class="movers-note" id="home-movers-note"></div>
     </div>
     <div class="simple-strip" id="home-thisweek-strip">
       <h3>이번 주 볼 것</h3>
@@ -1228,8 +1244,10 @@
     loadJSON("data/fx_analysis.json").catch(function () { return null; }),
     loadJSON("data/fx_position.json").catch(function () { return null; }),
     loadJSON("data/fx_predictors.json").catch(function () { return null; }),
-    loadText("data/events.csv").catch(function () { return ""; })
+    loadText("data/events.csv").catch(function () { return ""; }),
+    loadJSON("data/news.json").catch(function () { return null; })
   ]).then(function (results) {
+    state.news = results[10];
     var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
     var fx = results[5], fxAnalysis = results[6], fxPosition = results[7], fxPredictors = results[8];
     state.indicators = data.indicators || [];
@@ -2122,19 +2140,59 @@
     return movers.slice(0, 3);
   }
 
+  // news_collect.py가 만든 news.json이 있으면 그 목록(최근 발표 기준)을 쓰고,
+  // 없으면 사이트에서 직접 계산한 목록을 쓴다.
+  function homeMoverList() {
+    var items = state.news && state.news.items;
+    if (items && items.length) return { list: items.slice(0, 3), withNews: true };
+    return { list: computeHomeMovers(), withNews: false };
+  }
+
+  function moverLine(m) {
+    var dir = m.diff > 0 ? "up" : m.diff < 0 ? "down" : "flat";
+    var sign = m.diff > 0 ? "+" : "";
+    return "<span class='dir-mark' style='color:var(--dir-" + dir + ")'>" + DIRECTION_ARROW[dir] + "</span>" +
+      "<span>" + escapeHtml(m.country + " " + m.indicator) + ", " + fmtMonthDay(m.date) + "에 " + fmtNum(m.value, 2) +
+      (m.unit === "%p" ? "%" : (LEVEL_UNITS[m.indicator] || "")) + "로 " + (dir === "up" ? "올랐어요" : dir === "down" ? "내렸어요" : "비슷해요") +
+      "(" + sign + fmtNum(m.diff, 2) + m.unit + ")</span>";
+  }
+
+  // 지표 아래에 붙는 '같은 시기 뉴스'. AI가 확신하지 못했거나 자동 검사에 걸린 건 '확인 필요'로 표시한다.
+  function moverNewsHtml(m) {
+    var arts = m.articles || [];
+    if (m.status === "none" || !arts.length) {
+      return "<div class='mover-news muted'>같은 시기 관련 기사를 찾지 못했어요.</div>";
+    }
+    // 속성값은 큰따옴표로 감싼다(escapeHtml이 "만 이스케이프하므로). 링크는 http(s)만 허용.
+    var badge = m.status === "review"
+      ? "<span class=\"news-badge review\" title=\"" + escapeHtml(m.reason || "") + "\">확인 필요</span>"
+      : "<span class=\"news-badge linked\">같은 시기 뉴스</span>";
+    var summary = m.summary ? "<span class=\"news-summary\">" + escapeHtml(m.summary) + "</span>" : "";
+    var links = arts.filter(function (a) { return /^https?:\/\//.test(a.url || ""); }).map(function (a) {
+      return "<li><a href=\"" + escapeHtml(a.url) + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + escapeHtml(a.title) + "</a>" +
+        "<span class='muted'> · " + escapeHtml(a.source || "") + (a.published ? " · " + escapeHtml(a.published) : "") + "</span></li>";
+    }).join("");
+    var why = m.status === "review" && m.reason
+      ? "<div class='news-reason muted'>왜 확인이 필요한가요? " + escapeHtml(m.reason) + "</div>" : "";
+    return "<div class='mover-news'>" + badge + summary + "<ul class='news-links'>" + links + "</ul>" + why + "</div>";
+  }
+
   function renderHomeMovers() {
     var el = document.getElementById("home-movers");
-    var movers = computeHomeMovers();
-    if (!movers.length) { el.innerHTML = "<li class='empty-note'>최근 달라진 것이 없어요.</li>"; return; }
-    el.innerHTML = movers.map(function (m) {
-      var dir = m.diff > 0 ? "up" : m.diff < 0 ? "down" : "flat";
-      var arrow = DIRECTION_ARROW[dir];
-      var sign = m.diff > 0 ? "+" : "";
-      return "<li><span class='dir-mark' style='color:var(--dir-" + dir + ")'>" + arrow + "</span>" +
-        "<span>" + escapeHtml(m.country + " " + m.indicator) + ", " + fmtMonthDay(m.date) + "에 " + fmtNum(m.value, 2) +
-        (m.unit === "%p" ? "%" : (LEVEL_UNITS[m.indicator] || "")) + "로 " + (dir === "up" ? "올랐어요" : dir === "down" ? "내렸어요" : "비슷해요") +
-        "(" + sign + fmtNum(m.diff, 2) + m.unit + ")</span></li>";
+    var pick = homeMoverList();
+    if (!pick.list.length) { el.innerHTML = "<li class='empty-note'>최근 달라진 것이 없어요.</li>"; return; }
+    el.innerHTML = pick.list.map(function (m) {
+      return "<li class='mover-item'><div class='mover-line'>" + moverLine(m) + "</div>" +
+        (pick.withNews ? moverNewsHtml(m) : "") + "</li>";
     }).join("");
+    var note = document.getElementById("home-movers-note");
+    if (note) {
+      if (!pick.withNews) note.textContent = "";
+      else note.textContent = (state.news.model
+        ? "뉴스는 발표일 앞뒤에 나온 기사 중 AI가 관련 있다고 고른 거예요. 원인을 단정하는 건 아니에요."
+        : "아직 AI 연결 전이라 발표일 앞뒤 검색 결과를 그대로 보여줘요.") +
+        " (갱신: " + state.news.generated_at + " UTC)";
+    }
   }
 
   // ---- 이번 주 볼 것 ----
