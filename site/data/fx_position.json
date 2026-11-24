@@ -1,34 +1,34 @@
 {
-  "generated_at": "2026-11-23T02:09:30",
-  "as_of": "2026-11-23",
+  "generated_at": "2026-11-24T05:43:52",
+  "as_of": "2026-11-24",
   "sample": {
     "start": "2021-09-01",
-    "end": "2026-11-23",
-    "n_days": 1282
+    "end": "2026-11-24",
+    "n_days": 1283
   },
   "position": {
-    "as_of": "2026-11-23",
-    "value": 1337.3,
-    "percentile_1y": 7.3,
-    "n_1y": 245,
-    "percentile_3y": 15.8,
+    "as_of": "2026-11-24",
+    "value": 1346.6,
+    "percentile_1y": 15.0,
+    "n_1y": 246,
+    "percentile_3y": 20.9,
     "n_3y": 732,
-    "percentile_5y": 42.1,
+    "percentile_5y": 47.1,
     "n_5y": 1228,
     "high_52w": 1554.4,
     "low_52w": 1322.6,
-    "dev_from_high_52w_pct": -13.967,
-    "dev_from_low_52w_pct": 1.111,
-    "ma20": 1337.66,
-    "dev_from_ma20_pct": -0.027,
-    "ma60": 1348.21,
-    "dev_from_ma60_pct": -0.809,
-    "ma120": 1416.8,
-    "dev_from_ma120_pct": -5.611,
-    "mean_5y": 1359.03,
-    "std_5y": 82.28,
-    "z_score_5y": -0.264,
-    "percentile_5y_expanding_latest": 42.1
+    "dev_from_high_52w_pct": -13.369,
+    "dev_from_low_52w_pct": 1.815,
+    "ma20": 1338.87,
+    "dev_from_ma20_pct": 0.578,
+    "ma60": 1347.6,
+    "dev_from_ma60_pct": -0.074,
+    "ma120": 1415.48,
+    "dev_from_ma120_pct": -4.866,
+    "mean_5y": 1359.15,
+    "std_5y": 82.14,
+    "z_score_5y": -0.153,
+    "percentile_5y_expanding_latest": 47.1
   },
   "swings": [
     {
@@ -1495,7 +1495,8 @@
       "2026-11-18",
       "2026-11-19",
       "2026-11-20",
-      "2026-11-23"
+      "2026-11-23",
+      "2026-11-24"
     ],
     "value": [
       1162.8,
@@ -2779,7 +2780,8 @@
       1338.8,
       1331.1,
       1330.8,
-      1337.3
+      1337.3,
+      1346.6
     ]
   },
   "dollar_decomposition": {
@@ -4014,7 +4016,12 @@
         "2026-11-09",
         "2026-11-10",
         "2026-11-12",
-        "2026-11-13"
+        "2026-11-13",
+        "2026-11-16",
+        "2026-11-17",
+        "2026-11-18",
+        "2026-11-19",
+        "2026-11-20"
       ],
       "krw_usd_index": [
         100.0,
@@ -5246,7 +5253,12 @@
         116.778,
         116.589,
         114.955,
-        114.585
+        114.585,
+        114.697,
+        114.809,
+        115.136,
+        114.474,
+        114.448
       ],
       "dollar_index_index": [
         100.0,
@@ -6478,7 +6490,12 @@
         107.787,
         108.187,
         108.567,
-        108.662
+        108.662,
+        108.849,
+        108.626,
+        109.094,
+        109.437,
+        109.501
       ],
       "won_strength_index": [
         100.0,
@@ -7710,33 +7727,38 @@
         108.342,
         107.766,
         105.884,
-        105.451
+        105.451,
+        105.373,
+        105.692,
+        105.538,
+        104.602,
+        104.517
       ]
     },
     "contributions": {
       "1m": {
-        "start_date": "2026-10-13",
-        "end_date": "2026-11-13",
-        "total_pct": -0.255,
-        "dollar_factor_pct": 0.994,
-        "won_factor_pct": -1.236,
-        "dollar_factor_share_of_log": -3.881
+        "start_date": "2026-10-20",
+        "end_date": "2026-11-20",
+        "total_pct": -0.098,
+        "dollar_factor_pct": 2.049,
+        "won_factor_pct": -2.104,
+        "dollar_factor_share_of_log": -20.775
       },
       "3m": {
-        "start_date": "2026-08-13",
-        "end_date": "2026-11-13",
-        "total_pct": -5.837,
-        "dollar_factor_pct": 2.908,
-        "won_factor_pct": -8.498,
-        "dollar_factor_share_of_log": -0.477
+        "start_date": "2026-08-20",
+        "end_date": "2026-11-20",
+        "total_pct": -5.112,
+        "dollar_factor_pct": 4.518,
+        "won_factor_pct": -9.214,
+        "dollar_factor_share_of_log": -0.842
       },
       "6m": {
-        "start_date": "2026-05-13",
-        "end_date": "2026-11-13",
-        "total_pct": -10.234,
-        "dollar_factor_pct": 3.525,
-        "won_factor_pct": -13.291,
-        "dollar_factor_share_of_log": -0.321
+        "start_date": "2026-05-20",
+        "end_date": "2026-11-20",
+        "total_pct": -11.504,
+        "dollar_factor_pct": 3.722,
+        "won_factor_pct": -14.68,
+        "dollar_factor_share_of_log": -0.299
       }
     }
   },
@@ -9322,7 +9344,8 @@
           "2026-11-18",
           "2026-11-19",
           "2026-11-20",
-          "2026-11-23"
+          "2026-11-23",
+          "2026-11-24"
         ],
         "value": [
           5.361,
@@ -10586,7 +10609,8 @@
           6.983,
           7.281,
           7.276,
-          7.456
+          7.456,
+          7.761
         ]
       },
       "60": {
@@ -11812,7 +11836,8 @@
           "2026-11-18",
           "2026-11-19",
           "2026-11-20",
-          "2026-11-23"
+          "2026-11-23",
+          "2026-11-24"
         ],
         "value": [
           5.286,
@@ -13036,7 +13061,8 @@
           8.246,
           8.217,
           8.121,
-          8.193
+          8.193,
+          8.322
         ]
       },
       "120": {
@@ -14202,7 +14228,8 @@
           "2026-11-18",
           "2026-11-19",
           "2026-11-20",
-          "2026-11-23"
+          "2026-11-23",
+          "2026-11-24"
         ],
         "value": [
           4.772,
@@ -15366,27 +15393,28 @@
           8.131,
           8.087,
           8.08,
-          8.111
+          8.111,
+          8.174
         ]
       }
     },
     "latest": {
-      "20": 7.456,
-      "60": 8.193,
-      "120": 8.111
+      "20": 7.761,
+      "60": 8.322,
+      "120": 8.174
     },
     "percentile_5y": {
-      "20": 41.6,
-      "60": 51.9,
-      "120": 40.2
+      "20": 47.7,
+      "60": 54.9,
+      "120": 42.2
     },
     "median_5y": {
       "20": 7.857,
-      "60": 8.09,
-      "120": 8.404
+      "60": 8.091,
+      "120": 8.403
     },
     "daily_return_5y": {
-      "std_pct": 0.5404,
+      "std_pct": 0.5407,
       "abs_p95_pct": 1.1015,
       "abs_p99_pct": 1.6498,
       "n": 1228
@@ -15400,24 +15428,24 @@
       "1m": {
         "p5": -4.845,
         "p25": -1.28,
-        "p50": 0.319,
+        "p50": 0.321,
         "p75": 1.915,
         "p95": 4.399,
         "n": 1210
       },
       "3m": {
-        "p5": -9.836,
-        "p25": -1.936,
-        "p50": 1.544,
-        "p75": 3.931,
-        "p95": 8.051,
-        "n": 1171
+        "p5": -9.838,
+        "p25": -1.948,
+        "p50": 1.549,
+        "p75": 3.933,
+        "p95": 8.052,
+        "n": 1170
       },
       "6m": {
-        "p5": -8.441,
-        "p25": -1.684,
-        "p50": 2.397,
-        "p75": 5.378,
+        "p5": -8.455,
+        "p25": -1.691,
+        "p50": 2.393,
+        "p75": 5.359,
         "p95": 10.874,
         "n": 1108
       }
@@ -15425,60 +15453,61 @@
   },
   "analogs": {
     "current": {
-      "percentile_5y": 42.1,
+      "percentile_5y": 47.1,
       "spread_kr_us_sign": -1
     },
-    "n_candidates": 9,
+    "n_candidates": 10,
     "candidate_dates": [
-      "2023-01-10",
+      "2022-12-28",
+      "2023-01-02",
       "2023-02-01",
-      "2023-06-14",
-      "2023-07-14",
+      "2023-06-12",
+      "2023-07-12",
       "2023-08-01",
-      "2023-11-20",
+      "2023-11-16",
       "2023-12-01",
       "2024-01-02",
       "2024-10-02"
     ],
     "horizons": {
       "1m": {
-        "n": 9,
-        "median_pct": 3.343,
-        "p25_pct": 0.796,
-        "p75_pct": 3.808,
+        "n": 10,
+        "median_pct": 0.865,
+        "p25_pct": -0.388,
+        "p75_pct": 3.691,
         "mae": {
-          "weak_won_bet_median_pct": -0.313,
-          "weak_won_bet_worst_pct": -2.206,
-          "weak_won_bet_worst_day": 24,
-          "strong_won_bet_median_pct": 3.518,
+          "weak_won_bet_median_pct": -1.016,
+          "weak_won_bet_worst_pct": -3.046,
+          "weak_won_bet_worst_day": 29,
+          "strong_won_bet_median_pct": 2.197,
           "strong_won_bet_worst_pct": 7.036,
           "strong_won_bet_worst_day": 27
         }
       },
       "3m": {
-        "n": 9,
-        "median_pct": 4.991,
-        "p25_pct": 3.937,
-        "p75_pct": 5.951,
+        "n": 10,
+        "median_pct": 3.411,
+        "p25_pct": 2.616,
+        "p75_pct": 5.582,
         "mae": {
-          "weak_won_bet_median_pct": -0.518,
-          "weak_won_bet_worst_pct": -2.206,
-          "weak_won_bet_worst_day": 24,
-          "strong_won_bet_median_pct": 6.328,
+          "weak_won_bet_median_pct": -1.016,
+          "weak_won_bet_worst_pct": -3.863,
+          "weak_won_bet_worst_day": 37,
+          "strong_won_bet_median_pct": 4.567,
           "strong_won_bet_worst_pct": 12.794,
           "strong_won_bet_worst_day": 89
         }
       },
       "6m": {
-        "n": 9,
-        "median_pct": 4.697,
-        "p25_pct": 3.494,
-        "p75_pct": 6.672,
+        "n": 10,
+        "median_pct": 4.399,
+        "p25_pct": 2.931,
+        "p75_pct": 6.291,
         "mae": {
-          "weak_won_bet_median_pct": -0.518,
-          "weak_won_bet_worst_pct": -2.206,
-          "weak_won_bet_worst_day": 24,
-          "strong_won_bet_median_pct": 7.795,
+          "weak_won_bet_median_pct": -1.016,
+          "weak_won_bet_worst_pct": -3.863,
+          "weak_won_bet_worst_day": 37,
+          "strong_won_bet_median_pct": 6.99,
           "strong_won_bet_worst_pct": 12.794,
           "strong_won_bet_worst_day": 89
         }
@@ -15545,79 +15574,79 @@
       "date": "2026-11-26",
       "country": "한국",
       "indicator": "기준금리",
-      "d_day": 3
+      "d_day": 2
     },
     {
       "date": "2026-12-01",
       "country": "일본",
       "indicator": "실업률",
+      "d_day": 7
+    },
+    {
+      "date": "2026-12-02",
+      "country": "한국",
+      "indicator": "CPI 헤드라인",
       "d_day": 8
     },
     {
       "date": "2026-12-02",
       "country": "한국",
-      "indicator": "CPI 헤드라인",
-      "d_day": 9
-    },
-    {
-      "date": "2026-12-02",
-      "country": "한국",
       "indicator": "CPI 근원",
-      "d_day": 9
+      "d_day": 8
     },
     {
       "date": "2026-12-04",
       "country": "미국",
       "indicator": "비농업고용",
-      "d_day": 11
+      "d_day": 10
     },
     {
       "date": "2026-12-04",
       "country": "미국",
       "indicator": "실업률",
-      "d_day": 11
+      "d_day": 10
     },
     {
       "date": "2026-12-09",
       "country": "미국",
       "indicator": "정책금리(상단)",
+      "d_day": 15
+    },
+    {
+      "date": "2026-12-10",
+      "country": "미국",
+      "indicator": "CPI 헤드라인",
       "d_day": 16
     },
     {
       "date": "2026-12-10",
       "country": "미국",
-      "indicator": "CPI 헤드라인",
-      "d_day": 17
-    },
-    {
-      "date": "2026-12-10",
-      "country": "미국",
       "indicator": "CPI 근원",
-      "d_day": 17
+      "d_day": 16
     },
     {
       "date": "2026-12-16",
       "country": "한국",
       "indicator": "실업률",
-      "d_day": 23
+      "d_day": 22
     },
     {
       "date": "2026-12-18",
       "country": "일본",
       "indicator": "정책금리",
-      "d_day": 25
+      "d_day": 24
     },
     {
       "date": "2026-12-18",
       "country": "일본",
       "indicator": "CPI 헤드라인",
-      "d_day": 25
+      "d_day": 24
     },
     {
       "date": "2026-12-18",
       "country": "일본",
       "indicator": "CPI 근원",
-      "d_day": 25
+      "d_day": 24
     }
   ],
   "methodology_note": "이 데이터는 원/달러 환율의 과거 대비 위치와 과거 통계를 보여줄 뿐 향후 방향을 예측하지 않습니다. 단기 환율은 펀더멘털 모형이 단순 예측을 이기지 못한다는 연구 결과가 일반적이며, 고점·저점은 사후에만 확정됩니다. 표본은 제한적(2021-09~현재)이고 독립적인 국면은 이보다 훨씬 적습니다. 과거 최대 역행폭은 미래 손실의 상한이 아닙니다. 투자 판단과 그 결과는 본인 책임입니다."
