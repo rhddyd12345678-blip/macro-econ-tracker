@@ -1626,7 +1626,7 @@
     var out = [];
     for (var i = 0; i < points.length; i++) {
       if (i > 0) {
-        out.push({ x: points[i].x, y: points[i - 1].y, release_date: null, synthetic: true });
+        out.push({ x: points[i].x, y: points[i - 1].y, release_date: null, synthetic: "step" });
       }
       out.push(points[i]);
     }
@@ -1634,7 +1634,7 @@
       var last = points[points.length - 1];
       var today = todayStr();
       if (last.x < today) {
-        out.push({ x: today, y: last.y, release_date: null, synthetic: true });
+        out.push({ x: today, y: last.y, release_date: null, synthetic: "extend" });
       }
     }
     return out;
@@ -1668,8 +1668,12 @@
   function tooltipLabel(unit) {
     return function (ctx) {
       var raw = ctx.raw || {};
-      var lines = [ctx.dataset.label + ": " + fmtNum(raw.y, 4) + (unit ? " " + unit : "")];
-      lines.push("발표일: " + (raw.release_date ? raw.release_date : "없음"));
+      // 기준금리·정책금리는 결정일 값이라 카드 단위의 '(월평균)'을 붙이지 않는다
+      var u = unit && /금리/.test(ctx.dataset.label) && !/국채/.test(ctx.dataset.label)
+        ? unit.replace(/\s*\(월평균\)/, "") : unit;
+      var lines = [ctx.dataset.label + ": " + fmtNum(raw.y, 4) + (u ? " " + u : "")];
+      lines.push(raw.synthetic === "extend" ? "마지막 변경 이후 오늘까지 같은 값이에요"
+        : "발표일: " + (raw.release_date ? raw.release_date : "없음"));
       return lines;
     };
   }
@@ -1902,6 +1906,8 @@
         legend: { display: !!opts.legend, labels: { color: fg, boxWidth: 12, font: { size: 11 } } },
         tooltip: {
           callbacks: { label: tooltipLabel(unit) },
+          // 계단선용 보조 점(변경일에 끼워 넣은 '직전 값')은 실제 발표가 아니므로 툴팁에서 뺀다
+          filter: function (item) { return !(item.raw && item.raw.synthetic === "step"); },
           titleColor: fg, bodyColor: fg,
           backgroundColor: cssVar("--card-bg"), borderColor: border, borderWidth: 1
         },
