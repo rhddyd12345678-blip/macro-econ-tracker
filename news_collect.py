@@ -601,6 +601,9 @@ def build_calendar_notes(data, today, client, banned):
 
     for k, v in previous.items():  # 기간이 지난 메모도 남긴다(지난 달 달력에서도 보이도록)
         notes.setdefault(k, v)
+    reviews = load_reviews()  # 사람 검토(대상=달력) 반영
+    for k, v in notes.items():
+        apply_review(v, reviews.get(("달력", k)))
     with open(CAL_JSON, "w", encoding="utf-8") as f:
         json.dump({"generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
                    "notes": notes}, f, ensure_ascii=False, indent=1)
@@ -615,7 +618,7 @@ def build_calendar_notes(data, today, client, banned):
 # - 거절: 기사를 숨기고 '사람이 확인한 결과 관련 기사가 없어요'로 표시
 # AI 판정은 ai_status 에 따로 남겨, 사람 판정과 얼마나 일치했는지 셀 수 있게 한다.
 REVIEW_CSV = os.path.join(ROOT, "data", "news_review.csv")
-REVIEW_FIELDS = ["지표키", "판정", "AI판정", "메모", "검토일"]
+REVIEW_FIELDS = ["대상", "지표키", "판정", "AI판정", "메모", "검토일"]  # 대상: 홈(이번에 달라진 것) / 달력
 
 
 def load_reviews():
@@ -625,7 +628,8 @@ def load_reviews():
     with open(REVIEW_CSV, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             if row.get("판정") in ("승인", "거절") and row.get("지표키"):
-                out[row["지표키"]] = row  # 같은 지표를 다시 검토하면 마지막 판정이 이긴다
+                # 같은 대상·지표를 다시 검토하면 마지막 판정이 이긴다
+                out[(row.get("대상") or "홈", row["지표키"])] = row
     return out
 
 
@@ -725,7 +729,7 @@ def main():
     # ---- 사람 검토 반영 (HITL) ----
     reviews = load_reviews()
     for it in items:
-        apply_review(it, reviews.get(it["key"]))
+        apply_review(it, reviews.get(("홈", it["key"])))
     applied = sum(1 for it in items if it.get("human"))
     if applied:
         log(f"사람 검토 반영 {applied}건")

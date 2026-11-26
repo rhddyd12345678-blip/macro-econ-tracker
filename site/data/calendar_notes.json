@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-26 10:58",
+ "generated_at": "2026-11-26 11:04",
  "notes": {
   "미국|PCE 근원|2026-10-01": {
    "country": "미국",
@@ -37,7 +37,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "일본|CPI 헤드라인|2026-10-01": {
    "country": "일본",
@@ -75,7 +76,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "일본|CPI 근원|2026-10-01": {
    "country": "일본",
@@ -113,7 +115,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "일본|실질GDP 성장률|2026-07-01": {
    "country": "일본",
@@ -151,7 +154,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "한국|실업률|2026-10-01": {
    "country": "한국",
@@ -183,7 +187,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "review"
   },
   "한국|취업자수|2026-10-01": {
    "country": "한국",
@@ -221,7 +226,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "review"
   },
   "미국|비농업고용|2026-10-01": {
    "country": "미국",
@@ -259,7 +265,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "미국|실업률|2026-10-01": {
    "country": "미국",
@@ -297,7 +304,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "한국|CPI 헤드라인|2026-10-01": {
    "country": "한국",
@@ -335,7 +343,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "한국|CPI 근원|2026-10-01": {
    "country": "한국",
@@ -373,7 +382,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "미국|국채10년|2026-10-01": {
    "country": "미국",
@@ -411,7 +421,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "review"
   },
   "일본|정책금리|2026-10-30": {
    "country": "일본",
@@ -449,7 +460,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "일본|실업률|2026-09-01": {
    "country": "일본",
@@ -487,7 +499,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "미국|PCE 근원|2026-09-01": {
    "country": "미국",
@@ -525,7 +538,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "미국|실질GDP 성장률|2026-07-01": {
    "country": "미국",
@@ -563,7 +577,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "미국|정책금리(상단)|2026-10-28": {
    "country": "미국",
@@ -601,7 +616,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "한국|실질GDP 성장률|2026-07-01": {
    "country": "한국",
@@ -639,7 +655,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "review"
   },
   "일본|CPI 헤드라인|2026-09-01": {
    "country": "일본",
@@ -677,7 +694,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "일본|CPI 근원|2026-09-01": {
    "country": "일본",
@@ -715,7 +733,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "한국|기준금리|2026-10-22": {
    "country": "한국",
@@ -753,7 +772,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "한국|실업률|2026-09-01": {
    "country": "한국",
@@ -791,7 +811,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "한국|취업자수|2026-09-01": {
    "country": "한국",
@@ -829,7 +850,8 @@
    ],
    "provider": "구글 뉴스(한국어)",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "미국|CPI 헤드라인|2026-09-01": {
    "country": "미국",
@@ -867,7 +889,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   },
   "미국|CPI 근원|2026-09-01": {
    "country": "미국",
@@ -905,7 +928,8 @@
    ],
    "provider": "구글 뉴스",
    "ai": true,
-   "checked_at": "2026-11-26"
+   "checked_at": "2026-11-26",
+   "ai_status": "linked"
   }
  }
 }

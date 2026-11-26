@@ -2955,18 +2955,33 @@
       h += "<div class=\"muted\">이 발표의 해석은 아직 없어요. 최근 45일 안의 발표만 매일 밤 자동으로 만들고, 값이 아직 수집되지 않은 발표는 건너뛰어요.</div>";
     } else {
       var sign = note.diff > 0 ? "+" : "";
+      // 고용(천 명) 지표는 변화율보다 '몇 명 늘었나'로 읽는 게 일반적이라 증감 인원으로 보여준다
+      var isCount = LEVEL_UNITS[note.indicator] === "천 명";
+      var cnt = note.value - note.prev;
+      var changeTxt = isCount
+        ? (cnt > 0 ? "+" : "") + fmtNum(cnt, 0) + "천 명"
+        : sign + fmtNum(note.diff, 2) + note.unit;
       var valueLine = note.hold
         ? "동결 — " + fmtValueWithUnit(note.indicator, note.value) + " 유지"
+        : isCount
+        ? "직전보다 " + changeTxt + " <span class=\"muted\">(전체 " + fmtNum(note.value, 0) + "천 명)</span>"
         : fmtValueWithUnit(note.indicator, note.value) + " <span class=\"muted\">(직전 " + fmtValueWithUnit(note.indicator, note.prev) +
-          ", " + sign + fmtNum(note.diff, 2) + note.unit + ")</span>";
+          ", " + changeTxt + ")</span>";
       h += "<div class=\"cd-value\">" + valueLine + "</div>";
       if (note.meaning) {
         h += "<div class=\"cd-block\"><div class=\"cd-label\">이 숫자의 의미</div><div class=\"cd-meaning\">" +
           escapeHtml(note.meaning) + "</div><div class=\"muted\" style=\"margin-top:4px;\">일반적으로 이렇게 읽힌다는 해석이에요. 앞으로 그렇게 된다는 뜻은 아니에요.</div></div>";
       }
       var arts = (note.articles || []).filter(function (a) { return /^https?:\/\//.test(a.url || ""); });
-      if (arts.length) {
-        var badge = note.status === "review"
+      var human = note.human || null;
+      if (human && human.decision === "거절") {
+        h += "<div class=\"cd-block\"><div class=\"cd-label\">관련 기사 <span class=\"news-badge human\">사람 확인</span></div>" +
+          "<div class=\"muted\">AI가 고른 기사를 사람이 확인했는데 이 발표와 관련이 없었어요." +
+          (human.memo ? " 검토 메모: " + escapeHtml(human.memo) : "") + "</div></div>";
+      } else if (arts.length) {
+        var badge = human
+          ? " <span class=\"news-badge human\" title=\"AI가 고른 기사를 사람이 확인했어요\">사람 확인</span>"
+          : note.status === "review"
           ? " <span class=\"news-badge review\" title=\"" + escapeHtml(note.reason || "") + "\">확인 필요</span>" : "";
         h += "<div class=\"cd-block\"><div class=\"cd-label\">관련 기사" + badge + "</div>" +
           (note.summary ? "<div>" + escapeHtml(note.summary) + "</div>" : "") + "<ul>" +
@@ -2974,12 +2989,14 @@
             return "<li><a href=\"" + escapeHtml(a.url) + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + escapeHtml(a.title) +
               "</a> <span class=\"muted\">· " + escapeHtml(a.source || "") + (a.published ? " · " + escapeHtml(a.published) : "") + "</span></li>";
           }).join("") + "</ul>" +
-          (note.status === "review" && note.reason ? "<div class=\"muted\">왜 확인이 필요한가요? " + escapeHtml(note.reason) + "</div>" : "") +
+          (!human && note.status === "review" && note.reason ? "<div class=\"muted\">왜 확인이 필요한가요? " + escapeHtml(note.reason) + "</div>" : "") +
+          (human && human.memo ? "<div class=\"muted\">검토 메모: " + escapeHtml(human.memo) + "</div>" : "") +
           "</div>";
       } else {
         h += "<div class=\"cd-block muted\">발표일 앞뒤로 관련 기사를 찾지 못했어요.</div>";
       }
-      h += "<div class=\"muted\" style=\"margin-top:10px;\">AI가 기사를 고르고 해석을 썼어요(" + escapeHtml(note.checked_at || "") + ").</div>";
+      h += "<div class=\"muted\" style=\"margin-top:10px;\">AI가 기사를 고르고 해석을 썼어요(" + escapeHtml(note.checked_at || "") + ")" +
+        (human ? " · 사람이 검토했어요(" + escapeHtml(human.date || "") + ")" : "") + ".</div>";
     }
     box.innerHTML = h;
     box.style.display = "";
