@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-26 11:04",
+ "generated_at": "2026-11-26 11:22",
  "notes": {
   "미국|PCE 근원|2026-10-01": {
    "country": "미국",
@@ -196,14 +196,15 @@
    "period": "2026-10-01",
    "release_date": "2026-11-11",
    "value": 29179.0,
-   "prev": 29266.0,
-   "diff": -0.2973,
+   "prev": 29040.0,
+   "diff": 0.4787,
    "unit": "%",
    "hold": false,
-   "summary": "10월 전체 취업자는 1년 전보다 14만명 늘었지만, 청년층 취업자는 48개월 연속 줄며 고용률이 코로나 이후 최저로 떨어졌다는 '청년 고용 한파'에 초점을 맞춰 보도됐어요.",
-   "meaning": "이 지표로는 취업자가 전월보다 약 8만7천명(-0.3%) 줄었어요. 일반적으로 고용이 줄면 경기가 식는 신호로 읽혀요. 다만 물가는 2.82%로 아직 목표치 2%보다 높고, 한국은행은 직전 회의에서 금리를 올렸어요. 그래서 이번 숫자는 추가 인상을 서두를 필요가 줄었다는 쪽으로 읽힐 여지가 있지만, 금리를 내릴 근거로 보기는 어렵다고 볼 수 있어요.",
-   "status": "review",
-   "reason": "[1]·[2]·[5]는 같은 날 나온 전국 10월 고용동향 기사예요. 그런데 기사 제목은 전년 대비 14만명 증가인데, 지표 데이터는 전월 대비 -0.3%(아마 계절조정 기준)로 방향이 반대예요. 기준이 서로 다른지 사람이 확인해야 해요. [0]·[3]은 지역 통계, [4]·[6]은 다음 날 이후 나온 청년 고용 해설 기사라서 뺐어요.",
+   "basis": "yoy",
+   "summary": "10월 취업자수는 14만 명 늘었지만, 청년층과 건설업 취업자는 줄어 청년 고용 한파가 4년째 이어지고 있다고 보도됐어요.",
+   "meaning": "작년보다 취업자가 약 0.5% 늘어 전체 고용은 버티는 쪽으로 읽히지만, 청년·건설업 고용이 약해 고르게 좋아졌다고 보기는 어려워요. 물가가 2.82%로 목표 2%를 웃돌고 한국은행이 직전에 금리를 올린 상황이라, 고용이 크게 무너지지 않았다는 점은 금리를 서둘러 내릴 압력이 크지 않다고 볼 수 있는 재료로 읽혀요.",
+   "status": "linked",
+   "reason": "[1]은 전국 10월 취업자 14만 명 증가(지표 29,040→29,179천 명, +139천 명과 일치)를 직접 다뤘고, [2]와 [5]는 같은 날 같은 발표를 청년 고용 중심으로 보도했어요. [0]과 [3]은 지역 통계이고 [4]와 [6]은 [2]와 겹치거나 날짜가 늦어 제외했어요.",
    "articles": [
     {
      "title": "10월 취업자수 14만명 증가…청년·건설업 취업자수 감소",
@@ -227,7 +228,7 @@
    "provider": "구글 뉴스(한국어)",
    "ai": true,
    "checked_at": "2026-11-26",
-   "ai_status": "review"
+   "ai_status": "linked"
   },
   "미국|비농업고용|2026-10-01": {
    "country": "미국",
@@ -820,14 +821,15 @@
    "period": "2026-09-01",
    "release_date": "2026-10-16",
    "value": 29266.0,
-   "prev": 29151.0,
-   "diff": 0.3945,
+   "prev": 29154.0,
+   "diff": 0.3842,
    "unit": "%",
    "hold": false,
-   "summary": "9월 취업자 수가 11만3000명 늘었고 보건복지 분야 증가와 제조업 취업자의 27개월 만의 반등이 보도됐지만, 청년·건설업 취업자 감소로 청년 고용 한파는 여전하다는 점도 함께 다뤄졌어요.",
-   "meaning": "취업자 수가 약 0.4% 늘어나 크지는 않지만 고용 시장이 버티고 있다는 신호로 읽혀요. 물가가 2.88%로 목표치 2%를 웃돌고 한국은행이 직전 회의에서 금리를 올린 상황이라, 고용이 탄탄한 만큼 서둘러 금리를 내리기보다 긴축 기조를 유지할 여지가 있다고 볼 수 있어요.",
+   "basis": "yoy",
+   "summary": "9월 취업자 수가 1년 전보다 11만 3천 명 늘었다고 보도됐어요. 보건복지 분야는 20만 명 늘고 고용률은 '역대 최고'를 기록했지만, 청년과 건설업 취업자는 줄어 청년 고용 한파는 여전하다는 점도 함께 다뤄졌어요.",
+   "meaning": "취업자가 1년 전보다 약 0.4% 늘었어요. 증가 폭이 크지는 않지만 일자리가 꾸준히 늘고 있다는 신호로 읽혀요. 물가가 2.88%로 목표치 2%보다 높고 한국은행이 직전 회의에서 금리를 올렸다는 점을 함께 보면, 고용이 버텨 주는 동안에는 금리를 서둘러 내리기보다 물가 쪽에 더 무게를 둘 여지가 있다고 볼 수 있어요.",
    "status": "linked",
-   "reason": "발표 당일 기사 [3]·[4]·[6]이 9월 취업자 증가를 직접 다뤘어요. 다만 기사 속 증가 폭(전년 대비 11.3만 명)은 데이터의 증가 폭(29151→29266, 약 11.5만 명)과 기준이 다를 수 있으니 확인이 필요해요. [1]은 제목의 '27개월 만에 증가 전환'이 전체 취업자 기준이라는 오해를 줄 수 있어 뺐어요.",
+   "reason": "[3], [4], [6]은 발표일(10/16) 당일에 9월 취업자 수 발표를 직접 다뤘고, 제목의 약 11만 명 증가는 지표의 +11만 2천 명과 거의 같아요. [1]은 '27개월만에 증가 전환'이라고 했는데 이는 [6]에 나오는 제조업 내용과 혼동한 것으로 보여 빼고, [0]과 [2]는 각각 지역 기사와 부정적 측면만 짚은 기사라 우선순위를 낮췄어요.",
    "articles": [
     {
      "title": "[속보] 9월 취업자 수 11만3000명↑…보건복지 20만 증가",
@@ -836,15 +838,15 @@
      "published": "2026-10-16"
     },
     {
-     "title": "제조업 취업자 27개월만에 반등, 고용률 '역대 최고'…청년 고용한파는 여전 - 머니투데이",
-     "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1iWHVDUTVrYmxaRDFpbmVVNXhGSkxneF9fTWRpVzZLRmhRWEZmVzZzbHRLejRwR3dub0IySjctdW9rdmd3YWtKODd1aGF2dGV6akVQUE9QVHlQSFNGTHFsMFExZ2daZGN1ZzBV0gFwQVVfeXFMTzlWZ3QtTGdLY2Nzd3czaVl2bzEwQVZ1VTlxN0FUaHJHVmJHME5iaUxCakZTLXJqak5kVXdqckwxR2lhOTZvN2hXZkNaV29CeGlqZ2s0cVlNbXlId1dHZHNfNTNhUjVGa1duNWFKaTNUcA?oc=5",
-     "source": "머니투데이",
-     "published": "2026-10-16"
-    },
-    {
      "title": "9월 취업자수 11만명 증가…청년·건설업 취업자수 감소",
      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9XZHdyRGhQWDdUZHNCNHlRYlluUUpPd1BPUlNRdzF4QVdWUXlkNjVfbGFoNHQ2OTlrTGxuLVZpUWoxSkVCZ3NyQ0JqNEYxWF9YSFVaR1ZDNi1ra1h4T0lNV0RpWGJiSmVVeFE?oc=5",
      "source": "동양뉴스",
+     "published": "2026-10-16"
+    },
+    {
+     "title": "제조업 취업자 27개월만에 반등, 고용률 '역대 최고'…청년 고용한파는 여전 - 머니투데이",
+     "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1iWHVDUTVrYmxaRDFpbmVVNXhGSkxneF9fTWRpVzZLRmhRWEZmVzZzbHRLejRwR3dub0IySjctdW9rdmd3YWtKODd1aGF2dGV6akVQUE9QVHlQSFNGTHFsMFExZ2daZGN1ZzBV0gFwQVVfeXFMTzlWZ3QtTGdLY2Nzd3czaVl2bzEwQVZ1VTlxN0FUaHJHVmJHME5iaUxCakZTLXJqak5kVXdqckwxR2lhOTZvN2hXZkNaV29CeGlqZ2s0cVlNbXlId1dHZHNfNTNhUjVGa1duNWFKaTNUcA?oc=5",
+     "source": "머니투데이",
      "published": "2026-10-16"
     }
    ],

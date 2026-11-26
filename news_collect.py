@@ -55,6 +55,18 @@ THRESHOLD_GROUP = {
 BIG = {"default": 1.0, "rate_level": 0.5, "price_level": 5.0}
 SMALL = {"default": 0.3, "rate_level": 0.25, "price_level": 1.5}
 OIL = {"WTI", "두바이유", "브렌트"}
+# 전월이 아니라 '작년 같은 달'과 비교하는 지표. 한국 취업자수는 계절 영향이 커서
+# 통계청·언론 모두 전년동월대비로 본다(미국 비농업고용은 전월 대비 증감이 표준이라 제외).
+YOY_BASIS = {"취업자수"}
+
+
+def compare_row(rows, idx):
+    """비교 대상 행: 기본은 직전 행, YOY_BASIS 지표는 1년 전 같은 달 행(없으면 None)."""
+    cur = rows[idx]
+    if cur["indicator"] in YOY_BASIS:
+        target = f"{int(cur['date'][:4]) - 1}{cur['date'][4:]}"
+        return next((r for r in rows[:idx] if r["date"] == target), None)
+    return rows[idx - 1] if idx > 0 else None
 MONTHLY_AVERAGE = OIL | {"국채10년"}  # 월평균으로 집계되는 지표
 
 # ---- 검색어 ----
@@ -105,7 +117,9 @@ def find_movers(observations, today):
         rows.sort(key=lambda r: r["date"])
         if len(rows) < 2:
             continue
-        last, prev = rows[-1], rows[-2]
+        last, prev = rows[-1], compare_row(rows, len(rows) - 1)
+        if prev is None:
+            continue
         if indicator in PERCENT_POINT_INDICATORS:
             diff, unit = last["value"] - prev["value"], "%p"
         else:
@@ -135,6 +149,7 @@ def find_movers(observations, today):
             "date": last["date"], "release_date": rel, "freq": last.get("freq"),
             "value": round(last["value"], 4), "prev": round(prev["value"], 4),
             "diff": round(diff, 4), "unit": unit,
+            "basis": "yoy" if indicator in YOY_BASIS else "prev",
             "scaled": abs(diff) / BIG[g],
         })
     movers.sort(key=lambda m: m["scaled"], reverse=True)
@@ -293,7 +308,8 @@ def describe_change(m):
         when = (f'발표일 정보 없음 — 기준 기간이 끝난 뒤({start}~{end}) 나온 기사를 찾았어요. '
                 f'속보치·확정치 기사가 섞일 수 있어요')
     return (f'{m["country"]} {m["indicator"]}: {m["prev"]} → {m["value"]} '
-            f'({sign}{round(m["diff"], 2)}{m["unit"]}), 기준 기간 {m["date"][:7]}, {when}')
+            f'({sign}{round(m["diff"], 2)}{m["unit"]}'
+            f'{", 작년 같은 달 대비" if m.get("basis") == "yoy" else ""}), 기준 기간 {m["date"][:7]}, {when}')
 
 
 def candidates_text(candidates):
@@ -560,7 +576,9 @@ def build_calendar_notes(data, today, client, banned):
         elif not idx:
             continue  # 아직 값이 수집되지 않았거나 비교할 직전 값이 없음
         else:
-            cur, prev = rows[idx], rows[idx - 1]
+            cur, prev = rows[idx], compare_row(rows, idx)
+            if prev is None:
+                continue
         if idx is not None:
             hold = False
         diff, unit = change_of(ev["indicator"], cur["value"], prev["value"])
@@ -568,7 +586,8 @@ def build_calendar_notes(data, today, client, banned):
             continue
         m = {"country": "국제" if ev["indicator"] in OIL else ev["country"], "indicator": ev["indicator"],
              "date": ev["obs_date"], "release_date": ev["release_date"], "freq": cur.get("freq"),
-             "value": round(cur["value"], 4), "prev": round(prev["value"], 4), "diff": diff, "unit": unit}
+             "value": round(cur["value"], 4), "prev": round(prev["value"], 4), "diff": diff, "unit": unit,
+             "basis": "yoy" if ev["indicator"] in YOY_BASIS else "prev"}
         try:
             raw, provider = search_news(m)
         except (requests.RequestException, ET.ParseError) as e:
@@ -593,7 +612,8 @@ def build_calendar_notes(data, today, client, banned):
         notes[key] = {
             "country": ev["country"], "indicator": ev["indicator"], "period": ev["obs_date"],
             "release_date": ev["release_date"], "value": m["value"], "prev": m["prev"],
-            "diff": diff, "unit": unit, "hold": hold, "summary": summary, "meaning": meaning,
+            "diff": diff, "unit": unit, "hold": hold,
+            "basis": "yoy" if ev["indicator"] in YOY_BASIS else "prev", "summary": summary, "meaning": meaning,
             "status": status, "reason": reason, "articles": [candidates[i] for i in ids],
             "provider": provider, "ai": True, "checked_at": today.isoformat(),
         }
@@ -703,7 +723,7 @@ def main():
             log(f"{m['key']} 뉴스 검색 실패: {e}")
             raw, provider = [], "검색 실패"
         candidates = dedupe(raw)[:MAX_CANDIDATES]
-        item = {k: m[k] for k in ("key", "country", "indicator", "date", "release_date", "value", "prev", "diff", "unit")}
+        item = {k: m[k] for k in ("key", "country", "indicator", "date", "release_date", "value", "prev", "diff", "unit", "basis")}
         item.update({"provider": provider, "checked_at": today.isoformat(), "articles": [], "ai": False})
         if not candidates:
             item.update({"status": "none", "summary": "", "reason": "발표일 앞뒤 기간에 검색된 기사가 없어요"})
