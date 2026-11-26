@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-25 04:45",
+ "generated_at": "2026-11-26 03:55",
  "model": "claude-opus-5-5",
  "items": [
   {
@@ -108,6 +108,43 @@
    "reason": "기준 기간 안에 나온 [4](10-13)와 [3](10-15)은 WTI 가격이 오른 일을 직접 다뤄 월평균 상승 방향과 맞고, Brent만 다룬 기사([9])와 WTI 하락 기사([10], [0], [11]), 일반 정보·과거 사례 기사는 고르지 않았어요."
   },
   {
+   "key": "한국|기준금리|2026-11-26",
+   "country": "한국",
+   "indicator": "기준금리",
+   "date": "2026-11-26",
+   "release_date": "2026-11-26",
+   "value": 3.25,
+   "prev": 3.0,
+   "diff": 0.25,
+   "unit": "%p",
+   "provider": "구글 뉴스(한국어)",
+   "checked_at": "2026-11-26",
+   "articles": [
+    {
+     "title": "[1보] 한은, 기준금리 연 3.25%로 0.25%p 인상",
+     "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE01X0VwU1pCeDJmd1JYdlJkYVFoYkktU3RvUVRpZFg1LWkwMkE0OHZvY0x0RjYwdWVBOHRPY0VmdjBlbTYtcTZ6dnhlRkVsUGZ4WUh3LXduSmpSN3c?oc=5",
+     "source": "연합뉴스",
+     "published": "2026-11-26"
+    },
+    {
+     "title": "한은, 기준금리 0.25%p 인상…2년 만에 연 3.25%",
+     "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE9kaWJkTjM5bmJlYUh1RFVHbWdhSTdLOVRLY2oxTDZhNFE0QTJMTzlLV0VoSGVpRmg3NVZoYUR2dWVra0VIdnEtakJTUFR1N0IwbzBETlBNNXRMMTlRYUlmUFcyb2xsVGJXMWhjbWVDM09tZw?oc=5",
+     "source": "한겨레",
+     "published": "2026-11-26"
+    },
+    {
+     "title": "한은, 기준금리 3.25%로 인상…내년 성장률 4.1% 전망",
+     "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFA4RkF5WVV3WEJYWG85WUZ0d256bnVoazdjYXJLM0VIbkRkTERjNWprbDVPTWpYNUU0aFo3UjRudmZlUTd6cVJnYzM0bDZRZ3ZROENzSXFHMEM1ZUx5YlFlUFBtRzZwdw?oc=5",
+     "source": "KBS 뉴스",
+     "published": "2026-11-26"
+    }
+   ],
+   "ai": true,
+   "status": "linked",
+   "summary": "발표 당일, 한국은행이 기준금리를 0.25%p 올려 연 3.25%로 정했다는 보도가 여러 곳에서 함께 나왔어요.",
+   "reason": "발표일과 같은 날(2026-11-26) 나온 기사 3건을 골랐고, 모두 한국 기준금리가 3.25%로 0.25%p 오른 내용을 제목에서 직접 다뤄 지표 변화와 정확히 맞아요. 사전 전망 기사([8])와 증시 시황 기사([9])는 제외했어요."
+  },
+  {
    "key": "독일|HICP 헤드라인|2026-10-01",
    "country": "독일",
    "indicator": "HICP 헤드라인",
@@ -143,43 +180,6 @@
    "status": "review",
    "summary": "같은 시기에 독일의 10월 물가상승률이 2.8%로 낮아졌다는 보도가 함께 나왔어요.",
    "reason": "세 기사 모두 독일 10월 물가상승률 2.8%를 다뤄 수치는 지표와 맞지만, 제목만으로는 독일 통계청 기준 CPI인지 HICP인지 알 수 없어 사람이 확인해야 합니다."
-  },
-  {
-   "key": "프랑스|국채10년|2026-10-01",
-   "country": "프랑스",
-   "indicator": "국채10년",
-   "date": "2026-10-01",
-   "release_date": null,
-   "value": 4.89,
-   "prev": 4.44,
-   "diff": 0.45,
-   "unit": "%p",
-   "provider": "구글 뉴스",
-   "checked_at": "2026-11-24",
-   "articles": [
-    {
-     "title": "French 10-year bond yields hit 5%, highest since 2002",
-     "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOYXc5VF91b3J6TjJpdkR6VFR1SUtTX1VUY1ZTUFBTNXFIT3ZZQ3RBMTVPaDNjMVNZbzRqcGdqRjRXcFhEQjRZd0V6R2ZRZVJwOHdmeHl5LWhva0Y3c285ZUNuaG80bWxBNUMyczhxWWdPd0NZZlNUTVJmUEszM1dCMzU2dU43ZzJ0bHNMQVF5cjgzZWZMUWViWE5aeWc3NUYwSkE?oc=5",
-     "source": "Reuters",
-     "published": "2026-10-21"
-    },
-    {
-     "title": "French 10-year bond yield hits 5% for first time since 2002 amid unrest",
-     "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9IUktuMWpyQnBWOUFSNDdoeG9mdWUtLTJCOFZxSnphZVo2Mm9icFFoZDJtaDZIZzYwQzNfa3hxY0RVcUk5OXlabVEwT2Z1eGVQbXh4QWZVaTc3Z090SE5JdDdxTXRtYlhncUFQXy10Wmo?oc=5",
-     "source": "CNBC",
-     "published": "2026-10-21"
-    },
-    {
-     "title": "France's 10-year bond yield surpasses 5% mark for first time since 2002",
-     "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQTmIxUWx6OWRLOW55S1NEM2htMlNOZU11RUltdm5mUWVPM3VZVDNlSVJCTTItX0ZMTy1vSkpoYk5IclRzd1lfYjJ4NzRoUHotSC1TRHpCNTRvdVJ3SjJtUzdXZy1Bc1J4LVNBUEl3bWtXU1lJTkdJaUVvUHh4SlJMV3pPdWx0bGJsMTg2Ylk3MVhOV3VBZm5mMVhxZTg3RXFjU0JCaFJBcWR6SU5MSm5MTDJaSERJMUpZOHI3eGRtXzNtOXNTWW1XQVM1SUhLOG5FdmhOLTBOdC0wM1JoSlV3RzlwUGdidw?oc=5",
-     "source": "Le Monde.fr",
-     "published": "2026-10-21"
-    }
-   ],
-   "ai": true,
-   "status": "linked",
-   "summary": "같은 달에 프랑스 10년 만기 국채 금리가 2002년 이후 처음으로 5%를 넘었다는 보도가 함께 나왔어요.",
-   "reason": "0·1·5번은 기준 기간 안인 2026-10-21에 나온 기사이고, 프랑스 10년물 금리가 5%를 넘었다고 직접 다뤄 월평균 상승(+0.45%p)과 맞아요. 3·6번은 미국 국채 기사이고, 나머지는 확산 우려나 시장 일반 분석이라 고르지 않았어요."
   }
  ]
 }

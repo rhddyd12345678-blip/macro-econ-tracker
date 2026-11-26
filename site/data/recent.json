@@ -359,6 +359,18 @@
       "indicator": "CPI 근원",
       "date": "2026-10-01",
       "added_date": "2026-11-20"
+    },
+    {
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "date": "2026-10-01",
+      "added_date": "2026-11-26"
+    },
+    {
+      "country": "한국",
+      "indicator": "기준금리",
+      "date": "2026-11-26",
+      "added_date": "2026-11-26"
     }
   ]
 }

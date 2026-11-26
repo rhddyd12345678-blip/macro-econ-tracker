@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T04:45:34",
+  "generated_at": "2026-11-26T03:55:23",
   "indicators": [
     {
       "country": "미국",
@@ -15258,6 +15258,22 @@
       "value": 2.2,
       "release_date": "2026-11-20",
       "freq": "월간"
+    },
+    {
+      "date": "2026-10-01",
+      "country": "미국",
+      "indicator": "PCE 근원",
+      "value": 3.2611,
+      "release_date": "2026-11-25",
+      "freq": "월간"
+    },
+    {
+      "date": "2026-11-26",
+      "country": "한국",
+      "indicator": "기준금리",
+      "value": 3.25,
+      "release_date": "2026-11-26",
+      "freq": "수시"
     }
   ]
 }
