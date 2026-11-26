@@ -296,19 +296,25 @@ def describe_change(m):
             f'({sign}{round(m["diff"], 2)}{m["unit"]}), 기준 기간 {m["date"][:7]}, {when}')
 
 
-def ask_claude(client, m, candidates):
+def candidates_text(candidates):
+    return "\n".join(f"[{i}] {c['published']} | {c['source']} | {c['title']}"
+                     + (f" | {c['snippet']}" if c.get("snippet") else "")
+                     for i, c in enumerate(candidates))
+
+
+def mover_prompt(m, candidates):
+    return "지표 변화:\n" + describe_change(m) + "\n\n뉴스 후보:\n" + candidates_text(candidates)
+
+
+def ask_claude(client, user, system=SYSTEM_PROMPT, schema=OUTPUT_SCHEMA):
     import anthropic  # 키가 있을 때만 필요
 
-    lines = [f"[{i}] {c['published']} | {c['source']} | {c['title']}"
-             + (f" | {c['snippet']}" if c.get("snippet") else "")
-             for i, c in enumerate(candidates)]
-    user = "지표 변화:\n" + describe_change(m) + "\n\n뉴스 후보:\n" + "\n".join(lines)
     try:
         resp = client.beta.messages.create(
             model=MODEL,
             max_tokens=4000,
-            system=SYSTEM_PROMPT,
-            output_config={"effort": "low", "format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
+            system=system,
+            output_config={"effort": "low", "format": {"type": "json_schema", "schema": schema}},
             betas=["server-side-fallback-2026-07-01"],
             fallbacks="default",
             messages=[{"role": "user", "content": user}],
@@ -330,27 +336,23 @@ def ask_claude(client, m, candidates):
         return None
 
 
-def ask_claude_cli(m, candidates):
+def ask_claude_cli(user, system=SYSTEM_PROMPT, schema=OUTPUT_SCHEMA):
     """Claude 구독(Max 등)으로 돌리는 경로: Claude Code CLI 헤드리스 모드.
     CLAUDE_CODE_OAUTH_TOKEN(`claude setup-token`으로 만든 1년 토큰)으로 인증한다.
     ANTHROPIC_API_KEY가 환경에 있으면 CLI가 그 키(API 과금)를 먼저 쓰므로 자식 프로세스에서는 지운다."""
     import subprocess
     import tempfile
 
-    lines = [f"[{i}] {c['published']} | {c['source']} | {c['title']}"
-             + (f" | {c['snippet']}" if c.get("snippet") else "")
-             for i, c in enumerate(candidates)]
-    user = "지표 변화:\n" + describe_change(m) + "\n\n뉴스 후보:\n" + "\n".join(lines)
     env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
     env["DISABLE_AUTOUPDATER"] = "1"
     cmd = [
-        "claude", "-p", "아래 지표 변화와 뉴스 후보를 규칙대로 판단해 JSON으로만 답해.",
+        "claude", "-p", "아래 내용을 규칙대로 판단해 JSON으로만 답해.",
         "--model", MODEL,
-        "--system-prompt", SYSTEM_PROMPT,
+        "--system-prompt", system,
         "--tools", "",
         "--max-turns", "3",
         "--output-format", "json",
-        "--json-schema", json.dumps(OUTPUT_SCHEMA),
+        "--json-schema", json.dumps(schema),
     ]
     try:
         # 저장소 밖(빈 임시 폴더)에서 실행해 프로젝트 설정·훅을 읽지 않게 한다
@@ -398,6 +400,212 @@ def check_result(result, candidates, banned):
     if flags:
         reason = (reason + " / 자동 검사: " + "; ".join(flags)).strip(" /")
     return ids, summary, status, reason
+
+
+# ---- 달력: 지난 발표마다 '발표값 + 관련 기사 + 의미' 메모 ----
+CAL_JSON = os.path.join(ROOT, "site", "data", "calendar_notes.json")
+CALENDAR_JSON = os.path.join(ROOT, "site", "data", "calendar.json")
+CAL_LOOKBACK_DAYS = 45   # 최근 이 기간의 지난 발표만 메모를 만든다
+MAX_CAL_CALLS = 25       # 한 번 실행에서 새로 만드는 메모 수 상한(처음 채울 때 사용량 보호)
+POLICY_RATES = ("기준금리", "정책금리(상단)", "정책금리")
+HEADLINE_INFLATION = ("CPI 헤드라인", "HICP 헤드라인")
+
+CAL_SYSTEM_PROMPT = """너는 거시경제 지표 사이트의 해설 담당이야. 이미 발표된 지표 하나와, 발표일 앞뒤 뉴스 후보, 그 나라의 금리·물가 배경을 받는다.
+독자는 경제를 공부하는 대학생이야. 쉬운 말로, "~요"체로 쓴다.
+
+1. selected_ids: 이 발표를 직접 다룬 기사만 번호로 최대 3개. 없으면 빈 목록.
+2. summary: 기사를 골랐다면, 발표가 어떻게 보도됐는지 한 문장(예상과 비교한 보도가 있으면 그 내용). 기사 제목에 없는 숫자·사실은 쓰지 않는다. 기사가 없으면 빈 문자열.
+3. meaning: 이 숫자가 갖는 의미를 1~2문장으로 쓴다. 기사가 없어도 쓴다.
+   - 지표가 움직인 방향이 일반적으로 무엇을 뜻하는지, 그리고 그 나라 중앙은행의 금리 결정에 어떤 쪽으로 읽힐 수 있는지를 배경 정보와 연결해 설명한다.
+     예: "실업률이 오르면 경기가 식는 신호로 읽혀요. 연준이 금리를 더 올리기보다 멈추거나 내릴 여지가 커졌다고 볼 수 있어요."
+   - 가능성으로만 말한다("~로 읽혀요", "~여지가 커졌다고 볼 수 있어요"). "~할 거예요", "~될 것", "전망돼요", "예상돼요" 같은 단정·예측 표현은 쓰지 않는다.
+   - "~때문"으로 원인을 단정하지 않는다. 투자 판단(매수·매도·추천)은 말하지 않는다.
+   - 변화가 아주 작으면 "큰 변화는 아니에요"처럼 솔직하게 쓴다.
+4. status: "linked"(기사가 이 발표를 분명히 다룸), "review"(관련이 애매하거나 해석에 자신이 없음 → 사람이 확인), "none"(관련 기사 없음).
+5. reason: 판단 이유 한 문장(사람이 검토할 때 읽는다)."""
+
+CAL_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "selected_ids": {"type": "array", "items": {"type": "integer"}},
+        "summary": {"type": "string"},
+        "meaning": {"type": "string"},
+        "status": {"type": "string", "enum": ["linked", "review", "none"]},
+        "reason": {"type": "string"},
+    },
+    "required": ["selected_ids", "summary", "meaning", "status", "reason"],
+    "additionalProperties": False,
+}
+
+
+def period_to_obs_date(period):
+    """달력의 기준기간('2026-10', '2026-Q3', '2026-11-26')을 관측치 date 형식으로."""
+    period = (period or "").strip()
+    m = re.fullmatch(r"(\d{4})-Q([1-4])", period)
+    if m:
+        return f"{m.group(1)}-{(int(m.group(2)) - 1) * 3 + 1:02d}-01"
+    if re.fullmatch(r"\d{4}-\d{2}", period):
+        return period + "-01"
+    return period[:10]
+
+
+def cal_key(country, indicator, obs_date):
+    return f"{country}|{indicator}|{obs_date}"
+
+
+def change_of(indicator, value, prev):
+    if indicator in PERCENT_POINT_INDICATORS:
+        return round(value - prev, 4), "%p"
+    if not prev:
+        return None, None
+    return round((value / prev - 1) * 100, 4), "%"
+
+
+def calendar_release_map():
+    """calendar.json 의 (나라, 지표, 기준일) → 발표일. 관측치에 발표일이 없을 때 쓴다."""
+    try:
+        return {(e["country"], e["indicator"], period_to_obs_date(e["period"])): e["date"]
+                for e in json.load(open(CALENDAR_JSON, encoding="utf-8")).get("events", [])
+                if e.get("date") and e.get("period")}
+    except (OSError, ValueError, KeyError):
+        return {}
+
+
+def background_text(series, country, as_of, rel_map=None):
+    """그 나라의 금리·물가 배경(발표일 기준)."""
+    parts = []
+    for ind in POLICY_RATES:
+        # 발표일 '전'까지의 결정만(금리 결정 당일 메모라면 그 직전 상태가 배경)
+        rows = [r for r in series.get((country, ind), []) if (r.get("release_date") or r["date"]) < as_of]
+        if rows:
+            last = rows[-1]
+            move = ""
+            if len(rows) >= 2:
+                p = rows[-2]["value"]
+                move = " (직전 결정에서 " + ("인상" if last["value"] > p else "인하" if last["value"] < p else "동결") + ")"
+            parts.append(f"{country} {ind}: {last['value']}% — {last['date']} 결정{move}")
+            break
+    for ind in HEADLINE_INFLATION:
+        # 발표일 기준으로 '그때 이미 알려진 값'만 쓴다(미래 정보 섞임 방지).
+        # 발표일이 없으면 기준월 다음 달 말까지는 발표되지 않았다고 보수적으로 가정.
+        def known_by(r):
+            if r.get("release_date"):
+                return r["release_date"][:10]
+            cal = (rel_map or {}).get((r["country"], r["indicator"], r["date"]))
+            if cal:
+                return cal
+            return (_add_months(date.fromisoformat(r["date"][:10]), 2) - timedelta(days=1)).isoformat()
+        rows = [r for r in series.get((country, ind), []) if known_by(r) < as_of]
+        if rows:
+            parts.append(f"{country} {ind} 최근값: 전년 대비 {rows[-1]['value']}% ({rows[-1]['date'][:7]}), 물가 목표 2%")
+            break
+    return "\n".join(parts) or "배경 정보 없음"
+
+
+def past_release_events(data, today):
+    """최근 지난 발표 목록: calendar.json 일정 + 실제 발표일이 기록된 관측치."""
+    since = (today - timedelta(days=CAL_LOOKBACK_DAYS)).isoformat()
+    until = today.isoformat()
+    events = {}
+    try:
+        for e in json.load(open(CALENDAR_JSON, encoding="utf-8")).get("events", []):
+            if e.get("date") and since <= e["date"] < until and e.get("period"):
+                od = period_to_obs_date(e["period"])
+                events.setdefault(cal_key(e["country"], e["indicator"], od),
+                                  {"release_date": e["date"], "country": e["country"],
+                                   "indicator": e["indicator"], "obs_date": od})
+    except (OSError, ValueError):
+        pass
+    for o in data["observations"]:
+        rd = (o.get("release_date") or "")[:10]
+        if rd and since <= rd < until:
+            events[cal_key(o["country"], o["indicator"], o["date"])] = {
+                "release_date": rd, "country": o["country"], "indicator": o["indicator"], "obs_date": o["date"]}
+    return events
+
+
+def build_calendar_notes(data, today, client, banned):
+    previous = {}
+    if os.path.exists(CAL_JSON) and os.environ.get("NEWS_FORCE") != "1":
+        try:
+            previous = json.load(open(CAL_JSON, encoding="utf-8")).get("notes", {})
+        except (OSError, ValueError):
+            previous = {}
+    series = {}
+    for o in data["observations"]:
+        if o.get("value") is not None:
+            series.setdefault((o["country"], o["indicator"]), []).append(o)
+    for rows in series.values():
+        rows.sort(key=lambda r: r["date"])
+
+    notes, calls = {}, 0
+    rel_map = calendar_release_map()
+    events = sorted(past_release_events(data, today).items(), key=lambda kv: kv[1]["release_date"], reverse=True)
+    for key, ev in events:
+        old = previous.get(key)
+        if old and old.get("ai"):
+            notes[key] = old
+            continue
+        if client is None or calls >= MAX_CAL_CALLS:
+            continue
+        rows = series.get((ev["country"], ev["indicator"]), [])
+        idx = next((i for i, r in enumerate(rows) if r["date"] == ev["obs_date"]), None)
+        if idx is None and ev["indicator"] in POLICY_RATES:
+            # 금리는 바뀔 때만 기록된다 → 회의가 있었는데 기록이 없으면 '동결'
+            before = [r for r in rows if r["date"] < ev["release_date"]]
+            if not before:
+                continue
+            cur = prev = before[-1]
+            hold = True
+        elif not idx:
+            continue  # 아직 값이 수집되지 않았거나 비교할 직전 값이 없음
+        else:
+            cur, prev = rows[idx], rows[idx - 1]
+        if idx is not None:
+            hold = False
+        diff, unit = change_of(ev["indicator"], cur["value"], prev["value"])
+        if diff is None:
+            continue
+        m = {"country": "국제" if ev["indicator"] in OIL else ev["country"], "indicator": ev["indicator"],
+             "date": ev["obs_date"], "release_date": ev["release_date"], "freq": cur.get("freq"),
+             "value": round(cur["value"], 4), "prev": round(prev["value"], 4), "diff": diff, "unit": unit}
+        try:
+            raw, provider = search_news(m)
+        except (requests.RequestException, ET.ParseError) as e:
+            log(f"[달력] {key} 뉴스 검색 실패: {e}")
+            raw, provider = [], "검색 실패"
+        candidates = dedupe(raw)[:MAX_CANDIDATES]
+        user = ("발표된 지표:\n" + describe_change(m) +
+                ("\n이번 회의에서는 금리를 바꾸지 않았어요(동결). 동결이 갖는 의미를 써 줘." if hold else "") +
+                "\n\n배경:\n" + background_text(series, ev["country"], ev["release_date"], rel_map) +
+                "\n\n뉴스 후보:\n" + (candidates_text(candidates) or "(검색된 기사 없음)"))
+        calls += 1
+        result = (ask_claude_cli(user, CAL_SYSTEM_PROMPT, CAL_SCHEMA) if client == "cli"
+                  else ask_claude(client, user, CAL_SYSTEM_PROMPT, CAL_SCHEMA))
+        if result is None:
+            continue  # 다음 실행 때 다시 시도
+        ids, summary, status, reason = check_result(result, candidates, banned)
+        meaning = (result.get("meaning") or "").strip()
+        hit = [p for p in banned if p in meaning]
+        if hit:
+            status = "review"
+            reason = (reason + " / 자동 검사: 해석에 금지 표현 포함: " + ", ".join(hit)).strip(" /")
+        notes[key] = {
+            "country": ev["country"], "indicator": ev["indicator"], "period": ev["obs_date"],
+            "release_date": ev["release_date"], "value": m["value"], "prev": m["prev"],
+            "diff": diff, "unit": unit, "hold": hold, "summary": summary, "meaning": meaning,
+            "status": status, "reason": reason, "articles": [candidates[i] for i in ids],
+            "provider": provider, "ai": True, "checked_at": today.isoformat(),
+        }
+        log(f"[달력] {key}: {status} ({len(ids)}건)")
+
+    for k, v in previous.items():  # 기간이 지난 메모도 남긴다(지난 달 달력에서도 보이도록)
+        notes.setdefault(k, v)
+    with open(CAL_JSON, "w", encoding="utf-8") as f:
+        json.dump({"generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+                   "notes": notes}, f, ensure_ascii=False, indent=1)
+    log(f"[달력] 메모 {len(notes)}개 (이번에 새로 만든 것 {calls}개)")
+    return calls
 
 
 # ---- 사람 검토 (HITL) ----
@@ -501,7 +709,8 @@ def main():
                          "articles": candidates[:MAX_PICK]})
         else:
             calls += 1
-            result = ask_claude_cli(m, candidates) if client == "cli" else ask_claude(client, m, candidates)
+            user = mover_prompt(m, candidates)
+            result = ask_claude_cli(user) if client == "cli" else ask_claude(client, user)
             if result is None:
                 item.update({"status": "review", "summary": "", "reason": "AI 응답을 받지 못했어요",
                              "articles": candidates[:MAX_PICK]})
@@ -538,6 +747,11 @@ def main():
             w.writerow(["날짜", "지표수", "연결", "확인필요", "관련없음", "새로_호출한_AI"])
         w.writerow([today.isoformat(), len(items), counts["linked"], counts["review"], counts["none"], calls])
     log(f"완료: 연결 {counts['linked']} · 확인 필요 {counts['review']} · 없음 {counts['none']} · AI 호출 {calls}회")
+
+    try:
+        build_calendar_notes(data, today, client, banned)
+    except Exception as e:  # 달력 메모 실패가 '이번에 달라진 것'을 막지 않게
+        log(f"[달력] 실패: {e!r}")
 
 
 if __name__ == "__main__":

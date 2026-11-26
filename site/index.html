@@ -273,6 +273,25 @@
     opacity: 0.45;
     background: color-mix(in srgb, var(--muted) 15%, var(--card-bg));
   }
+  .cal-event { cursor: pointer; }
+  .cal-event:hover, .cal-event:focus-visible { opacity: 1; outline: 1px solid var(--accent); }
+  .cal-event.has-note { opacity: 0.8; }
+  .cal-event.has-note::before { content: "●"; color: var(--accent); font-size: 8px; margin-right: 3px; vertical-align: middle; }
+  .cal-event.selected { opacity: 1; outline: 2px solid var(--accent); }
+  .cal-detail { margin-top: 14px; padding: 16px 18px; border: 1px solid var(--border); border-radius: 12px;
+    background: var(--card-bg); font-size: 13.5px; line-height: 1.65; }
+  .cal-detail h4 { margin: 0 0 4px; font-size: 15px; }
+  .cal-detail .cd-sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+  .cal-detail .cd-value { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .cal-detail .cd-block { margin-top: 10px; }
+  .cal-detail .cd-label { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+  .cal-detail .cd-meaning { padding: 10px 12px; border-radius: 9px; background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .cal-detail ul { margin: 4px 0 0; padding-left: 18px; }
+  .cal-detail a { color: var(--accent); text-decoration: none; overflow-wrap: anywhere; }
+  .cal-detail a:hover { text-decoration: underline; }
+  .gap-note { font-size: 11.5px; margin: -4px 0 8px; }
+  .cal-detail .cd-close { float: right; background: none; border: 1px solid var(--border); color: var(--muted);
+    border-radius: 7px; padding: 2px 9px; cursor: pointer; font-size: 12px; }
 
   footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
 
@@ -717,6 +736,7 @@
         <button id="cal-next" type="button">›</button>
       </div>
       <div id="cal-grid"></div>
+      <div id="cal-detail" class="cal-detail" style="display:none;"></div>
     </section>
   </div>
 
@@ -1246,9 +1266,13 @@
     loadJSON("data/fx_position.json").catch(function () { return null; }),
     loadJSON("data/fx_predictors.json").catch(function () { return null; }),
     loadText("data/events.csv").catch(function () { return ""; }),
-    loadJSON("data/news.json").catch(function () { return null; })
+    loadJSON("data/news.json").catch(function () { return null; }),
+    loadJSON("data/calendar_notes.json").catch(function () { return null; }),
+    loadJSON("data/data_gaps.json").catch(function () { return null; })
   ]).then(function (results) {
+    state.dataGaps = (results[12] && results[12].gaps) || [];
     state.news = results[10];
+    state.calNotes = (results[11] && results[11].notes) || {};
     var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
     var fx = results[5], fxAnalysis = results[6], fxPosition = results[7], fxPredictors = results[8];
     state.indicators = data.indicators || [];
@@ -1708,6 +1732,16 @@
     });
 
     renderStats(c.stats, allPointsForStats || [], 2, unit);
+    // 원자료는 발표됐지만 계산할 수 없어 비워 둔 값이 있으면 이유를 적는다
+    var gapNotes = (state.dataGaps || []).filter(function (g) {
+      return g.country === country && inds.some(function (ind) { return ind.indicator === g.indicator; });
+    });
+    if (gapNotes.length) {
+      var gn = document.createElement("div");
+      gn.className = "muted gap-note";
+      gn.textContent = gapNotes.map(function (g) { return g.indicator + " " + g.date.slice(0, 7) + " 값 없음: " + g.reason; }).join(" · ");
+      c.stats.parentNode.insertBefore(gn, c.stats.nextSibling);
+    }
 
     if (!datasets.some(function (d) { return d.data.length; })) {
       c.canvas.replaceWith(emptyMsg());
@@ -2881,8 +2915,85 @@
   var DOW = ["일", "월", "화", "수", "목", "금", "토"];
   var MONTH_NAMES = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
 
+  // 달력 일정 → calendar_notes.json 키(나라|지표|관측치 기준일)
+  function calNoteKey(e) {
+    var p = String(e.period || "");
+    var q = p.match(/^(\d{4})-Q([1-4])$/);
+    if (q) p = q[1] + "-" + String((+q[2] - 1) * 3 + 1).padStart(2, "0") + "-01";
+    else if (/^\d{4}-\d{2}$/.test(p)) p = p + "-01";
+    return e.country + "|" + e.indicator + "|" + p.slice(0, 10);
+  }
+
+  function fmtValueWithUnit(indicator, v) {
+    var isPct = PERCENT_POINT_INDICATORS.indexOf(indicator) !== -1;
+    return fmtNum(v, 2) + (isPct ? "%" : (LEVEL_UNITS[indicator] ? " " + LEVEL_UNITS[indicator] : ""));
+  }
+
+  function calGap(e) {
+    var k = calNoteKey(e);
+    return (state.dataGaps || []).filter(function (g) { return g.country + "|" + g.indicator + "|" + g.date === k; })[0] || null;
+  }
+
+  function showCalDetail(e, tagEl) {
+    var box = document.getElementById("cal-detail");
+    Array.prototype.forEach.call(document.querySelectorAll(".cal-event.selected"), function (x) { x.classList.remove("selected"); });
+    if (tagEl) tagEl.classList.add("selected");
+    var isPast = e.date < todayStr();
+    var note = state.calNotes && state.calNotes[calNoteKey(e)];
+    var h = "<button type=\"button\" class=\"cd-close\" aria-label=\"닫기\">닫기</button>" +
+      "<h4>" + escapeHtml(e.country + " " + e.indicator) + "</h4>" +
+      "<div class=\"cd-sub\">" + (e.date <= todayStr() ? "발표일 " : "발표 예정일 ") + escapeHtml(e.date) +
+      (e.period ? " · 기준 기간 " + escapeHtml(String(e.period).slice(0, 7)) : "") + "</div>";
+    if (e.date === todayStr()) {
+      h += "<div class=\"muted\">오늘 발표예요. 결과와 해석은 내일 밤 자동 업데이트 때 붙어요.</div>";
+    } else if (!isPast) {
+      h += "<div class=\"muted\">아직 발표 전이에요. 발표 다음 날 밤 자동 업데이트 때 결과와 해석이 붙어요.</div>";
+    } else if (!note && calGap(e)) {
+      h += "<div class=\"cd-value\">값 없음</div><div>" + escapeHtml(calGap(e).reason) +
+        ". 비교 기준이 되는 작년 같은 달 원자료가 발표되지 않았기 때문이에요(예: 2025년 미국 정부 셧다운으로 그해 10월 CPI가 발표되지 않음). 값을 추정해 채우지 않고 비워 뒀어요.</div>";
+    } else if (!note) {
+      h += "<div class=\"muted\">이 발표의 해석은 아직 없어요. 최근 45일 안의 발표만 매일 밤 자동으로 만들고, 값이 아직 수집되지 않은 발표는 건너뛰어요.</div>";
+    } else {
+      var sign = note.diff > 0 ? "+" : "";
+      var valueLine = note.hold
+        ? "동결 — " + fmtValueWithUnit(note.indicator, note.value) + " 유지"
+        : fmtValueWithUnit(note.indicator, note.value) + " <span class=\"muted\">(직전 " + fmtValueWithUnit(note.indicator, note.prev) +
+          ", " + sign + fmtNum(note.diff, 2) + note.unit + ")</span>";
+      h += "<div class=\"cd-value\">" + valueLine + "</div>";
+      if (note.meaning) {
+        h += "<div class=\"cd-block\"><div class=\"cd-label\">이 숫자의 의미</div><div class=\"cd-meaning\">" +
+          escapeHtml(note.meaning) + "</div><div class=\"muted\" style=\"margin-top:4px;\">일반적으로 이렇게 읽힌다는 해석이에요. 앞으로 그렇게 된다는 뜻은 아니에요.</div></div>";
+      }
+      var arts = (note.articles || []).filter(function (a) { return /^https?:\/\//.test(a.url || ""); });
+      if (arts.length) {
+        var badge = note.status === "review"
+          ? " <span class=\"news-badge review\" title=\"" + escapeHtml(note.reason || "") + "\">확인 필요</span>" : "";
+        h += "<div class=\"cd-block\"><div class=\"cd-label\">관련 기사" + badge + "</div>" +
+          (note.summary ? "<div>" + escapeHtml(note.summary) + "</div>" : "") + "<ul>" +
+          arts.map(function (a) {
+            return "<li><a href=\"" + escapeHtml(a.url) + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + escapeHtml(a.title) +
+              "</a> <span class=\"muted\">· " + escapeHtml(a.source || "") + (a.published ? " · " + escapeHtml(a.published) : "") + "</span></li>";
+          }).join("") + "</ul>" +
+          (note.status === "review" && note.reason ? "<div class=\"muted\">왜 확인이 필요한가요? " + escapeHtml(note.reason) + "</div>" : "") +
+          "</div>";
+      } else {
+        h += "<div class=\"cd-block muted\">발표일 앞뒤로 관련 기사를 찾지 못했어요.</div>";
+      }
+      h += "<div class=\"muted\" style=\"margin-top:10px;\">AI가 기사를 고르고 해석을 썼어요(" + escapeHtml(note.checked_at || "") + ").</div>";
+    }
+    box.innerHTML = h;
+    box.style.display = "";
+    box.querySelector(".cd-close").addEventListener("click", function () {
+      box.style.display = "none";
+      if (tagEl) tagEl.classList.remove("selected");
+    });
+    box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
   function renderMonthCalendar() {
     var year = state.calCursor.year, month = state.calCursor.month;
+    var detailBox = document.getElementById("cal-detail");
+    if (detailBox) detailBox.style.display = "none";  // 달을 옮기면 열려 있던 상세는 닫는다
     document.getElementById("cal-month-label").textContent = year + "년 " + MONTH_NAMES[month];
 
     var evsByDate = {};
@@ -2930,6 +3041,15 @@
         tag.className = "cal-event" + (isPast ? " past" : "");
         tag.title = e.country + " " + e.indicator + (e.note ? " - " + e.note : "") + (isPast ? " (지난 발표)" : "");
         tag.textContent = e.country + " " + e.indicator;
+        var noteKey = calNoteKey(e);
+        if (state.calNotes && state.calNotes[noteKey]) tag.className += " has-note";
+        tag.tabIndex = 0;
+        tag.setAttribute("role", "button");
+        (function (ev, el) {
+          function open() { showCalDetail(ev, el); }
+          el.addEventListener("click", open);
+          el.addEventListener("keydown", function (k) { if (k.key === "Enter" || k.key === " ") { k.preventDefault(); open(); } });
+        })(e, tag);
         cell.appendChild(tag);
       });
       grid.appendChild(cell);

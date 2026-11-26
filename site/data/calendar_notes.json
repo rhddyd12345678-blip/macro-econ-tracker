@@ -1,0 +1,911 @@
+{
+ "generated_at": "2026-11-26 10:58",
+ "notes": {
+  "미국|PCE 근원|2026-10-01": {
+   "country": "미국",
+   "indicator": "PCE 근원",
+   "period": "2026-10-01",
+   "release_date": "2026-11-25",
+   "value": 3.2611,
+   "prev": 3.1212,
+   "diff": 0.1399,
+   "unit": "%p",
+   "hold": false,
+   "summary": "10월 미국 근원 PCE 물가가 전년 대비 3.3%로 예상치(3.2%)를 웃돌았고, 3년 만의 최고치라고 보도됐어요.",
+   "meaning": "에너지·식료품을 뺀 근원 PCE가 3.1%대에서 3.3%대로 올랐어요. 기초적인 물가 압력이 아직 잘 꺾이지 않고 목표치 2%에서 더 멀어지고 있다는 신호로 읽혀요. 연준이 직전 회의에서 이미 금리를 4.0%로 올린 상황이라, 금리를 내리기보다 높은 수준을 유지하거나 더 올리는 쪽에 무게가 실릴 여지가 커졌다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "[1]·[10]·[3]은 발표일 당일과 다음 날에 10월 근원 PCE 3.3%(예상치 3.2% 상회, 3년 만의 최고치)를 직접 다뤘고, 이는 발표값 3.2611%와 맞아요. [0]·[7]은 헤드라인 3.8% 중심이고, [5]·[8]은 발표 전 기사라서 제외했어요.",
+   "articles": [
+    {
+     "title": "Breaking: US core PCE inflation rises to 3.3% YoY in October vs 3.2% expected",
+     "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxPQUZzWXlBNFZYYlJKZzB0Sk50eDNkVDl4cGowSFlianpHVzc5d1RTc25hQzAxNFNwX3VablB3c0tmZEhkNkxvSC1pS2JsaDRvMkJMUlY4N3ZvSEF6UkcwSnZsZTM2VUxNQ2IxdGRNSGNydTJ4LVpSTFluTFZVcEZ0MVlpRnltaE94MmsxLUtxZk9RRDNpVTkwSnZtQWZ3bzI3WVYzQks2T2FkbHctbjBGcm5JR3FQendHTDNYQ2tIUC1SQTBfWUxkWGZOZFVzT2Ex?oc=5",
+     "source": "FXStreet",
+     "published": "2026-11-25"
+    },
+    {
+     "title": "US Core PCE Hits 3.3%, Topping Forecasts... December Fed Hike Odds at 98%",
+     "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5JN2FsdTA4NmkxekF0cVJWeVlNT0I2NUswMElJa3lFN0tCaUJsSXo0c0NvZ3BnTmI0TWdPR2p3SGd6enlDRzItSTVzZk5JN0thbWdRV0tMRDN2aXBNT3hzTHQzOUJ6RXhSZVhQSFRleWQtUmtGYlE?oc=5",
+     "source": "BigGo Finance",
+     "published": "2026-11-25"
+    },
+    {
+     "title": "US core PCE inflation hits 3-year high in October",
+     "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9mdm1pcTdTZ3cyT190Y3EtTDhmX0dKM09BOUJPeVdJRjFKRGszTmVFdnNULWh6ZzNIWXVBTzVJQmhvRlltLUtWQzdyUWljTUxVYkpPY2Ribzl4b01OdndHNUx3?oc=5",
+     "source": "Global Times",
+     "published": "2026-11-26"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "일본|CPI 헤드라인|2026-10-01": {
+   "country": "일본",
+   "indicator": "CPI 헤드라인",
+   "period": "2026-10-01",
+   "release_date": "2026-11-20",
+   "value": 2.3,
+   "prev": 2.1,
+   "diff": 0.2,
+   "unit": "%p",
+   "hold": false,
+   "summary": "10월 일본 헤드라인 CPI는 올해 들어 가장 빠른 상승률이자 11개월 만의 최고치로 보도됐어요. 다만 근원 CPI는 예상치를 조금 밑돌았다는 보도도 함께 나왔어요.",
+   "meaning": "헤드라인 물가 상승률이 2.1%에서 2.3%로 0.2%p 올라 물가 목표 2%를 조금 더 웃돌게 됐어요. 일본은행은 6월에 금리를 1.0%로 올렸는데, 물가가 목표 위에서 오르는 흐름은 추가 인상 쪽에 무게를 싣는 근거로 읽힐 수 있어요.",
+   "status": "linked",
+   "reason": "2·4·6번은 발표일(11-20)에 10월 일본 CPI 헤드라인이 올해 최고·11개월 최고라고 직접 다뤘고, 4·6번 제목에는 근원 CPI가 예상을 밑돌았다는 비교도 있어요. 7번(세 지표 모두 예상 하회)과 1·3번(근원 CPI 위주)도 관련 있지만, 헤드라인을 더 직접 다룬 기사를 우선했어요.",
+   "articles": [
+    {
+     "title": "Japan CPI Rises to Fastest This Year, Backing BOJ Hike Case",
+     "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxOM2NOOWw3YnlUdXhvb0FwZ2FRcFJQV2p2bVhEbjVoX3A5VUV0c0VPNEc2RkpHVkp5Tld6SE1NQ1p4ODQ3UGZKWEhMdFpPVEZ5QTJ0UXliWXE3amxGNzBKMG5RTnJ2S08yWTFtcWJTRnM3R19Md1A4a2VmQnRIV2xNU0R0dW5OQ3lTYlhNV1BNRFc2anQtMTJRc2ZFTE5NaVI0LUxhMlIwaG9DN0RNVjROMW9B?oc=5",
+     "source": "Bloomberg",
+     "published": "2026-11-20"
+    },
+    {
+     "title": "Japan CPI inflation hits 11-mth high in Oct, core print slightly misses estimates",
+     "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQQ2djdTRsd3hFb2wxMk44djJFdGZOTzFoUHg1amxwMWtOWDRUSzVvZllfUldhOVBfLUVXRVNBcmJHUFYxNnUyS2RkMWtORGhKS1RicjZXYUJBd3haSVVWZlpZTGtETXVJbThscW1NQlF3TFBKWHVoQ0tublhrdU1ESnBoNGhLM1BGcm5oRVFYV2VvX3k1TFFPeXlnZ0VJUlJBRXNjdHNJb280WmlfREMtNmpmZXd3bmh6Q3lEendOWWwtajNFaEE?oc=5",
+     "source": "Investing.com",
+     "published": "2026-11-20"
+    },
+    {
+     "title": "Japan's October core CPI rises to 2.2%, misses estimates, and headline inflation hits 11-month high",
+     "url": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxNbDNRZlZRTHN6Q25UZE1QX1U2cWhhS0F2THdRTDhKV2JZN2hxTHZYUmRjR2dWdjNtUi1OeGtQM3dnSFRLNmh3RXpwWXZUSUdpazJIQjU3MXV1d1RLMEN2TGNXX1ZNX3R3MHRHeU1CSnJFNDlxTWFtb291S0tRa2Jyd09JbUJHRzZfdFRsR1p5SEE1MjRIaUgxd203UHZCWUhVdEM1V2tiNDdfRVExbTE1aVJyaHFOZDNVeWl0ZVNFbzZJbTRCOW81blNXbFJBNFctYmlkMHZaQVJLVk1OdlAtbmFzY0FSNldYZXdqdmhOZXk?oc=5",
+     "source": "TradingView",
+     "published": "2026-11-20"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "일본|CPI 근원|2026-10-01": {
+   "country": "일본",
+   "indicator": "CPI 근원",
+   "period": "2026-10-01",
+   "release_date": "2026-11-20",
+   "value": 2.2,
+   "prev": 2.1,
+   "diff": 0.1,
+   "unit": "%p",
+   "hold": false,
+   "summary": "10월 일본 근원 CPI가 2.2%로 올해 가장 빠르게 올랐고 일본은행의 금리 인상 논거를 뒷받침한다는 보도가 많았어요. 다만 한 기사는 세 가지 물가 지표가 모두 시장 예상에 못 미쳤다고 전했어요.",
+   "meaning": "근원 물가 상승률이 0.1%p 올라 2.2%가 됐어요. 오른 폭은 크지 않지만, 물가 목표인 2%를 계속 넘고 있다는 점이 중요해요. 일본은행은 6월에 금리를 1.0%로 올렸는데, 이번 숫자는 금리를 한 번 더 올릴 근거가 조금 더 쌓인 쪽으로 읽힐 수 있어요.",
+   "status": "linked",
+   "reason": "고른 기사 세 건은 모두 2026년 11월 19~20일에 나왔어요. 일본 근원 CPI 10월 수치를 직접 다뤘고, 그중 둘은 제목에 2.2%를 밝혔어요. 나머지 기사(investingLive)는 예상치와 비교한 내용이 있어서 골랐어요.",
+   "articles": [
+    {
+     "title": "Japan's core inflation rises to 2.2% in October, the fastest this year, as household energy subsidies end",
+     "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQdGpvLU0tZDFjdzQtYUt4R2hNTTdka0t0djYzZk9kb1NOQ0FTZFd4QzJ6bHpxQnJjX1Q4NE1VUzBibi1Tc2tMancza1ZsN09KU2p5dmhuRUpuRVRGRWd3U3VrWFhxOG82bTRDblRRSjlxazJHcDVuam1PUHlic3dqMERjMVFaR3U5eDJndTh6YXFQQlEzS1g3VjBXRzVabUxMMmdXSmxMSnVnSGROeV8tZjQwNUNqS25UdGtvN0pn?oc=5",
+     "source": "MLQ.ai",
+     "published": "2026-11-20"
+    },
+    {
+     "title": "Japan CPI Rises to Fastest This Year, Backing BOJ Hike Case",
+     "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxOM2NOOWw3YnlUdXhvb0FwZ2FRcFJQV2p2bVhEbjVoX3A5VUV0c0VPNEc2RkpHVkp5Tld6SE1NQ1p4ODQ3UGZKWEhMdFpPVEZ5QTJ0UXliWXE3amxGNzBKMG5RTnJ2S08yWTFtcWJTRnM3R19Md1A4a2VmQnRIV2xNU0R0dW5OQ3lTYlhNV1BNRFc2anQtMTJRc2ZFTE5NaVI0LUxhMlIwaG9DN0RNVjROMW9B?oc=5",
+     "source": "Bloomberg",
+     "published": "2026-11-20"
+    },
+    {
+     "title": "Japan CPI misses on all three measures, but core stays above 2% ahead of a BoJ hike call",
+     "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPemYwbnFoWDJGU1VZclc5TlVhekc0VkYwd3NlZ1Z1QmZ4YVVwaHJ6elVSSDViUGdMZEdTZW41SnpSaGpYYXJRTXZ3MEpwUVdZTVdYZ09HRlZ3YXlvRUtEWV9RZ3Y0UTE5QXBVUlpzM3BkQ09XZUw0Mms5QUxaWmRoWVBxRnVlZWdaS1NXLWJXWnVFbVNNU01ZMENNXzI0V29PYVRzR1JyS0FTVFBXUWhQam5xQ2lUdU41SnBEc2NDazlHbmRrTnc?oc=5",
+     "source": "investingLive",
+     "published": "2026-11-20"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "일본|실질GDP 성장률|2026-07-01": {
+   "country": "일본",
+   "indicator": "실질GDP 성장률",
+   "period": "2026-07-01",
+   "release_date": "2026-11-16",
+   "value": -0.02,
+   "prev": 0.36,
+   "diff": -0.38,
+   "unit": "%p",
+   "hold": false,
+   "summary": "일본의 3분기 GDP가 시장 예상과 달리 줄었다고 보도됐어요. 닛케이아시아는 연율 0.1% 감소로 시장 예상보다 낮았다고 전했어요.",
+   "meaning": "성장률이 0.36%에서 -0.02%로 떨어져 사실상 제자리걸음이 됐어요. 줄어든 폭 자체는 아주 작아서 큰 변화는 아니지만, 경기가 식는 신호로 읽혀요. 물가는 2.1%로 목표(2%) 근처에 있어서, 올해 6월에 금리를 1.0%로 올린 일본은행이 추가 인상을 서두르기보다 지켜볼 여지가 커졌다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "닛케이·로이터·CNBC 기사 제목 모두 발표일 무렵 나온 일본 3분기 GDP 감소를 직접 다뤘어요. 특히 닛케이의 '연율 0.1% 감소, 예상 하회'는 전 분기 대비 -0.02%라는 수치와 맞아요(분기 수치를 연율로 바꾸면 대략 0.1% 감소).",
+   "articles": [
+    {
+     "title": "Japan's Q3 GDP drops an annualized 0.1%, below market expectations",
+     "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOd21XbkI2N1dSWUZGT2ZIcTVtZzRzdlBIdkM1bTloQnptdWxOOEoxdGM4QWJpWHQyVklKRXgya3hxQThXOTg0b3BCSmtZYlY0VmZMS0xrc050TlZmN2ZMNXRKZU9nT2dEakhmdnRoLWFsSUw3amxVcDY3Qkg0VUMyYWk1T1RLcDNnTGF6SlVSTXJVX2UtQTJadGxSUlk?oc=5",
+     "source": "Nikkei Asia",
+     "published": "2026-11-16"
+    },
+    {
+     "title": "Japan's economy unexpectedly shrinks as inflation squeezes households",
+     "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQeXFYOEg3cHpDTUFrTU9IRlQyWDlvRGVMVVN3VmxOelY3WnhCREJNdElKcEY5ZWpBSmhoalMzWDdaM0Y5Z0VXbkxVemg3YmdhSUg5UmYybnhFOHhWbVhXdjdoT1BUUGNQUFVtX2o1SkJRSnBJNEdLX081amJyUll6WHFpUk5SaWlkd2JGN0VnRFZKYi1WT1B0NzFUOUVKdkFfcTQ5RmdFeHdvcWI5c2pRaXF6MFBydw?oc=5",
+     "source": "Reuters",
+     "published": "2026-11-15"
+    },
+    {
+     "title": "Japan's economy unexpectedly contracts in third-quarter as elevated energy costs bite",
+     "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE51ZGpUMGRueFdhOHZwSVZsV0NKaDRHbzgwUWZkODNQN3V0Y2w3Z2kzQjRlTVNleXdJaW1LVmloeGFDamJLdUhfUk1ESXhRT1Jfc19KWkxhZElZa0hldTJtdUI2OUREaHNzR2NNQ1YwYXNPSUVSa3fSAXtBVV95cUxONng3eHcteEVaaVZBOUlKa3ZYaHdiTUZPSVhJel9mTDN4RFhPUU5QR3BRSjZXWEtYSHlqbjYtc1pCQV9YV1lxTzJPU3FtLWt3UXlSMkZLd1dwVWJNc0Rnc3RUX0lua1pWSW1Qa1V3TEpsTW43ejZXUm9ZUHM?oc=5",
+     "source": "CNBC",
+     "published": "2026-11-15"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|실업률|2026-10-01": {
+   "country": "한국",
+   "indicator": "실업률",
+   "period": "2026-10-01",
+   "release_date": "2026-11-11",
+   "value": 2.5,
+   "prev": 2.6,
+   "diff": -0.1,
+   "unit": "%p",
+   "hold": false,
+   "summary": "10월 고용동향은 취업자가 13만 9천 명 늘었다는 소식과 함께 보도됐어요. 다만 늘어난 취업자 대부분이 고령층과 복지 분야라는 점이 함께 짚였고, 기사 제목에 예상치와 비교한 내용은 없었어요.",
+   "meaning": "실업률이 0.1%p 내린 건 큰 변화는 아니지만, 고용시장이 여전히 탄탄하다는 신호로 읽혀요. 물가가 2.82%로 목표치 2%보다 높고 한국은행이 직전 결정에서 금리를 올린 상황이라, 고용 쪽에서 금리를 내릴 이유는 약해졌다고 볼 수 있어요.",
+   "status": "review",
+   "reason": "[1]과 [8]은 발표일에 나온 전국 10월 고용동향 기사지만, [1] 제목의 실업률(2.0%, 0.2%p 하락)이 지표 값(2.5%, 0.1%p 하락)과 달라요. 계절조정 여부 차이일 수 있어서 사람이 확인해야 해요. [0], [4], [7]은 지역 통계이고 나머지는 다른 나라 기사라서 제외했어요.",
+   "articles": [
+    {
+     "title": "10월 취업자 13.9만명 증가···대부분 '고령ㆍ복지'",
+     "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5sQmN2cEhRd2dLRXlJLXdJcXJFNGVxcTBybDlKckRSUmpSLUkwUjlhSWNoOUZYemx3WXF3YW1UZlhuV0NlZ3hkSDJrWWJfMG45UFVIN3c2REhNSDN5XzBNODlQSHo0RGFzY2piMtIBcEFVX3lxTE1HZncyUDVDeEl0VVE4MVpVU3BQRGFOdndseGJRRmJQdG12QzNCZkVFSkl6S1ZTSktfOTZUSWNMWldhVnVsblJxTTNCUGR2aURya3lRZkhQNjdEdndBZGx4a2w2eWhMYTlIZ1V2LTd5eGk?oc=5",
+     "source": "데이터솜",
+     "published": "2026-11-11"
+    },
+    {
+     "title": "10월 취업자 13만 9천 명 증가…실업률 2.0%로 0.2%p 하락",
+     "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9BdFNVdkd1bUlmTUUxNGZuamZWTjVLNTRTakpBajc1RE0yMDU2ODIzX2pUQlRtRGNhbTVIc2pmcTdha1lUbDBheFppRTA4WHhmc0RBa1hUMGVSNl95Tm9UTTdrOTJBNGhrcEpF?oc=5",
+     "source": "BBS불교방송",
+     "published": "2026-11-11"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|취업자수|2026-10-01": {
+   "country": "한국",
+   "indicator": "취업자수",
+   "period": "2026-10-01",
+   "release_date": "2026-11-11",
+   "value": 29179.0,
+   "prev": 29266.0,
+   "diff": -0.2973,
+   "unit": "%",
+   "hold": false,
+   "summary": "10월 전체 취업자는 1년 전보다 14만명 늘었지만, 청년층 취업자는 48개월 연속 줄며 고용률이 코로나 이후 최저로 떨어졌다는 '청년 고용 한파'에 초점을 맞춰 보도됐어요.",
+   "meaning": "이 지표로는 취업자가 전월보다 약 8만7천명(-0.3%) 줄었어요. 일반적으로 고용이 줄면 경기가 식는 신호로 읽혀요. 다만 물가는 2.82%로 아직 목표치 2%보다 높고, 한국은행은 직전 회의에서 금리를 올렸어요. 그래서 이번 숫자는 추가 인상을 서두를 필요가 줄었다는 쪽으로 읽힐 여지가 있지만, 금리를 내릴 근거로 보기는 어렵다고 볼 수 있어요.",
+   "status": "review",
+   "reason": "[1]·[2]·[5]는 같은 날 나온 전국 10월 고용동향 기사예요. 그런데 기사 제목은 전년 대비 14만명 증가인데, 지표 데이터는 전월 대비 -0.3%(아마 계절조정 기준)로 방향이 반대예요. 기준이 서로 다른지 사람이 확인해야 해요. [0]·[3]은 지역 통계, [4]·[6]은 다음 날 이후 나온 청년 고용 해설 기사라서 뺐어요.",
+   "articles": [
+    {
+     "title": "10월 취업자수 14만명 증가…청년·건설업 취업자수 감소",
+     "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1RNjNHSjF4bGlyTFMwRGQtNlpySHpNdmFxOTBqdTRicWx3ZllCSjg3M2dzMk1JemxQQ3BCbFN6TVFoUldLVkVOaTM3U2M3bGJUVUN5bEduc0FsYTUzNUk0blYyX3NxOWdRX1E?oc=5",
+     "source": "동양뉴스",
+     "published": "2026-11-11"
+    },
+    {
+     "title": "전체 취업자 늘었지만…청년 4년째 '고용 한파'",
+     "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFB6MlUzbFJqSXBTc2hWTUphQ2JnMkNpNUtuWTNaRFVTY2tTNi02OUxVNVlQWkdaVU5OcUxqTkd6UUdOVHpLUWJEMC1ORDYxN2ZCaktaSQ?oc=5",
+     "source": "매일경제",
+     "published": "2026-11-11"
+    },
+    {
+     "title": "청년층 고용률 코로나 이후 최저…취업자 48개월 연속 감소",
+     "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE16cm1aejB4RVA5ZkRVeW1PMFB0WVJ6Nm5CMkJ4Y2VxZUhwWlZIZnZyYkRIMGc1MXJJNVYzZW5jeVpwcDgyTmtQa0N6WlpMbXJ6OG05b2VHV2ZzSE0?oc=5",
+     "source": "경기일보",
+     "published": "2026-11-11"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|비농업고용|2026-10-01": {
+   "country": "미국",
+   "indicator": "비농업고용",
+   "period": "2026-10-01",
+   "release_date": "2026-11-06",
+   "value": 159293.0,
+   "prev": 159044.0,
+   "diff": 0.1566,
+   "unit": "%",
+   "hold": false,
+   "summary": "10월 미국 비농업고용이 16만 5천 명 늘어 시장 예상을 크게 웃돌았다고 보도됐어요.",
+   "meaning": "일자리가 예상보다 많이 늘었다는 건 경기가 아직 탄탄하다는 신호로 읽혀요. 물가가 3.7% 정도로 목표 2%보다 꽤 높고 연준이 직전 회의에서 금리를 올렸던 만큼, 금리를 내릴 여지는 줄었고 높은 금리를 유지하거나 더 올리는 쪽에 힘이 실렸다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "[1][6][9]는 발표 당일 나온 기사로, 10월 비농업고용 결과와 예상 대비 수준을 제목에서 직접 다뤄요. 다만 데이터상 수준 변화는 약 24만 9천 명인데 기사 제목은 16만 5천 명이에요. 전월치 수정 때문일 수 있으니 검토할 때 확인이 필요해요.",
+   "articles": [
+    {
+     "title": "October US Jobs Report: 165,000 Rise in Payrolls, Beating Expectations",
+     "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPN3BUN0xldDVWVlFXaU9saWN5NG1ocFFOUEljaUVGcjNuNGttbUtOUkI3R2dvUzgxNGh4aDBDSTFHRW8zamc1SHoxOEhpU2p1Q084WWxsODg3eFpEZmZqWEZncERvb2t3aHhVZFZ6SXNLSWJSbUR6OTA5aHlIM2w2R19pODFyTWh2N0pkcC1MOHlMRk12MkMxLXprXzctdEgxcnc?oc=5",
+     "source": "Morningstar",
+     "published": "2026-11-06"
+    },
+    {
+     "title": "US economy adds 165,000 jobs in October, blowing past expectations",
+     "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9hcUNlQlY3TW5URE81NlNvLTd2YlJ1UHg5eTlfcTV6Vm55aXA5ZU9HeVJYNkYxVXFmT29ENFpmUUtvcU5rclhSaEZmQVRxdDdfQzBZY0Q3MVo3RnItbXJlOXAydUZCOHNubmoxajJFRnbSAXZBVV95cUxQUVVZaDZiQmx5dm9iSDE4cHVfdTgxVWh0NFRPOFJibE1vNFlickNJVHlKX2x5TjJiOC1LT3J2SjRaYjBnUTVOcXFyN1hVMjV1VHFYVTFjR3VOTVlrWHJuZ1AwSnlNaEc0VzhNNk9nYUlJUEdtN1JB?oc=5",
+     "source": "Fox Business",
+     "published": "2026-11-06"
+    },
+    {
+     "title": "US October Nonfarm Payrolls Rise 165,000, Beating Forecast by Wide Margin",
+     "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBuSVNTbDNNa2hEbUoxVXl3WXFQRDdaNWlPblp4LV9ZZWd3V2xoOURVcUluRjFPUXRNelVkUDd1SGgwYUhCWF9UUDJCMEJWY1ZoTVN5dw?oc=5",
+     "source": "bloomingbit",
+     "published": "2026-11-06"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|실업률|2026-10-01": {
+   "country": "미국",
+   "indicator": "실업률",
+   "period": "2026-10-01",
+   "release_date": "2026-11-06",
+   "value": 4.1,
+   "prev": 4.2,
+   "diff": -0.1,
+   "unit": "%p",
+   "hold": false,
+   "summary": "언론들은 10월에 일자리가 16만 5천 개 늘어 예상보다 많았고, 실업률은 4.1%로 내려갔다고 보도했어요.",
+   "meaning": "실업률이 0.1%p 내린 건 큰 변화는 아니지만, 고용 시장이 아직 탄탄하다는 신호로 읽혀요. 물가가 3.7% 정도로 목표인 2%보다 꽤 높고 연준이 직전 회의에서 금리를 올린 상황이라, 연준이 금리를 서둘러 내릴 이유는 줄었다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "CNBC·Reuters·Morningstar 기사는 발표 당일에 나온 미국 10월 고용보고서 기사이고, 제목에 실업률 4.1%나 '예상치 상회'가 들어 있어 이번 발표를 직접 다뤘어요. 캐나다 실업률 기사(5)와 운송 부문 실업률 기사(2)는 빼고 골랐어요.",
+   "articles": [
+    {
+     "title": "U.S. economy added 165,000 jobs in October, way more than expected; unemployment rate slips to 4.1%",
+     "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE56MGdjWVJoQ0JqTmhlZVpRREt0eE1XOFd0VkdIdVBfZnZNcUQ3eFV6aVl0aGptRkpCVEk1Q1BuTXExaTlnb3dnOXpsQTE0THJlc0VZX0lQV0RrQmY0LXR2ajc1VHJkNmNjZzBVOER30gFzQVVfeXFMTldndzJuTUpwcExmUGd3N3pzNjM1NUZ3VkU4TGY0Q1R5Y1lfNTVsZWJfTVVHUGU5Qkh0LTZWcmZhMjE3ZW9DNmdZWlI4a3kyYmduMkVIQVB4Zjd6VDhPV0UyXy1kOU80WUlIaExhZ0tHeXBFMA?oc=5",
+     "source": "CNBC",
+     "published": "2026-11-06"
+    },
+    {
+     "title": "US labor market regains ground as job growth surges, unemployment rate falls to 4.1%",
+     "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPakNLaDVCMElHQkc5cjV5SmVJcFNPdVpMbnZHRmVFMkoxR3hhbERYTnBZcUlmQVZBanhMeVhEZHpsN3JxM0xrUHNsYVZPWW1EdXBWam1pNk5lSEZVNHkwcUV1VG9xbmVYek80a3JXelRIcW9fQjQ3TUljTUdpZkhYWUJaZHhxNTUybWQwME81bUtPTmJ4UUg4ZjVrZjVlLUx2azFkWjhmeThDWkp2MHJwdTVR?oc=5",
+     "source": "Reuters",
+     "published": "2026-11-06"
+    },
+    {
+     "title": "October US Jobs Report: 165,000 Rise in Payrolls, Beating Expectations",
+     "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPN3BUN0xldDVWVlFXaU9saWN5NG1ocFFOUEljaUVGcjNuNGttbUtOUkI3R2dvUzgxNGh4aDBDSTFHRW8zamc1SHoxOEhpU2p1Q084WWxsODg3eFpEZmZqWEZncERvb2t3aHhVZFZ6SXNLSWJSbUR6OTA5aHlIM2w2R19pODFyTWh2N0pkcC1MOHlMRk12MkMxLXprXzctdEgxcnc?oc=5",
+     "source": "Morningstar",
+     "published": "2026-11-06"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|CPI 헤드라인|2026-10-01": {
+   "country": "한국",
+   "indicator": "CPI 헤드라인",
+   "period": "2026-10-01",
+   "release_date": "2026-11-03",
+   "value": 2.82,
+   "prev": 2.88,
+   "diff": -0.06,
+   "unit": "%p",
+   "hold": false,
+   "summary": "10월 소비자물가 상승률은 2.8%로 두 달 연속 2%대를 이어갔고, 석유류(14.9%↑)와 가공식품의 오름세가 함께 보도됐어요.",
+   "meaning": "물가 상승률이 2.88%에서 2.82%로 0.06%p 낮아졌지만 큰 변화는 아니고, 여전히 한국은행의 물가 목표(2%)보다 높은 수준이에요. 그래서 직전 결정에서 기준금리를 3.0%로 올린 한국은행이 금리를 서둘러 내릴 만한 신호로 읽기는 어렵고, 지금의 긴축 기조를 이어갈 여지가 있다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "[6]·[3]·[11]은 발표일(11/3)에 10월 전국 소비자물가 2.8% 상승을 직접 다룬 기사이고, 수치도 발표값(2.82%)과 맞아요. [4]의 2.6%는 제주 지역 수치로 보여 제외했고, [0]은 정부 공식 발표 자료라서 언론 보도로 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "[2보] 10월 소비자물가 2.8% 상승…가공식품·석유류 오름세",
+     "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE10N3BWQ0tKcl9udktRX2lnYkpnWkZhSG1CYVdJOG02SXNpbHdpMkJ2SjlwaTlaSzhfdzc3cTR0YjVSMm1PbGRKN3RnblRERUMyOGVsTF94b3l3WTDSAWBBVV95cUxNQ0VtMnM5SGhoWkg4VXluTk1tX1gtWUJXRm52amxnUFdhVFlNblU2aEZ3Z29zSWJDcmJjSXNkcnNVVnlmalppdG5TdEJkcE1wR1dreVdBc1U2amdtYzBfR3I?oc=5",
+     "source": "연합뉴스",
+     "published": "2026-11-03"
+    },
+    {
+     "title": "10월 소비자물가 2.8%↑…두 달 연속 2%대",
+     "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE05Qm9SVmI2Tk5NQ1EtNWdtSWgxTWZnSmh4ZzlTSGVQWi1aRVk5OXlzSHF2QnBqM3A3ZVp2MjFGakxiZnBHTmpVX1l6VHZlNWtOWF9Fbm1PY1FoVDZ0WFBvQzNkU21aMjQ?oc=5",
+     "source": "연합뉴스TV",
+     "published": "2026-11-03"
+    },
+    {
+     "title": "10월 소비자물가 전년비 2.8%↑…석유류 14.9% 급등",
+     "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1XZ2NQcFJzYk1KdFRPU0JzZ3YyUkNtQ3Flblk3WkJ0Y1NRRVl2d29kcXZzTWNoLUk5NmY3YUVYYTNIUlEzRHVVTXFvZWpobkpPZ2RUZUhVSTRKUFBE?oc=5",
+     "source": "뉴스핌",
+     "published": "2026-11-03"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|CPI 근원|2026-10-01": {
+   "country": "한국",
+   "indicator": "CPI 근원",
+   "period": "2026-10-01",
+   "release_date": "2026-11-03",
+   "value": 2.78,
+   "prev": 2.73,
+   "diff": 0.05,
+   "unit": "%p",
+   "hold": false,
+   "summary": "10월 소비자물가는 2.8%로 소폭 둔화됐지만 근원물가도 2.8% 올랐고, 한은은 근원물가 오름세가 여전하다고 평가했다고 보도됐어요.",
+   "meaning": "근원물가는 0.05%p 올라 큰 변화는 아니지만, 변동이 큰 품목을 뺀 기본 물가가 목표치 2%보다 높은 2%대 후반에 머물러 있다는 신호로 읽혀요. 한국은행이 8월에 금리를 3.0%로 올린 뒤라 당장 금리를 내릴 여지는 크지 않고, 긴축 기조를 유지하는 쪽으로 읽힐 수 있어요.",
+   "status": "linked",
+   "reason": "[5]·[7]·[10]은 발표일(11-03)에 10월 소비자물가와 근원물가 발표를 직접 다뤘어요. [6]은 근원물가를 '제자리'로 표현해 지표의 +0.05%p 상승과 어긋날 수 있어 제외했고, 나머지는 한은 전망이나 후속 분석 기사여서 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "10월 소비자물가 2.8% 상승…근원물가는 2.8%↑",
+     "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFA1MkNiVjJwZFBZUzBmaklncGxWS2RHYktnNDA0N2VaZlJJTG9uM1Y3cVZEaHU2VGU4ckZUVDVaN0Z5aGloSnNLS1BNLWQ5MjBYMmo4QW5aZ0t1NnZlV013NzJ1UGg?oc=5",
+     "source": "동양뉴스",
+     "published": "2026-11-03"
+    },
+    {
+     "title": "10월 물가 2.8%로 소폭 둔화…한은 “근원물가 오름세 여전”",
+     "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE15b3lMNzUxaW0yRy1XRnVMWHlnVURneW8xMTB4MmVHSm9VOGRiWS1tcXRKT0R2YlF0Y3JzOXBaZmF0a09mLXo5bzJBNHo5bGxsbGlFWTRTbld6WEJNYW1j?oc=5",
+     "source": "조세일보",
+     "published": "2026-11-03"
+    },
+    {
+     "title": "10월 물가 2.8%로 소폭 둔화…한은 “11월도 2%대 후반 전망”",
+     "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1EeWRZak5wenRpWU9sR0NsMVQwWEdsdGJNbVpELUdLaDNCTXhuMUNQbjJTVEtSLUFRUUk2M0NBak9ZWEpPcXNWRWl5d3FfNWpuWWJudi1MZVpOdw?oc=5",
+     "source": "브릿지경제",
+     "published": "2026-11-03"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|국채10년|2026-10-01": {
+   "country": "미국",
+   "indicator": "국채10년",
+   "period": "2026-10-01",
+   "release_date": "2026-11-02",
+   "value": 5.13,
+   "prev": 4.99,
+   "diff": 0.14,
+   "unit": "%p",
+   "hold": false,
+   "summary": "10월 초에는 10년물 입찰 결과가 좋아 국채 매도세가 누그러지고 금리가 고점에서 내려왔다고 보도됐어요. 하순에는 프랑스의 정치·금융 불안과 AI 관련 우려로 안전자산을 찾는 수요가 늘면서 10년물 금리가 5% 아래로 내려가거나 5% 수준으로 돌아왔다는 보도가 이어졌어요.",
+   "meaning": "10년물 국채 금리의 한 달 평균이 0.14%p 올라 5%를 넘었어요. 시장에서 돈을 오래 빌리는 비용이 커졌다는 뜻이고, 물가(CPI 3.7%)가 목표 2%보다 높은 상황에서 금리가 높게 유지될 것으로 보는 시각이 반영된 것으로 읽혀요. 다만 장기 금리가 오르면 그 자체로 경기를 식히는 효과가 있어서, 9월에 금리를 올린 연준이 추가 인상을 서두를 필요가 줄었다고 보는 해석도 가능해요.",
+   "status": "review",
+   "reason": "월평균 지표라서 특정 발표를 다룬 기사는 없고, 고른 기사들은 10월 중 10년물 금리의 움직임을 보도한 것이에요. 그런데 하순 기사들은 금리 하락을 다루고 있어서 월평균이 오른 것과 방향이 엇갈려 보이니 사람이 확인해 주세요. Pimco 6% 전망(5·11)과 JPMorgan 전망(3)처럼 앞으로를 내다본 기사와 분석 글(4·6·7·8·10)은 뺐어요. / 자동 검사: 금지 표현 포함: 매도",
+   "articles": [
+    {
+     "title": "US bonds selloff eases, yields off highs, after strong 10-year note auction",
+     "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQN0RvVl9ubDN1ZkRqRFJ1Z21yUUdrSHFGUG5jRmU5N2FUU0dPeHlGcjlBY0hQZjltWjFVc3hJNEtSVEtKNUF1T0RZV3dnWFEzbWJ6Yi1jbk1QajNDMzFMTzlTUUtkNExTdWJIYXZHZ3FMTXgycVJVd056RFhwYkRYM0tYa3I3eElsVGdnMHUxQWh6blZK?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-07"
+    },
+    {
+     "title": "U.S. 10-Year Treasury Yield Falls Under 5% as French Turmoil Fuels Flight for Safety",
+     "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQaG1kb1dxekJabUk3czhacmlCWC1GV1N5WlkyaFZVekxHaUhsbUVIU0lLMXFHRk91ZnVBRUZCMkNWWmVMZGppbDJ1QXZTX05OdkJpNy1nVlQ0MzVyb3dONjNQcjVoU1ZsdDVwc1BuVnpUTk9TX1dMNnBJdVNtVHpkbjZCSDBrZTZlOEo5MFo5QV9WTnAxV2JySkVpWGh5alBYVTNBRlBJTUVYVjJ1Q2hwdDlyY2tJUmFJYjg4?oc=5",
+     "source": "WSJ",
+     "published": "2026-10-22"
+    },
+    {
+     "title": "10-year Treasury yield drops back to 5% this week as investors seek cover from AI worries",
+     "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9fUFhkR0R0cmxYeWNRb2Y2LXEyNUlGQnozcWxNUW1jaWRDcUdpYnBTWVZGR3p4OWwydEdicWRMMEozdXpxUl9td1V6SVVZM2JOT25hOWU3TUFLU1h4aHk0VC1VcjQ2bkhyMGJSVzduZ9IBdEFVX3lxTE1KUjZzM3JxQnUxN2Y0LVlocU52STl2ZUIwSlNOMFNnY3hyUlJ5TGJpZjJlc3VRaS1LdDh1ZlNvSDNCYWlmdnpIMHk4ZWFTT1E3UmplVjAwRm5MNnM5V2FsSWVpZ0Z3aWVhMjNVeWhrX1lRWWtk?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-23"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "일본|정책금리|2026-10-30": {
+   "country": "일본",
+   "indicator": "정책금리",
+   "period": "2026-10-30",
+   "release_date": "2026-10-30",
+   "value": 1.0,
+   "prev": 1.0,
+   "diff": 0.0,
+   "unit": "%p",
+   "hold": true,
+   "summary": "일본은행이 금리를 동결했다는 보도에서는 기조 물가가 2013년 이후 처음으로 2% 목표에 맞춰졌다는 점이 함께 다뤄졌고, 일본은행이 물가 목표 달성을 선언해 금리 인상의 길을 열었다는 해석도 나왔어요.",
+   "meaning": "6월에 금리를 1.0%로 올린 뒤 이번에는 그대로 두었어요. 올린 효과를 지켜보며 잠시 쉬어 가는 동결로 읽혀요. 최근 물가가 전년 대비 2.1%로 목표 2% 근처에 있어서, 일본은행이 금리를 내리기보다는 앞으로 더 올릴 여지를 남겨 둔 동결로 볼 수 있어요.",
+   "status": "linked",
+   "reason": "CNBC[3]와 Reuters[1] 기사 제목이 일본은행의 이번 금리 동결 결정을 직접 언급하고, WSJ[0]은 같은 날 회의에서 나온 물가 목표 달성 선언을 다뤄요. 10-29 날짜는 미국과 일본의 시차로 보여요. 같은 결정을 다룬 FT[4]와 富途[11]는 3개 제한 때문에 뺐어요.",
+   "articles": [
+    {
+     "title": "BOJ holds rates as underlying inflation aligns with 2% target for first time since 2013",
+     "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE8talZyVVhDS3lTcklPWGVGZ0RpajdfY0FzaWNYNEhRTzZaSDlqMHU3eFdFRmgyc241UnJSRGN4RHdlOC0zQ0taR3YyeGVwdWJjVXdFbWxLWHFRMVZKLVR4TkNyMDh3VU5RdjVjbnVLcFbSAXZBVV95cUxPVkFxbzREZEFuS3drT0c1ZFpvZWJuYzRqY1dBd0lnRzBNTUJsRDhaYlFHdGo2WkFvWUNHQzVGcFBOd3loYXhXM3FUbmUzS2IwU2I5cXhYTHd5Ykx1WlZERVhFVUhNUUozXzRwRFJsNXBnSDJJWFl3?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "VIEW Analysts react to BOJ decision to keep rates steady",
+     "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNSnRoUnFPTXd3aThEbHFYOXpiS2RwcUhURmhyc2RVMWtxdENYOGg0cjVYWllUS012TnI2Rmxxd3d2dEx4QURuVW9ZWUhFdzVuOHNvWlpYOV9Rd0xCNHRfNTNuMVFZeVQwOUZ1ZHVlTkFnMUllanAwRkQzLXMyaE9qMzY1Vmp4Vy1GU0NTYVpLbkQ5eG5PVXlSYUh0T0l2YjJ3RVVIX0hzUmM?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "Bank of Japan Declares Inflation Win, Clearing Way for Rate Hikes",
+     "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPWnJWU0FUQ3RzZzNCVjVCREZiMTJvOGI5UjU1VmlwR2lmYThxSGt2LS10eTEzd054TXpCVjhnRFlVcDBWYjAxOHRSSFZKdlVqMGJ0WDJGck43cTFGRXRiYW1TYTlrZUVEdEJVWVdCZjI4ZUV0czFUOC15dG9FYlpwRk5FOHFNR25RbWhrRVVPVlVkcWJUTGtrNVlzMnFaa1JjOGtrQjRLWG5JTnBrMi1R?oc=5",
+     "source": "WSJ",
+     "published": "2026-10-30"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "일본|실업률|2026-09-01": {
+   "country": "일본",
+   "indicator": "실업률",
+   "period": "2026-09-01",
+   "release_date": "2026-10-30",
+   "value": 2.4,
+   "prev": 2.5,
+   "diff": -0.1,
+   "unit": "%p",
+   "hold": false,
+   "summary": "9월 일본 실업률이 2.4%로 떨어졌다는 보도가 나왔어요. 일손 부족 속에 수치가 좋아졌다는 기사가 있었고, 도쿄 근원 CPI가 2.6% 오른 것과 함께 일본은행의 추가 금리 인상 기대를 키웠다고 본 기사도 있었어요.",
+   "meaning": "실업률이 0.1%p 내린 것은 큰 변화는 아니지만, 원래 낮았던 실업률이 더 내려가 일손이 계속 부족하다는 신호로 읽혀요. 물가도 목표인 2% 근처(2.1%)에 있어서, 금리를 1.0%까지 올려 온 일본은행이 추가 인상을 생각해 볼 여지는 남아 있다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "[7]·[0]·[1]은 제목에 9월 일본 실업률 2.4%가 그대로 나와 이번 발표를 직접 다뤘고, 10-29 날짜는 시차 때문으로 보여요. [3]·[6]은 일본은행 결정과 도쿄 물가 기사라서, [2]·[4]·[5]·[8]~[11]은 이번 발표와 상관이 없어서 뺐어요.",
+   "articles": [
+    {
+     "title": "Japan's jobless rate falls to 2.4% in Sept. amid labor shortages",
+     "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBwY0tvWUpZVDFCX0RtNGE5R1Bac2JhN3RYb3AyNDJacktBbW9JVEZ5M3BYX0dHR3RWNGVOS1FOTmNGcGNMSzVHWUR5TE8tV0hIU1JZMGtvUG1QWjB0R2gyaHQ2elJUd09renU3V1hEMjFMTGs?oc=5",
+     "source": "毎日新聞",
+     "published": "2026-10-30"
+    },
+    {
+     "title": "Japan's unemployment rate at 2.4% in September",
+     "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQbWR4ZDlrUHlxOUFhUm9WY2JKWTM0TnJnSmc1T2MzUzNLdHFXUHBaUjNpbGhQcVBfR0xBQWZXOUgyZDlEVDZUU1cyQ3BYTFljTjluUGV2RUtrRmZFYnQ2YzVYZFhUSk5OT0w4NkUxeTE5ZExYRDdObEpmanZUTlBIS25ycVBBNk1pMUUxdXZjUUNwdjd5?oc=5",
+     "source": "Breakingthenews.net",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "Japan's September Unemployment Rate Improves to 2.4%; Tokyo Core CPI Rises 2.6%, Bolstering Expectations for Additional BOJ Rate Hike",
+     "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9WRElUblhMd2RlOE04MUpKOXA2b2pWRkprTnlfTEFlQzVud0hWbmk4YV9ta0g4VWNaaGlzTzJIV1B3UWlzZGphdTk0eGRpZXdDN3dhbno5TzNhaUQ0YUxIRlEybWZwYWpoZ3Npd1Q3QTBKU3RzekE?oc=5",
+     "source": "BigGo Finance",
+     "published": "2026-10-29"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|PCE 근원|2026-09-01": {
+   "country": "미국",
+   "indicator": "PCE 근원",
+   "period": "2026-09-01",
+   "release_date": "2026-10-29",
+   "value": 3.1212,
+   "prev": 3.0076,
+   "diff": 0.1136,
+   "unit": "%p",
+   "hold": false,
+   "summary": "9월 근원 PCE 물가가 3.1%로 보도됐고, 전월 대비로는 0.5% 올라 예상치 0.3%를 웃돌았다는 보도와 함께 9월 물가가 다시 달아올랐다는 보도가 나왔어요.",
+   "meaning": "근원 PCE가 3.0%에서 3.1%로 올라서 상승 폭은 크지 않지만, 연준 목표인 2%와는 조금 더 멀어졌어요. 연준이 직전 회의에서 금리를 올렸고 CPI도 3.7% 수준이라서, 이번 숫자는 금리를 내리기보다 높게 유지하거나 더 올릴 여지가 남아 있다는 쪽으로 읽힐 수 있어요.",
+   "status": "linked",
+   "reason": "[0]·[8]·[2]는 발표일에 9월 근원 PCE를 직접 다뤘고 수치(3.1%)도 데이터와 맞아요. [5]는 근원 PCE를 2.5%로 적어 데이터와 맞지 않고, [7]은 3.1%에서 '유지'됐다고 써서 실제 상승과 어긋나서 둘 다 뺐어요. [1]·[9]는 GDP가 중심이고 [6]은 연준 결정 기사라 제외했어요.",
+   "articles": [
+    {
+     "title": "Core PCE Inflation at 3.1% in September",
+     "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQTG1JUVk2elVoX3UzUlk1QkItUHF6bkhWU3J3T0lzcF9fTHhCa2JNcE5ERHVfZk9sc3NrWEp1c1gwczBsLXgyRUJ2Q3VhQ1dGcXRJcVZwMTB6VnB3ZzNXNnROVTBTU2NEaVREWDJRZXhoMmc2S0hYbHhWbUs4UG13eEN0elRrc3k3ZEZnaXdaVXAzX0h1dW54NHUyeUp5NDNPcEE?oc=5",
+     "source": "Advisor Perspectives",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "US September PCE core inflation +0.5% m/m vs +0.3% expected",
+     "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxONDZoQXJSSlk5RlVtaTJPUUpsUGhHZ09OdmlFNG03Qk5ZblhSRWphb25MMmtWS2xZdFphZ3BTZEVPdWdtZ3lwZ1FBTHdVZmo2R1N5bHQwYTJEQVprY3cybWhuVHJNb3kyc0dZcjBQTTFtSjdyT1pDZWIzdVhBeUlWVkVwT3JiQmNWbm9z?oc=5",
+     "source": "investingLive",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "US inflation heats up in September; consumer spending rises",
+     "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNamNwQk5mVXlad05tREVFeXVRU29iOGZLMHJLQ3dhQURxb2s2OXNfYzhjQ2tmakJEUFpJcU9FUlZrZmY1czdGVXpsYzVaY21EaVR3R2NDM3pfeEpXYVpRQmZOSXphSXdSMDlyM0plUnlvVnJCdkVhd2Q2dlhOTjUwQm42TE1uYVpsUEJEX1V0WHJ1cVZXajFSNm9zcHlGTUprQWc?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-29"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|실질GDP 성장률|2026-07-01": {
+   "country": "미국",
+   "indicator": "실질GDP 성장률",
+   "period": "2026-07-01",
+   "release_date": "2026-10-29",
+   "value": 3.4,
+   "prev": 1.5,
+   "diff": 1.9,
+   "unit": "%p",
+   "hold": false,
+   "summary": "3분기 미국 경제가 연율 3.4% 성장해 예상을 웃돌았고, 1년 만에 가장 빠른 성장이었다고 보도됐어요. 강한 소비 지출과 AI 관련 투자가 성장을 이끌었다고 전해졌어요.",
+   "meaning": "성장률이 1.5%에서 3.4%로 크게 높아진 것은 경기가 식지 않고 오히려 힘을 얻고 있다는 신호로 읽혀요. 물가가 3.7% 수준으로 목표 2%보다 높고 연준이 최근 금리를 올린 상황이라, 연준이 금리를 서둘러 내리기보다 높은 수준을 유지하거나 더 올릴 여지가 커졌다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "발표일(2026-10-29)에 나온 FT·Bloomberg·AP 기사 제목에 3분기 성장률 3.4%와 예상 상회가 직접 나와 이번 발표와 분명히 맞아요. 다만 [8]은 회계연도 기준 2.2%를 다룬 기사라 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "US economy beats forecasts to grow at 3.4% rate in third quarter",
+     "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOMEF0eF9hbDVjcmptcUxza3p4ZDkxeVc1Wlc0aDBmMDdJeW0xSkdvTnJqSkc4elNBaFhkSGFjWWhSQnJyd1RPN2ZGSF9ielZJdjNmZjRjYklvYWdoX1RrQjFqQmw4MUxWV1ZYQ3dreFR4NFBxTEVIZkswVFRyamo1WFBaYzA?oc=5",
+     "source": "Financial Times",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "US Economy Grows a Faster-Than-Expected 3.4%, Most in a Year",
+     "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOUFh4bnBMRG5WMnJ2SGxxY1ZReEdVN2k5RGRFUmZqZUN4U3NTMVRNUXlaY0ZfV3VoT3hTQ0VyRkxQZk5KaUFfUUJPVDNtNWtKWDQzSC16WE1kVllma2NpQWNqRDdTUE5FaTZfVXl6b09UUko2T2h5a0QxdTZIb3VtM2pkMDFKOHNvU2FqekdtOGNQSXd2RHJ3VEhPQno5a1BMdlNiVlNqSEV2WktBNWc?oc=5",
+     "source": "Bloomberg.com",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "US economy grows at brisk 3.4% pace in third quarter on strong consumer spending and AI investment",
+     "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBYX1ZvM3RmNE1xbUFIc3MwZDVzVWVXa3NWdkF2cGVndGVuZjVyVDVBQ05nN2NlNFVsbkZabnBBU1JlREljc1VHczhVNmkybDc4cWNLQzVuMXRTLVJTSWVuLUJJUDFaZkhKeHI2NDFPMENNLWp2UWdOV3FSTQ?oc=5",
+     "source": "AP News",
+     "published": "2026-10-29"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|정책금리(상단)|2026-10-28": {
+   "country": "미국",
+   "indicator": "정책금리(상단)",
+   "period": "2026-10-28",
+   "release_date": "2026-10-28",
+   "value": 4.0,
+   "prev": 4.0,
+   "diff": 0.0,
+   "unit": "%p",
+   "hold": true,
+   "summary": "연준이 물가 상승 우려가 있는데도 금리를 동결했고, 결정을 내리기 전에 정보를 더 모으며 지켜보겠다는 입장이라고 보도됐어요.",
+   "meaning": "직전 회의에서 금리를 올린 뒤 이번에는 그대로 두었어요. 지금까지 올린 금리가 경기와 물가에 어떤 영향을 주는지 지켜보는 단계로 읽혀요. 다만 9월 물가 상승률이 약 3.7%로 목표치 2%보다 꽤 높아서, 지금은 금리를 내릴 여지보다는 높은 금리를 유지하거나 상황에 따라 더 올릴 가능성이 남아 있다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "Reuters·CNBC·NBC 기사 제목이 모두 2026-10-28 연준의 금리 동결 결정을 직접 다루고 있어요. 이 중 CNBC와 NBC 제목은 물가 우려도 함께 언급해요.",
+   "articles": [
+    {
+     "title": "Fed leaves rates unchanged as it awaits 'accumulation of more information'",
+     "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPaU93czlpTHJXMTJGby0yOGppZGVlVkZzZW4tNC11WTcwVk1yQUZHTVMza0dTLURMRi0tTUtYTHhITkI2OVBWN2k0anZCN2liNnlyNFpaTmFTaWlFTHItWmtBXzh1VWhkRjZBNjVDejQxOGNUTW1HWWRBUzNjbGdKUDV0MlFSWXRsaWQwMXpWQXI?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-29"
+    },
+    {
+     "title": "Fed holds rates steady despite concerns over inflation",
+     "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPVjFqcXcxNFVDRGhYVGxJWGRJMTlJQmxGSDB5WUtrVzVKTGdOeHJuRFlCclpaVmFYQWtuQUx5QkliT0hCY05xN2oxTEs5eFFpa1dfMHBOTkY1Q2FMa3RRYlJhdU5tc2pJQk9KRkp2c1l6bVZFak5FYzUwelRWRnlJX29B0gGHAUFVX3lxTE9YSTVNRm1qMmE1eUZDQUlLdW51bmtLeWxka1JqTDFTMG9rUnNDR21QNFJRTTIxQjZyRlliVzZoYzd2MVVRTmFuQk13bE5qVFJsazZ6S1Jyd2h0RUl5VzM0TlphMFBhU21oUFpkOGRyQjFKVEkyZjVObmVBMVl2S3FTZ0RUVTFiWQ?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-28"
+    },
+    {
+     "title": "Federal Reserve leaves interest rates unchanged despite rising inflation",
+     "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPcHhyOWk0NW9KMUxVdWU1d015dG1YZmdWV2JsbGFRbTV5UFUxZUdENy10ZHl4M3FQakxWNW53enE3Um9IT3NCUUtDaDlkLWpXX0lpUWZPV214WURKVVdLcWtTczUzdjZiVm9HUFNzRmVSeUd2TzF2VDBpWlFvbzdyeWotdl9zOVAzaDhCZW9MQQ?oc=5",
+     "source": "NBC News",
+     "published": "2026-10-28"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|실질GDP 성장률|2026-07-01": {
+   "country": "한국",
+   "indicator": "실질GDP 성장률",
+   "period": "2026-07-01",
+   "release_date": "2026-10-27",
+   "value": 0.97,
+   "prev": 0.63,
+   "diff": 0.34,
+   "unit": "%p",
+   "hold": false,
+   "summary": "3분기 한국 경제가 1.0% '깜짝 성장'했다고 보도됐고, 한은 전망치의 3배를 넘었다는 보도도 있었어요.",
+   "meaning": "성장률이 0.63%에서 0.97%로 높아진 건 경기가 예상보다 힘 있게 움직인다는 신호로 읽혀요. 물가가 2.88%로 목표치 2%를 웃돌고 한은이 직전에 금리를 올린 상황이라, 금리를 내릴 이유는 약해지고 긴축 기조를 유지하거나 더 올릴 여지가 커졌다고 볼 수 있어요.",
+   "status": "review",
+   "reason": "[1][3][5]는 발표일(10-27)에 한국 3분기 GDP 1.0% 성장을 직접 다뤘고(0.97%를 반올림한 값), [5]는 예상치와 비교한 내용도 담고 있어요. [2][4][6][7][9]는 다른 나라 통계이거나 다른 주제예요. / 자동 검사: 금지 표현 포함: 깜짝",
+   "articles": [
+    {
+     "title": "3분기 한국경제 1% '깜짝 성장'…연간 3% 달성 유력",
+     "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBFRy1BekFhT3FaTTNKekxaTVpCRmdqejktUEpDaVRsVjlEbTZrYUhlaFh1YTBOWWE3VU9kSF9pcmM0SVk1VG9STnM2T21aVVVnei1MOVRoX24xQQ?oc=5",
+     "source": "한국경제",
+     "published": "2026-10-27"
+    },
+    {
+     "title": "3분기 한국 경제 1.0% '깜짝 성장'…\"4분기 0%여도 연간 3.6%\"(종합)",
+     "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1FQzZLVEV2V1JtZWNEY3dEQ1hnenhFeS1CT0taQS1fdWxuTVU2MkVNRmJTUXNHcS0tVG5hQWpZMzY5ci01bDFIR2VHNXQ0Q3JOcGpVTkwxZ1hOcTA?oc=5",
+     "source": "연합뉴스",
+     "published": "2026-10-27"
+    },
+    {
+     "title": "3분기 경제성장률 1.0%…한은 전망치 3배 넘어",
+     "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1zQnNiUWE1WjBCRk1oZGhGZjhNSVNXTXJCUG9GRlZOcnZMTS1vdkV6WUlmV2pfdTZWcThEZWdOMDltdHFnZk5ySTVJeWJZZDBpaEdrUWpsSFp1ZjQ?oc=5",
+     "source": "KBS 뉴스",
+     "published": "2026-10-27"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "일본|CPI 헤드라인|2026-09-01": {
+   "country": "일본",
+   "indicator": "CPI 헤드라인",
+   "period": "2026-09-01",
+   "release_date": "2026-10-23",
+   "value": 2.1,
+   "prev": 1.9,
+   "diff": 0.2,
+   "unit": "%p",
+   "hold": false,
+   "summary": "9월 일본 물가 상승률이 9개월 만에 가장 높은 수준을 기록하며, 올해 처음으로 2%를 넘어 일본은행(BOJ) 목표를 웃돌았다고 보도됐어요.",
+   "meaning": "물가 상승률이 1.9%에서 2.1%로 올라 일본은행의 물가 목표인 2%를 넘었어요. 6월에 정책금리를 1.0%로 올린 일본은행이 추가로 금리를 올릴 근거가 조금 더 생겼다고 읽힐 수 있어요. 다만 상승 폭은 0.2%p로 크지 않아요.",
+   "status": "linked",
+   "reason": "발표일(10-23)에 나온 [7]·[9]·[1]은 9월 물가가 2%를 넘었다는 내용으로, 이번 헤드라인 CPI 2.1%와 맞아요. [0]·[2]는 근원 물가를 다룬 기사이고 [4]는 발표 전 예상 기사, [5]는 다른 지표 기사라서 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "Japan CPI inflation hits 9-mth high in Sept, crosses BOJ target",
+     "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOdjVKLVAweWsyTWg3MEpKclFrc2hoV3BVQlAwNUVNNERDYkUxbnB1S0EtNlNFa2hmWWtvUEdUcjllRzdnTk81bFVTdFRjMmMyMXoxVkpJb1dFY0JVTVhmdElPMXlNWmpJdEtUeDNVMWs4dzIwUnhJSXA0d0o0ZC1vNkdQamNxZXV1V196a2RKNUlMM3RlTFBFWmtGRlB4X3lkeGV3eFQ0MGwyaTIxQl9XOW5vNFZCZlFYck1z?oc=5",
+     "source": "Investing.com UK",
+     "published": "2026-10-23"
+    },
+    {
+     "title": "Japan inflation tops 2% for first time in 9 months. Is another rate hike coming?",
+     "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPQXJUaE1OTzdmUnM2VkozWXhmYlRfSFcwdHBXYXBBM3FmMDR5TEFPaFB5UmFHVjk3dWZJdG8tV3JETlNHT0FOVEFkdHV3QWw1VFZkX0JMRUhkVnY5LXN5R0k3bEs3ZlRmOEpNT3dSWUtqdjdxZlNJQ3FTMno0b01zMktramc3ZDNfSkl5SXlvdmlXUdIBlwFBVV95cUxOWWx5NzVEWFZTRV9wLWhYUFI5RVNzT0V4RTI0YTdvTG1KdEdKQWFleGlXN3d6cHVnVjZoSXFZTkgzTjQ5ZjZrTm5JMi01aENta0VrY0l4SUFWTkpLN09uU2NZZlllNUZPOURNVW12T3NfY3B6b05Sb0p3UTFtdWw2elA0b0RHTWdsZVRyVGdHY09tZ0t0RERv?oc=5",
+     "source": "Firstpost",
+     "published": "2026-10-23"
+    },
+    {
+     "title": "Japanese inflation breaks 2% for the first time this year",
+     "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOX1VnaFEtdlMzR3pnbkdaNDZxR1pCbk9Ccy1YaGZrUk1HM0FuTjYxbjRvRERTNVN1YzZiaFAzQzhaZnAtb3ZLemg1OElkdld4a01jSS0xbld0djZMY0tac3RQYjRMRVJ6ejNkNGNtRXhBZnRjUUpWOFB0NmxBellEbV9jLTE4emlC?oc=5",
+     "source": "The Japan Times",
+     "published": "2026-10-23"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "일본|CPI 근원|2026-09-01": {
+   "country": "일본",
+   "indicator": "CPI 근원",
+   "period": "2026-09-01",
+   "release_date": "2026-10-23",
+   "value": 2.1,
+   "prev": 1.7,
+   "diff": 0.4,
+   "unit": "%p",
+   "hold": false,
+   "summary": "9월 일본 근원 CPI가 2.1%로 올해 들어 가장 높아져 일본은행(BOJ)의 물가 목표를 넘어섰고, 이 때문에 금리 인상 근거가 강해졌다는 쪽으로 보도됐어요.",
+   "meaning": "근원 물가가 한 달 새 0.4%p 뛰어 2% 목표를 넘어선 건 물가 오름세가 다시 강해지는 신호로 읽혀요. 일본은행이 6월에 이미 금리를 1.0%로 올린 상황이라, 추가 인상을 검토할 여지가 커졌다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "[0]·[1]·[9]는 9월 근원 CPI 2.1% 결과를 직접 보도한 기사예요. 10-22자 기사는 발표 시각(일본 시간 아침)과 미국 기준 날짜가 달라서 생긴 차이로 보여요. [4]는 발표 전 미리보기이고, [2]는 다른 지표(추세 물가지수), [3]·[5]·[7]·[8]·[10]·[11]은 해설이나 환율 위주 기사라 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "Japan's core inflation exceeds BOJ target, cements near-term rate hike chance",
+     "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQOTJqdzA2UHpkbmExTlVYbWgxX2VuMGQ3ck9XcUpfUEgxQURja19JdmlfLURneW9HUWpZbzNPMFJ3bS15Zk5DYlNTWU1teWprbW1hOHlJNXdDNWxYbExYRUU0bTIyVzFPLVlRZjY2cFk0THZTb094X2FrM3lPZ005THBHczdTdEl4WEhIUXVCdnA2TE9qTEtFWHh4aHloeWZFU0RuQmhlR0VRSDRCTURWZDB2eTNnWDloNWJIWktsNG5Pak5NSEdtSQ?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-22"
+    },
+    {
+     "title": "Japan core inflation in September surges to its highest this year at 2.1%",
+     "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQcFNlTGc0TGJVaWQxSVFaSzhDazF4WHFhWHBLZ0hrX2NnWGpiYU1MYjZ0ZjJsYUU0SV9fRzVXWHJDby1VZy1vMFU2cUoyb1l3VkI1MVlaZXZCd0tzSFhGLU55cmt0ZnNPSnhka0RpS1UybU5PY3VWdGtmbi0wdUlqbHJLdU7SAYoBQVVfeXFMTW1kam8yWHpZU0lZYkNfYnI5QWwyd2k1a1RXV0RaaXNEemZhckM2T3FCYXlPaXRhS1J1LVJwSzhjT2lvMGxheVdtdVk1aWN4WDhOMjN0VFd2dllpVHJpMmpJU05iUkNBdlpzVER3N0Nob2JzUHhHZlpHWGVLTmswVllYNkF0Zkw5clJR?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-22"
+    },
+    {
+     "title": "Japan Core Inflation Returns Above 2% Target, Strengthening Rate Hike Case",
+     "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPeTltdzJDR3F4a2xMR2pZTHlta1RhNXNWT0RTUUtWTGdtb3lLRGNtMmFWYnZfQXM5cXdPa0ZNOXBvV0dsa0dpMEN2LWNtV1ItVW9xSlk0ZFp5OEk2d3VhN04zSE14TGdZNE9GbVJlR1NONUtKNzNVTXlTQUoycVptV19FVU90NzBfUGJpQW8zdlNpRGpLaEx0cFl5bjdlUm9UVFc0ZjVDaGJkUHRqSTZiTmtDM0ZNWXpW?oc=5",
+     "source": "BusinessToday Malaysia",
+     "published": "2026-10-23"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|기준금리|2026-10-22": {
+   "country": "한국",
+   "indicator": "기준금리",
+   "period": "2026-10-22",
+   "release_date": "2026-10-22",
+   "value": 3.0,
+   "prev": 3.0,
+   "diff": 0.0,
+   "unit": "%p",
+   "hold": true,
+   "summary": "한국은행이 기준금리를 연 3.0%로 동결했고, 언론은 이를 두 차례 인상 뒤 효과를 점검하는 '숨 고르기'이면서 추가 인상 가능성을 남겨 둔 결정으로 보도했어요.",
+   "meaning": "직전 회의에서 금리를 올린 뒤 이번에는 그대로 둬서, 지금까지 올린 금리가 경기와 물가에 어떤 영향을 주는지 지켜보는 단계로 읽혀요. 다만 9월 물가 상승률이 2.88%로 목표치 2%보다 높아서, 한국은행이 금리 인상을 끝냈다기보다 추가 인상의 여지를 남겨 둔 동결로 볼 수 있어요.",
+   "status": "linked",
+   "reason": "[0]·[3]·[4]는 발표일(10-22)에 나온 기사로, 제목이 이번 3.0% 동결 결정을 직접 다뤄 골랐어요. [2]도 같은 내용이지만 발표 하루 전 날짜(10-21)의 속보라 날짜 정보가 맞지 않아 제외했어요.",
+   "articles": [
+    {
+     "title": "한국은행, 기준금리 동결…연 3.0% 유지",
+     "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5icFg5NTNQd3ItMS1BOG5KODNtaEF4cmlqcnFnM0x4am9uaTgyZk90X2JLSmJiQkU5VUR4eVA1azMtakx2S29CSUcxdVpFNTVhMUlCYXpQMDdFdDlxRVh3cUFBSUpOX0k?oc=5",
+     "source": "연합뉴스TV",
+     "published": "2026-10-22"
+    },
+    {
+     "title": "한국은행, ‘기준금리 3% 유지’ 전원일치 결정… “2회 인상 효과 점검 필요”",
+     "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxPSGNhbmM2Wm5Ycm5yY25EajBrQzd5VGxySHVLd1p5ZmxIRVlhNHJia212d0VvU1FvQWd4SDkwU09iV1FVamhybjhObFFfcGl6RVFJd3Ewa1E4TWJuYXdSeHRnbS02RTZ2cDJtZ1JLVG83WWpJd0NoWFRvMnlxWGhxSTd3dXROZ9IBmgFBVV95cUxNT090ZjdPOEVleGdqd3dNZnFfT0tBLUxsMHRTQ0VGSk4yMWtmbktIYmh2dmJiRkxBTjZzMkxwd1pWN3NlQkxZWm00V3RWbTd1Q213OEZab0I5UlhHOHBMUTY4X1BWRmpZNm9IT2VjVTVxM0tlM0FhVEliMmN2c3cxUGhneHNwNk1JQkZka2dibU5YdjVWYUUzbm1B?oc=5",
+     "source": "Chosunbiz",
+     "published": "2026-10-22"
+    },
+    {
+     "title": "한은, 연속 금리 인상 뒤 ‘숨 고르기’…11월·내년 인상 시사",
+     "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9IQXZGWlhfaE1EenJJTE0xUmt2WXAwdWgwRU5vUXh6djkzSGcxUmFhTTAwYVlILWtzd1hDVi1GZVFaaG82UXJGYUlWeEdaZFZKZ0wtUl9adlJJUdIBX0FVX3lxTE9KQ3g1UHZFUDB3T3NMZExya2o3dDMzQnNLSzhSVXM0a1NpN3VSWVdmWlZZZHdPb0YxUV93YTNYWjQ1dDZ5b0JmQXA1UkpOcnQzMC1uc1p6VjlNajE1VG1n?oc=5",
+     "source": "경향신문",
+     "published": "2026-10-22"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|실업률|2026-09-01": {
+   "country": "한국",
+   "indicator": "실업률",
+   "period": "2026-09-01",
+   "release_date": "2026-10-16",
+   "value": 2.6,
+   "prev": 2.7,
+   "diff": -0.1,
+   "unit": "%p",
+   "hold": false,
+   "summary": "9월 고용동향은 전체 취업자가 11.3만 명 늘었지만 청년 취업자가 14.7만 명 줄어 청년 고용 한파가 이어졌다는 점을 중심으로 보도됐어요.",
+   "meaning": "실업률이 0.1%p 내린 건 큰 변화는 아니지만, 전체 고용시장이 아직 약해지지 않았다는 신호로 읽혀요. 물가가 2.88%로 목표치 2%보다 높고 한국은행이 직전 결정에서 금리를 올린 상황이라, 고용을 이유로 금리를 서둘러 내릴 필요는 크지 않다고 볼 수 있어요. 다만 기사들이 짚은 청년 고용 부진은 이렇게 해석할 때 함께 고려할 부분이에요.",
+   "status": "linked",
+   "reason": "[3]·[1]·[8]은 발표일(10/16)에 나온 9월 전국 고용동향 기사여서 이 발표를 직접 다뤘어요. 다만 제목의 '실업률 4년래 최고'는 전체 실업률이 아니라 청년 실업률로 보여서 summary에서 뺐어요. 나머지는 지역 통계, 해외 통계, 일반 기획 기사라서 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "9월 취업자 11.3만명↑…청년은 47개월째 ‘한파’·실업률 4년래 최고",
+     "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5hMU9WenFMbE9wWEZjSlN2bmh4MEpGZ0lBOVpIcV91dHQtcVhGYmphQ3poNnh0eVhFZWU3WGhFZmJtb05Id3JEdFpmT0oyUDRXcnU4RElKa3lHWUljQ0xSV3lwUGNrWnoySERMZVhBVEs0YUU3aFHSAWZBVV95cUxOV01kcUFZWDBKdWFsLXQzcExFRGw4aFhfaFNkZHBHNFNzSXRtck9rWHdMemFrd29ua3A5WWU0SmtxQmRfUXdxX29ua0RfdmxvdGZTQ2F4aW83TEEzdHdQSkFuVUNvblE?oc=5",
+     "source": "동아일보",
+     "published": "2026-10-16"
+    },
+    {
+     "title": "노인이 떠받친 고용시장… 청년 취업자 14.7만명 줄고 실업률 4년만에 최고",
+     "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5LTDFValdSZnNKYldGd1pWNHhrRmxvRVZxdTViZ2lBZERGVVU4bkRDRDJnc1JlLThfcFQtejd0Sk5vZktOeXpOUDA3U21PWFhsaEp6UUhZYi1qY1QwX2FzWjBNWW9KSG15RVJ3dW9OQ2RFdVgwTlg1UDVsUdIBgAFBVV95cUxOYkl0VVl2VkpIYnJjZ0NlampzRGZ1WS1oc29uZTBJb2ZqRTNwbkJNMzlKY1A0OXFScmRwVUVjcDIwY0s3SkM0cjlhM19BWDIzcWRTU244QThpVXMxVjR0YUFEM0lrYVh1Y1IzU1pRalRRM0hJaUhCOWJUT2YxazRUaw?oc=5",
+     "source": "뉴데일리 경제",
+     "published": "2026-10-16"
+    },
+    {
+     "title": "청년 고용 한파…취업자는 늘었는데 청년은 줄었다",
+     "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE14aDZubFJEMTl1REdWa1dJbVIyR0wxU2VQeENFVTY5MmNGcDJxT1BkUGhTcFIyaThpQllDOXAzUjZwUGRTRGFKTkZycVpsZHZnOGVaYk9BVQ?oc=5",
+     "source": "부산경남대표방송 KNN 뉴스",
+     "published": "2026-10-16"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "한국|취업자수|2026-09-01": {
+   "country": "한국",
+   "indicator": "취업자수",
+   "period": "2026-09-01",
+   "release_date": "2026-10-16",
+   "value": 29266.0,
+   "prev": 29151.0,
+   "diff": 0.3945,
+   "unit": "%",
+   "hold": false,
+   "summary": "9월 취업자 수가 11만3000명 늘었고 보건복지 분야 증가와 제조업 취업자의 27개월 만의 반등이 보도됐지만, 청년·건설업 취업자 감소로 청년 고용 한파는 여전하다는 점도 함께 다뤄졌어요.",
+   "meaning": "취업자 수가 약 0.4% 늘어나 크지는 않지만 고용 시장이 버티고 있다는 신호로 읽혀요. 물가가 2.88%로 목표치 2%를 웃돌고 한국은행이 직전 회의에서 금리를 올린 상황이라, 고용이 탄탄한 만큼 서둘러 금리를 내리기보다 긴축 기조를 유지할 여지가 있다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "발표 당일 기사 [3]·[4]·[6]이 9월 취업자 증가를 직접 다뤘어요. 다만 기사 속 증가 폭(전년 대비 11.3만 명)은 데이터의 증가 폭(29151→29266, 약 11.5만 명)과 기준이 다를 수 있으니 확인이 필요해요. [1]은 제목의 '27개월 만에 증가 전환'이 전체 취업자 기준이라는 오해를 줄 수 있어 뺐어요.",
+   "articles": [
+    {
+     "title": "[속보] 9월 취업자 수 11만3000명↑…보건복지 20만 증가",
+     "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBnLTRSaWxZWm1fMGZJQmV2dzZhaFYwSDQ2R1FBY2w2aFF0SXFoNy1HUHJ6VFRMa2MwY2lCcDBYMUZNME5lVWUtX2VZSFI4SHV5c2xBc1VOUzRSV0dx?oc=5",
+     "source": "부산파이낸셜뉴스",
+     "published": "2026-10-16"
+    },
+    {
+     "title": "제조업 취업자 27개월만에 반등, 고용률 '역대 최고'…청년 고용한파는 여전 - 머니투데이",
+     "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1iWHVDUTVrYmxaRDFpbmVVNXhGSkxneF9fTWRpVzZLRmhRWEZmVzZzbHRLejRwR3dub0IySjctdW9rdmd3YWtKODd1aGF2dGV6akVQUE9QVHlQSFNGTHFsMFExZ2daZGN1ZzBV0gFwQVVfeXFMTzlWZ3QtTGdLY2Nzd3czaVl2bzEwQVZ1VTlxN0FUaHJHVmJHME5iaUxCakZTLXJqak5kVXdqckwxR2lhOTZvN2hXZkNaV29CeGlqZ2s0cVlNbXlId1dHZHNfNTNhUjVGa1duNWFKaTNUcA?oc=5",
+     "source": "머니투데이",
+     "published": "2026-10-16"
+    },
+    {
+     "title": "9월 취업자수 11만명 증가…청년·건설업 취업자수 감소",
+     "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9XZHdyRGhQWDdUZHNCNHlRYlluUUpPd1BPUlNRdzF4QVdWUXlkNjVfbGFoNHQ2OTlrTGxuLVZpUWoxSkVCZ3NyQ0JqNEYxWF9YSFVaR1ZDNi1ra1h4T0lNV0RpWGJiSmVVeFE?oc=5",
+     "source": "동양뉴스",
+     "published": "2026-10-16"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|CPI 헤드라인|2026-09-01": {
+   "country": "미국",
+   "indicator": "CPI 헤드라인",
+   "period": "2026-09-01",
+   "release_date": "2026-10-14",
+   "value": 3.7172,
+   "prev": 3.353,
+   "diff": 0.3642,
+   "unit": "%p",
+   "hold": false,
+   "summary": "9월 미국 소비자물가가 1년 전보다 3.7% 올라 물가 상승세가 다시 빨라졌다고 보도됐어요. 기사들은 휘발유 가격이 크게 뛴 점을 함께 짚었고, 연준이 이번 달에 금리를 다시 올릴 가능성이 거론된다는 보도도 있었어요.",
+   "meaning": "CPI 상승률이 3.35%에서 3.72%로 0.36%p 오르면서 물가 목표인 2%에서 더 멀어졌어요. 이는 물가 압력이 다시 세지는 신호로 읽혀요. 연준은 직전 회의에서 이미 금리를 4.0%로 올렸어요. 이번 결과로 금리를 한 번 더 올리거나, 적어도 높은 금리를 더 오래 유지할 여지가 커졌다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "Reuters[1], CNBC[2], AP[9]는 발표일에 9월 CPI 3.7%를 직접 다뤘어요. CBS[6], CNN[5], NYT[11]도 이 발표를 다뤘지만 최대 3개 제한 때문에 빠졌어요. [4]와 [8]은 발표 전 미리보기 기사이고, [0]과 [7]은 일반 분석 자료, [10]은 금값 기사라서 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "US inflation heats up in September; Fed rate hike this month back on table",
+     "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNX3hkV3J5em1xWWY4V0hQODFTamFtU3NvdkpPRUUzMGY0TnlKaVlneXZPc0J6bFpWdDZWb2hLRkZZaHhZVElDSXNFbGNYMVVBRGR6c1RlNDA4cEhkMEcwck5VMFRtZ1QxOFJqNTkyaGJzWWFLSXp2Z0l1Z19vMDh5bGd6N1FJSkJFR2tZUXd1UWUzeVlvZi1xNTVONk00ejJ5cE0xSGY4THFsaUo0RGxPV3dpaW4tbEZseUE?oc=5",
+     "source": "Reuters",
+     "published": "2026-10-14"
+    },
+    {
+     "title": "Consumer prices rose 3.7% annually in September as gas prices skyrocket",
+     "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1IZEUyWDE5aTVyU1VTMEhhNW9LV3pZdUkwcFI4WVlIOEhHUzBmUTZGbUlWTDVfN05zdzhFTlR4RERqUHROMDJ2T3dCN2I0UDI2dmZhOTBVTVRIYVlIYjRKQ2RZcjdNQWdWTTkyV0owQU1Xekt4U2ZHUFc4NnPSAYIBQVVfeXFMT3U1UnZTdHN4U2tIM1lZcHlGRGZLUXNaYjhDTHl4bllqdzY3ek9XYl9ZdzNBaUdJQjNndF9HSm1yci15X3ZnMEdaazNzMjVTZ204TzJ1cFJEOE81bUF0RFBJWTR6RWF2YU9BWm1PMnhTVGNWVnc5bkxNWlRpT0RuU2t2Zw?oc=5",
+     "source": "CNBC",
+     "published": "2026-10-14"
+    },
+    {
+     "title": "Inflation worsened last month to 3.7% in sign that prices remain elevated as midterm elections near",
+     "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPdHFWOXRoc2RvT291ZElaYW5MOWYyZ01rX1I3N093NGJ4bGNxRU1JS2tLS2J5TjhHNk9WQWNfY0xyMnZvbkdoa0N1LWs2OWlGQ19tc1pCZkdJUG5qTl9mMnJJOVE4cXM3V3YweDVGRG1RNnFPeDE0U1F4NW43TjVpNzNRMVRGZkxGOXh5a25EUm1QQTdBT0YwYk5INHByWl9ILXNBQU5R?oc=5",
+     "source": "AP News",
+     "published": "2026-10-14"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  },
+  "미국|CPI 근원|2026-09-01": {
+   "country": "미국",
+   "indicator": "CPI 근원",
+   "period": "2026-09-01",
+   "release_date": "2026-10-14",
+   "value": 2.5658,
+   "prev": 2.4462,
+   "diff": 0.1196,
+   "unit": "%p",
+   "hold": false,
+   "summary": "9월 미국 근원 CPI는 2.6%로 시장 예상보다 높게 나왔고, 물가 압력이 에너지 밖으로도 넓어졌다는 보도가 나왔어요.",
+   "meaning": "에너지·식품을 뺀 근원 물가가 0.12%p 올랐어요. 크게 뛴 건 아니지만, 일시적인 가격 변동을 걸러내고도 물가가 오르고 있다는 신호로 읽혀요. 헤드라인 물가가 3.7%로 목표치 2%를 크게 웃돌고 연준이 직전 회의에서 이미 금리를 올린 상황이라, 연준이 금리를 한 번 더 올릴 여지가 커졌다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "[10]·[11]은 9월 근원 CPI가 2.6%로 예상을 웃돌았다는 내용을 제목에서 직접 다루고 있어요(실제 값 2.5658을 반올림하면 같아요). [5]도 근원 물가의 예상 상회를 다뤄요. [7]은 발표 전 프리뷰이고 [2]는 헤드라인 물가 중심이라 고르지 않았어요.",
+   "articles": [
+    {
+     "title": "U.S. Core Inflation Rises to 2.6% in September, Above Forecast",
+     "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9hdFVmZlVaNGZKTFZHTzZNenNFWFRWUU5mbnVvUUt5RUZtWExObzQxTEhXbG02ZEExeG5vUnhBRS1YeWxEQTNKTnpCWk9fQjBQZ0NOT1VHTFlBQQ?oc=5",
+     "source": "TOKENPOST",
+     "published": "2026-10-14"
+    },
+    {
+     "title": "US Core CPI Beats Forecasts at 2.6% as Inflation Pressures Broaden Beyond Energy",
+     "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPWEVyYTRmbHEtVlptWWlYZG9fbmNNVUk0Rmtuc2w0Zl84djVENWJSR0VoY19HY1pFdW5OVWJvekp3dzZVNi1WV0g1QmV5MTBJZE1fVFk4VlJDYzRPVWxORG5sdHVyNWlQcmZwVk9IaXdLRVkzdnVkNU52bENXTU83MjNyMmh2MTlsNWcwM3duMEJIa0ZPcUlpTGdTcXFxcnBPV1d3S2FHdkFUbUdkZWhZV2xFZ2I5WWhucGN2cXlNOWlBU29HbmYtcQ?oc=5",
+     "source": "Action Forex",
+     "published": "2026-10-14"
+    },
+    {
+     "title": "Goldman Sachs: U.S. Core Inflation Tops Expectations, Odds of October Fed Rate Hike Rise",
+     "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBzV054RXFEeGROLVdYZ2UwSzF0dTJEVllXa0pxTDQ3b281MHhrSGx0c1hiN3ZUeEQ3dE5tb1FSaTZoNmd5RGJFQmU5MFh5SU12eWg1V094R1NJRWZjN0ZtZEFrU3Q3Zkxfck1JdnVzVEZwcU55cHc?oc=5",
+     "source": "BigGo Finance",
+     "published": "2026-10-15"
+    }
+   ],
+   "provider": "구글 뉴스",
+   "ai": true,
+   "checked_at": "2026-11-26"
+  }
+ }
+}

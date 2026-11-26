@@ -622,6 +622,19 @@ def _collect_direct(client, series_id, units, today, start):
                 }
             )
 
+    # 전년동월비(pc1)로 받을 때, 원자료(lin)에는 있는데 변환값이 비어 있는 달은 조용히 빠지므로
+    # '산출 불가'로 기록한다. 예: 2025년 10월 미국 CPI가 정부 셧다운으로 발표되지 않아
+    # 2026년 10월 전년동월비를 FRED가 계산하지 못함.
+    if units == "pc1":
+        level = client.latest_observations(series_id, start, today, units="lin")
+        for d_str in sorted(set(level) - set(values)):
+            held_back.append({
+                "series_id": series_id,
+                "date": datetime.strptime(d_str, "%Y-%m-%d").date(),
+                "value": None, "vintage": None, "gap": True,
+                "reason": "작년 같은 달 원자료가 없어 전년동월비를 계산할 수 없어요",
+            })
+
     rows = []
     for d_str, v_str in sorted(values.items()):
         if d_str == skip:
@@ -1449,6 +1462,29 @@ def target_period(d, freq):
 CALENDAR_LOOKUP_CATEGORIES = {"물가", "고용", "성장"}
 
 LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+DATA_GAPS_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site", "data", "data_gaps.json")
+
+
+def write_data_gaps(gaps, today):
+    """산출 불가 값을 site/data/data_gaps.json 에 누적한다(사이트가 빈칸의 이유를 보여줄 때 사용).
+    수집 시작일이 지나간 뒤에도 기록이 사라지지 않도록 기존 항목과 합친다."""
+    try:
+        with open(DATA_GAPS_JSON_PATH, encoding="utf-8") as f:
+            items = json.load(f).get("gaps", [])
+    except (OSError, ValueError):
+        items = []
+    seen = {(g["country"], g["indicator"], g["date"]) for g in items}
+    for label, hb in gaps:
+        country, indicator = [x.strip() for x in label.split("/", 1)]
+        key = (country, indicator, hb["date"].isoformat())
+        if key not in seen:
+            seen.add(key)
+            items.append({"country": country, "indicator": indicator, "date": key[2],
+                          "reason": hb["reason"], "found_at": today.isoformat()})
+    with open(DATA_GAPS_JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump({"gaps": items}, f, ensure_ascii=False, indent=1)
+
+
 RECENT_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site", "data", "recent.json")
 RECENT_RETENTION_DAYS = 60  # 웹페이지에서 "최근 30일 강조"에 쓰는 여유 보존 기간
 
@@ -1617,7 +1653,13 @@ def main():
         emit("모든 대상 지표를 확인했습니다.")
 
     suppressed = [(l, hb) for l, hb in all_held_back if hb.get("suppressed")]
-    noted = [(l, hb) for l, hb in all_held_back if not hb.get("suppressed")]
+    gaps = [(l, hb) for l, hb in all_held_back if hb.get("gap")]
+    noted = [(l, hb) for l, hb in all_held_back if not hb.get("suppressed") and not hb.get("gap")]
+    if gaps:
+        emit("\n=== 산출 불가로 비워 둔 값 (원자료는 발표됐지만 변환값을 계산할 수 없음) ===")
+        for label, hb in gaps:
+            emit(f"  - {label} ({hb['series_id']}) {hb['date'].isoformat()}: {hb['reason']}")
+    write_data_gaps(gaps, today)
     if suppressed:
         emit("\n=== 반복값 의심으로 보류 (직전 달과 값·FRED 게시일이 모두 동일해 저장하지 않음) ===")
         for label, hb in suppressed:
