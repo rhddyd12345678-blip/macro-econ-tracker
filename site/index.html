@@ -291,6 +291,23 @@
   .cal-detail a:hover { text-decoration: underline; }
   #recent-details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); list-style-position: inside; }
   #recent-details[open] summary { margin-bottom: 8px; }
+  .about-doc { padding: 24px 28px; line-height: 1.75; font-size: 14.5px; }
+  @media (max-width: 640px) { .about-doc { padding: 16px; } }
+  .about-doc h1 { font-size: 22px; margin: 4px 0 12px; }
+  .about-doc h2 { font-size: 17px; margin: 30px 0 10px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .about-doc p { margin: 8px 0; }
+  .about-doc ul, .about-doc ol { margin: 8px 0; padding-left: 22px; }
+  .about-doc li { margin: 4px 0; }
+  .about-doc a { color: var(--accent); }
+  .about-doc .table-wrap { overflow-x: auto; margin: 10px 0; }
+  .about-doc table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  .about-doc th, .about-doc td { border: 1px solid var(--border); padding: 7px 9px; text-align: left; vertical-align: top; }
+  .about-doc th { background: color-mix(in srgb, var(--muted) 10%, transparent); font-weight: 700; }
+  .about-live { margin: 12px 0 4px; padding: 10px 14px; border-radius: 10px; font-size: 13px;
+    background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); }
+  .about-live b { font-weight: 700; }
+  .about-diagram { margin: 12px 0; }
+  .about-diagram svg { width: 100%; height: auto; display: block; }
   .review-queue { border-color: color-mix(in srgb, #d97706 45%, var(--border)); }
   .review-queue h3 { margin: 0 0 4px; font-size: 14px; }
   .rq-count { display: inline-block; min-width: 20px; padding: 0 7px; border-radius: 999px; font-size: 12px;
@@ -693,6 +710,7 @@
     <button type="button" data-simple="link">연결</button>
     <button type="button" data-simple="fx">환율</button>
     <button type="button" data-simple="schedule">일정</button>
+    <button type="button" data-simple="about">만든 과정</button>
     <button type="button" data-simple="help">도움말</button>
     <div id="detail-toggle-wrap">
       <label>
@@ -759,6 +777,10 @@
       <div id="cal-grid"></div>
       <div id="cal-detail" class="cal-detail" style="display:none;"></div>
     </section>
+  </div>
+
+  <div id="view-about" style="display:none;">
+    <article class="panel card about-doc" id="about-doc"><div class="muted">불러오는 중…</div></article>
   </div>
 
   <div id="view-help" style="display:none;">
@@ -1297,6 +1319,7 @@
     var data = results[0], cal = results[1], recent = results[2], analysis = results[3], forecasts = results[4];
     var fx = results[5], fxAnalysis = results[6], fxPosition = results[7], fxPredictors = results[8];
     state.indicators = data.indicators || [];
+    state.generatedAt = data.generated_at || "";
     state.observations = data.observations || [];
     state.events = (cal.events || []).filter(function (e) { return !!e.date; });
     state.rateEvents = parseEventsCsv(results[9] || "");
@@ -1401,6 +1424,7 @@
     document.getElementById("view-link-simple").style.display = "none";
     document.getElementById("view-schedule").style.display = "none";
     document.getElementById("view-help").style.display = "none";
+    document.getElementById("view-about").style.display = "none";
     document.getElementById("main-tabs").style.display = "none";
     document.getElementById("fxpos-judgment-section").style.display = "none";
     ["countries", "linkage", "market", "fx"].forEach(function (v) {
@@ -1469,6 +1493,11 @@
     if (tab === "schedule") {
       document.getElementById("view-schedule").style.display = "";
       renderScheduleHeadline();
+      return;
+    }
+    if (tab === "about") {
+      document.getElementById("view-about").style.display = "";
+      renderAbout();
       return;
     }
     if (tab === "help") {
@@ -2828,6 +2857,128 @@
   // ---- 일정(질문 중심 간단 화면) — 기존 달력/다음 14일 목록은 그대로 두고
   // 맨 위에 "가장 가까운 발표가 언제인지" 한 줄만 추가한다 ----
   // ==================================================================
+  // ---- '만든 과정' 탭: data/portfolio.md 를 그려 주고 {{…}} 자리에 매일 갱신되는 숫자를 채운다 ----
+  // 글은 Claude Docs 포트폴리오 문서와 같은 내용(문서를 고치면 portfolio.md 로 다시 내보내 맞춘다).
+  var aboutCache = null;
+  function renderAbout() {
+    var el = document.getElementById("about-doc");
+    var go = function (md) { el.innerHTML = renderPortfolioMd(md); fillCommitCount(); };
+    if (aboutCache) { go(aboutCache); return; }
+    loadText("data/portfolio.md").then(function (md) { aboutCache = md; go(md); })
+      .catch(function () { el.innerHTML = "<div class=\"muted\">내용을 불러오지 못했어요.</div>"; });
+  }
+
+  function aboutLiveValues() {
+    var notes = state.calNotes || {};
+    var keys = Object.keys(notes);
+    var rs = (state.news && state.news.review_stats) || {};
+    return {
+      indicators: String(state.indicators.length),
+      observations: state.observations.length.toLocaleString("ko-KR"),
+      reviews: String(rs.total || 0),
+      cal_notes: String(keys.length),
+      cal_review: String(keys.filter(function (k) { return notes[k].status === "review" && !notes[k].human; }).length),
+      generated: (state.generatedAt || "").slice(0, 16).replace("T", " ")
+    };
+  }
+
+  function mdInline(t, v) {
+    t = escapeHtml(t);
+    t = t.replace(/\\\[/g, "[").replace(/\\\]/g, "]");
+    t = t.replace(/\{\{(\w+)\}\}/g, function (m, k) {
+      if (k === "commits") return "<span class=\"live-commits\">140여</span>";
+      return v[k] != null ? "<b>" + escapeHtml(v[k]) + "</b>" : m;
+    });
+    t = t.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    t = t.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "<a href=\"$2\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");
+    return t;
+  }
+
+  function renderPortfolioMd(md) {
+    var v = aboutLiveValues();
+    var lines = md.replace(/\r/g, "").split("\n");
+    var out = [], i = 0;
+    while (i < lines.length) {
+      var ln = lines[i];
+      if (!ln.trim()) { i++; continue; }
+      if (ln.trim() === "{{diagram}}") { out.push(aboutDiagramSvg()); i++; continue; }
+      if (ln.trim() === "{{live_status}}") {
+        out.push("<div class=\"about-live\">매일 자동으로 갱신되는 현황 — 지표 <b>" + v.indicators + "</b>개 · 관측치 <b>" + v.observations +
+          "</b>개 · AI가 붙인 달력 해석 <b>" + v.cal_notes + "</b>건(사람 확인 대기 <b>" + v.cal_review + "</b>건) · 사람 검토 <b>" + v.reviews +
+          "</b>건 · 마지막 데이터 생성 " + escapeHtml(v.generated) + "</div>");
+        i++; continue;
+      }
+      var h = ln.match(/^(#{1,3})\s+(.*)$/);
+      if (h) { out.push("<h" + h[1].length + ">" + mdInline(h[2], v) + "</h" + h[1].length + ">"); i++; continue; }
+      if (/^\|/.test(ln)) {
+        var rows = [];
+        while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i]); i++; }
+        var cells = function (r) { return r.replace(/^\|/, "").replace(/\|\s*$/, "").split("|").map(function (c) { return c.trim(); }); };
+        var head = cells(rows[0]), body = rows.slice(2);
+        out.push("<div class=\"table-wrap\"><table><thead><tr>" + head.map(function (c) { return "<th>" + mdInline(c, v) + "</th>"; }).join("") +
+          "</tr></thead><tbody>" + body.map(function (r) { return "<tr>" + cells(r).map(function (c) { return "<td>" + mdInline(c, v) + "</td>"; }).join("") + "</tr>"; }).join("") +
+          "</tbody></table></div>");
+        continue;
+      }
+      if (/^(-|\d+\.)\s/.test(ln)) {
+        var ordered = /^\d+\./.test(ln), items = [];
+        while (i < lines.length && /^(-|\d+\.)\s/.test(lines[i])) { items.push(lines[i].replace(/^(-|\d+\.)\s+/, "")); i++; }
+        var tag = ordered ? "ol" : "ul";
+        out.push("<" + tag + ">" + items.map(function (it) { return "<li>" + mdInline(it, v) + "</li>"; }).join("") + "</" + tag + ">");
+        continue;
+      }
+      var para = [];
+      while (i < lines.length && lines[i].trim() && !/^(#|\||-\s|\d+\.\s)/.test(lines[i]) && lines[i].trim().indexOf("{{") !== 0) { para.push(lines[i]); i++; }
+      if (!para.length) { para.push(lines[i]); i++; }
+      out.push("<p>" + mdInline(para.join(" "), v) + "</p>");
+    }
+    return out.join("\n");
+  }
+
+  // 전체 커밋 수: GitHub API(마지막 페이지 번호). 실패하면 기본 문구를 그대로 둔다.
+  var commitCount = null;
+  function fillCommitCount() {
+    var put = function () { Array.prototype.forEach.call(document.querySelectorAll(".live-commits"), function (s) { s.innerHTML = "<b>" + commitCount + "</b>"; }); };
+    if (commitCount) { put(); return; }
+    fetch("https://api.github.com/repos/" + REVIEW_REPO + "/commits?per_page=1").then(function (r) {
+      var link = r.headers.get("link") || "", m = link.match(/[?&]page=(\d+)>;\s*rel="last"/);
+      if (m) { commitCount = Number(m[1]).toLocaleString("ko-KR"); put(); }
+    }).catch(function () {});
+  }
+
+  // 포트폴리오 구조 그림(문서의 다이어그램과 같은 내용, 사이트 색상 토큰으로 다크/라이트 대응)
+  function aboutDiagramSvg() {
+    var W = 210, H = 56, cA = 135, cB = 380, cC = 625, rA = 120, rB = 230, rC = 350;
+    var edge = "var(--muted)", ink = "var(--fg)", quiet = "var(--muted)", accent = "var(--accent)", warn = "#d97706";
+    function box(cx, cy, kind, name, body) {
+      var col = kind === "ai" ? accent : kind === "human" ? warn : edge;
+      return "<rect x='" + (cx - W / 2) + "' y='" + (cy - H / 2) + "' width='" + W + "' height='" + H + "' rx='8' fill='" + (kind ? col : "none") +
+        "' fill-opacity='" + (kind ? 0.12 : 1) + "' stroke='" + col + "' stroke-width='" + (kind ? 2 : 1.25) + "'/>" +
+        "<text x='" + cx + "' y='" + (cy - 4) + "' text-anchor='middle' font-weight='600' fill='" + ink + "'>" + name + "</text>" +
+        "<text x='" + cx + "' y='" + (cy + 15) + "' text-anchor='middle' font-size='11.5' fill='" + (kind ? ink : quiet) + "'>" + body + "</text>";
+    }
+    var arrow = function (d) { return "<path d='" + d + "' fill='none' stroke='" + edge + "' stroke-width='1.25' marker-end='url(#about-arrow)'/>"; };
+    return "<div class=\"about-diagram\"><svg viewBox='0 0 760 402' role='img' aria-label='AI가 고른 것도 코드가 검사하고, 애매한 것만 사람이 판정해요' font-size='13'>" +
+      "<defs><marker id='about-arrow' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'><path d='M0 0L10 5L0 10z' fill='" + edge + "'/></marker></defs>" +
+      "<text x='24' y='34' font-size='15' font-weight='600' fill='" + ink + "'>AI가 고른 것도 코드가 검사하고, 애매한 것만 사람이 판정해요</text>" +
+      "<rect x='24' y='56' width='712' height='218' rx='8' fill='none' stroke='" + edge + "' stroke-dasharray='4 4'/>" +
+      "<text x='40' y='78' font-size='11.5' fill='" + quiet + "'>매일 밤 23:17 자동 실행 (GitHub Actions)</text>" +
+      arrow("M" + (cA + W / 2) + " " + rA + "H" + (cB - W / 2)) + arrow("M" + (cB + W / 2) + " " + rA + "H" + (cC - W / 2)) +
+      arrow("M" + cC + " " + (rA + H / 2) + "V175H" + cA + "V" + (rB - H / 2)) +
+      arrow("M" + (cA + W / 2) + " " + rB + "H" + (cB - W / 2)) + arrow("M" + (cB + W / 2) + " " + rB + "H" + (cC - W / 2)) +
+      arrow("M" + (cC + 40) + " " + (rB + H / 2) + "V" + (rC - H / 2)) +
+      arrow("M" + (cC - 60) + " " + (rB + H / 2) + "V298H" + cA + "V" + (rC - H / 2)) +
+      arrow("M" + (cA + W / 2) + " " + rC + "H" + (cC - W / 2)) +
+      box(cA, rA, null, "공식 통계 API", "FRED·ECOS·e-Stat·Eurostat") + box(cB, rA, null, "수집·검증", "계산할 수 없는 값은 비우고 기록") +
+      box(cC, rA, null, "분석", "금리 연동 회귀·환율 위치") + box(cA, rB, null, "대상 고르기·기사 검색", "크게 움직인 지표·지난 발표") +
+      box(cB, rB, "ai", "Claude 선별·해석", "기사는 번호로만 고름") + box(cC, rB, null, "코드 검사", "없는 번호·금지 표현 걸러냄") +
+      box(cA, rC, "human", "사람 검토", "사이트 버튼 → GitHub 이슈") + box(cC, rC, null, "사이트 (GitHub Pages)", "질문 카드·달력·자세히 보기") +
+      "<text x='" + cB + "' y='291' text-anchor='middle' font-size='11.5' fill='" + quiet + "'>확인 필요</text>" +
+      "<text x='" + (cC + 48) + "' y='302' font-size='11.5' fill='" + quiet + "'>연결</text>" +
+      "<text x='" + cB + "' y='" + (rC - 8) + "' text-anchor='middle' font-size='11.5' fill='" + quiet + "'>승인·거절 반영</text>" +
+      "</svg></div>";
+  }
+
   // 일정 탭 맨 위: 아직 사람이 판정하지 않은 달력 해석('확인 필요') 목록
   function renderCalReviewQueue() {
     var box = document.getElementById("cal-review-queue");
