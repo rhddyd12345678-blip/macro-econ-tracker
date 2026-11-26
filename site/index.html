@@ -289,6 +289,17 @@
   .cal-detail ul { margin: 4px 0 0; padding-left: 18px; }
   .cal-detail a { color: var(--accent); text-decoration: none; overflow-wrap: anywhere; }
   .cal-detail a:hover { text-decoration: underline; }
+  .review-queue { border-color: color-mix(in srgb, #d97706 45%, var(--border)); }
+  .review-queue h3 { margin: 0 0 4px; font-size: 14px; }
+  .rq-count { display: inline-block; min-width: 20px; padding: 0 7px; border-radius: 999px; font-size: 12px;
+    color: #b45309; background: color-mix(in srgb, #d97706 15%, transparent); text-align: center; }
+  .rq-list { list-style: none; margin: 0; padding: 0; }
+  .rq-item { display: block; width: 100%; text-align: left; background: none; border: none; border-top: 1px dashed var(--border);
+    padding: 8px 2px; cursor: pointer; color: var(--fg); font: inherit; font-size: 13.5px; }
+  .rq-list li:first-child .rq-item { border-top: none; }
+  .rq-item:hover .rq-title, .rq-item:focus-visible .rq-title { color: var(--accent); text-decoration: underline; }
+  .rq-title { font-weight: 700; }
+  .rq-reason { display: block; font-size: 12px; margin-top: 2px; }
   .review-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; }
   .review-btn { display: inline-block; padding: 2px 10px; border-radius: 7px; font-weight: 700; text-decoration: none !important; border: 1px solid var(--border); }
   .review-btn.ok { color: #047857; background: color-mix(in srgb, #10b981 12%, transparent); }
@@ -725,6 +736,7 @@
   <div id="view-schedule" style="display:none;">
     <div class="simple-headline">다음 발표는 언제인가요?</div>
     <div class="simple-subline" id="schedule-simple-subline"></div>
+    <section class="panel card review-queue" id="cal-review-queue" style="display:none;"></section>
     <section class="panel card" id="calendar-section">
       <h2>📅 발표일정</h2>
       <div id="cal-controls">
@@ -2812,7 +2824,46 @@
   // ---- 일정(질문 중심 간단 화면) — 기존 달력/다음 14일 목록은 그대로 두고
   // 맨 위에 "가장 가까운 발표가 언제인지" 한 줄만 추가한다 ----
   // ==================================================================
+  // 일정 탭 맨 위: 아직 사람이 판정하지 않은 달력 해석('확인 필요') 목록
+  function renderCalReviewQueue() {
+    var box = document.getElementById("cal-review-queue");
+    var notes = state.calNotes || {};
+    var keys = Object.keys(notes).filter(function (k) { return notes[k].status === "review" && !notes[k].human; })
+      .sort(function (a, b) { return notes[a].release_date < notes[b].release_date ? 1 : -1; });
+    if (!keys.length) { box.style.display = "none"; return; }
+    box.style.display = "";
+    box.innerHTML = "<h3>검토할 항목 <span class=\"rq-count\">" + keys.length + "</span></h3>" +
+      "<div class=\"muted\" style=\"margin-bottom:8px;\">AI가 기사 연결이나 해석에 자신이 없어 사람 확인을 맡긴 발표예요. 눌러서 내용을 보고 승인·거절해 주세요.</div>" +
+      "<ul class=\"rq-list\">" + keys.map(function (k) {
+        var n = notes[k];
+        var reason = (n.reason || "").split(" / 자동 검사")[0];
+        if (reason.length > 90) reason = reason.slice(0, 90) + "…";
+        return "<li><button type=\"button\" class=\"rq-item\" data-key=\"" + escapeHtml(k) + "\">" +
+          "<span class=\"rq-title\">" + escapeHtml(n.country + " " + n.indicator) + "</span>" +
+          "<span class=\"muted\"> · 발표 " + escapeHtml(fmtMonthDay(n.release_date)) + "</span>" +
+          "<span class=\"rq-reason muted\">" + escapeHtml(reason) + "</span></button></li>";
+      }).join("") + "</ul>";
+    Array.prototype.forEach.call(box.querySelectorAll(".rq-item"), function (btn) {
+      btn.addEventListener("click", function () { openCalNote(btn.dataset.key); });
+    });
+  }
+
+  // 검토 목록에서 누르면 해당 달로 옮겨 그 일정의 상세를 연다
+  function openCalNote(key) {
+    var n = (state.calNotes || {})[key];
+    if (!n) return;
+    if (state.calScope === "country" && n.country !== state.country) setCalScope("all");
+    var d = n.release_date.split("-");
+    state.calCursor = { year: +d[0], month: +d[1] - 1 };
+    renderMonthCalendar();
+    var tag = null;
+    Array.prototype.forEach.call(document.querySelectorAll(".cal-event"), function (t) { if (t.dataset.key === key) tag = t; });
+    showCalDetail({ date: n.release_date, country: n.country, indicator: n.indicator, period: n.period }, tag);
+    document.getElementById("cal-detail").scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
   function renderScheduleHeadline() {
+    renderCalReviewQueue();
     var el = document.getElementById("schedule-simple-subline");
     var today = new Date(); today.setHours(0, 0, 0, 0);
     var evs = state.events.filter(function (e) { return new Date(e.date) >= today; })
@@ -3088,6 +3139,7 @@
         tag.title = e.country + " " + e.indicator + (e.note ? " - " + e.note : "") + (isPast ? " (지난 발표)" : "");
         tag.textContent = e.country + " " + e.indicator;
         var noteKey = calNoteKey(e);
+        tag.dataset.key = noteKey;
         if (state.calNotes && state.calNotes[noteKey]) tag.className += " has-note";
         tag.tabIndex = 0;
         tag.setAttribute("role", "button");
