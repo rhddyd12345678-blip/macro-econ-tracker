@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: ["매크로 지표 자동 업데이트"]
+    workflows: ["매크로 지표 자동 업데이트", "사람 판정 반영"]
     types: [completed]
     branches: [main]
   workflow_dispatch: {}

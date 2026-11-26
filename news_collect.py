@@ -758,7 +758,29 @@ def main():
         log(f"[달력] 실패: {e!r}")
 
 
+def apply_reviews_only():
+    """검색·AI 없이 사람 판정만 news.json / calendar_notes.json 에 다시 반영한다.
+    사이트의 [승인]/[거절] → GitHub 이슈 → review.yml 에서 쓴다."""
+    reviews = load_reviews()
+    news = json.load(open(NEWS_JSON, encoding="utf-8"))
+    for it in news.get("items", []):
+        apply_review(it, reviews.get(("홈", it["key"])))
+    news["review_stats"] = review_stats(reviews)
+    with open(NEWS_JSON, "w", encoding="utf-8") as f:
+        json.dump(news, f, ensure_ascii=False, indent=1)
+    if os.path.exists(CAL_JSON):
+        cal = json.load(open(CAL_JSON, encoding="utf-8"))
+        for k, v in cal.get("notes", {}).items():
+            apply_review(v, reviews.get(("달력", k)))
+        with open(CAL_JSON, "w", encoding="utf-8") as f:
+            json.dump(cal, f, ensure_ascii=False, indent=1)
+    log(f"사람 판정 {len(reviews)}건 반영")
+
+
 if __name__ == "__main__":
+    if "--apply-reviews-only" in sys.argv:
+        apply_reviews_only()
+        sys.exit(0)
     try:
         main()
     except Exception as e:  # 뉴스는 부가 기능 — 실패해도 지표 업데이트를 막지 않는다

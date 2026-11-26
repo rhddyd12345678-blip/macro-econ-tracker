@@ -289,6 +289,11 @@
   .cal-detail ul { margin: 4px 0 0; padding-left: 18px; }
   .cal-detail a { color: var(--accent); text-decoration: none; overflow-wrap: anywhere; }
   .cal-detail a:hover { text-decoration: underline; }
+  .review-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; }
+  .review-btn { display: inline-block; padding: 2px 10px; border-radius: 7px; font-weight: 700; text-decoration: none !important; border: 1px solid var(--border); }
+  .review-btn.ok { color: #047857; background: color-mix(in srgb, #10b981 12%, transparent); }
+  .review-btn.no { color: #b91c1c; background: color-mix(in srgb, #ef4444 10%, transparent); }
+  .review-btn:hover { filter: brightness(1.1); }
   .gap-note { font-size: 11.5px; margin: -4px 0 8px; }
   .cal-detail .cd-close { float: right; background: none; border: 1px solid var(--border); color: var(--muted);
     border-radius: 7px; padding: 2px 9px; cursor: pointer; font-size: 12px; }
@@ -2185,7 +2190,11 @@
   // 없으면 사이트에서 직접 계산한 목록을 쓴다.
   function homeMoverList() {
     var items = state.news && state.news.items;
-    if (items && items.length) return { list: items.slice(0, 3), withNews: true };
+    // 상위 3개 + 아직 사람이 판정하지 않은 '확인 필요' 항목은 순위와 상관없이 보여준다(검토할 수 있게)
+    if (items && items.length) {
+      var extra = items.slice(3).filter(function (m) { return m.status === "review" && !m.human; });
+      return { list: items.slice(0, 3).concat(extra), withNews: true };
+    }
     return { list: computeHomeMovers(), withNews: false };
   }
 
@@ -2223,7 +2232,26 @@
     }).join("");
     var why = !human && m.status === "review" && m.reason
       ? "<div class='news-reason muted'>왜 확인이 필요한가요? " + escapeHtml(m.reason) + "</div>" : "";
-    return "<div class='mover-news'>" + badge + summary + "<ul class='news-links'>" + links + "</ul>" + why + memo + "</div>";
+    var actions = !human && m.status === "review" && m.key
+      ? reviewButtonsHtml("홈", m.key, m.country + " " + m.indicator) : "";
+    return "<div class='mover-news'>" + badge + summary + "<ul class='news-links'>" + links + "</ul>" + why + memo + actions + "</div>";
+  }
+
+  // [승인]/[거절] → 판정 내용이 미리 채워진 GitHub 이슈 작성 화면을 연다.
+  // 제출하면 review.yml 이 판정을 기록하고 사이트에 반영한다(저장소 주인이 연 이슈만 받음).
+  var REVIEW_REPO = "rhddyd12345678-blip/macro-econ-tracker";
+  function reviewIssueUrl(target, key, label, decision) {
+    var title = "[검토] " + decision + ": " + label + " (" + target + ")";
+    var body = "메모: (여기에 판단 이유를 한 줄로 적어 주세요)\n\n" +
+      "위 '메모' 줄만 고치고 제출하세요. 아래 블록은 지우지 마세요. 제출하면 몇 분 뒤 사이트에 반영돼요.\n\n" +
+      "<!-- review\n대상: " + target + "\n지표키: " + key + "\n판정: " + decision + "\n-->";
+    return "https://github.com/" + REVIEW_REPO + "/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body);
+  }
+  function reviewButtonsHtml(target, key, label) {
+    return "<div class=\"review-actions\"><span class=\"muted\">판정하기:</span>" +
+      "<a class=\"review-btn ok\" href=\"" + escapeHtml(reviewIssueUrl(target, key, label, "승인")) + "\" target=\"_blank\" rel=\"noopener noreferrer\">승인</a>" +
+      "<a class=\"review-btn no\" href=\"" + escapeHtml(reviewIssueUrl(target, key, label, "거절")) + "\" target=\"_blank\" rel=\"noopener noreferrer\">거절</a>" +
+      "<span class=\"muted\">GitHub 이슈로 제출돼요</span></div>";
   }
 
   // 사람 검토 누적: AI가 '연결'로 판단한 것 중 사람이 맞다고 한 비율
@@ -2991,6 +3019,7 @@
           }).join("") + "</ul>" +
           (!human && note.status === "review" && note.reason ? "<div class=\"muted\">왜 확인이 필요한가요? " + escapeHtml(note.reason) + "</div>" : "") +
           (human && human.memo ? "<div class=\"muted\">검토 메모: " + escapeHtml(human.memo) + "</div>" : "") +
+          (!human && note.status === "review" ? reviewButtonsHtml("달력", calNoteKey(e), e.country + " " + e.indicator) : "") +
           "</div>";
       } else {
         h += "<div class=\"cd-block muted\">발표일 앞뒤로 관련 기사를 찾지 못했어요.</div>";

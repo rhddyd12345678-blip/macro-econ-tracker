@@ -15,6 +15,11 @@ on:
 permissions:
   contents: write
 
+# 사람 판정 반영(review.yml)과 동시에 데이터 파일을 쓰지 않도록 한 줄로 세운다
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest

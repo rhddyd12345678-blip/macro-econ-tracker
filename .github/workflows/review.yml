@@ -1,0 +1,67 @@
+name: 사람 판정 반영
+
+# 사이트의 [승인]/[거절] 버튼 → GitHub 이슈 작성 화면(판정 내용 미리 채움) → 제출하면 여기서 처리.
+# 공개 저장소라 누구나 이슈를 열 수 있으므로, 저장소 주인이 연 '[검토]' 이슈만 판정으로 받는다.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+# 매일 자동 업데이트와 동시에 데이터 파일을 쓰지 않도록 한 줄로 세운다
+concurrency:
+  group: data-write
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: startsWith(github.event.issue.title, '[검토]') && github.event.issue.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 패키지 설치
+        run: pip install requests==2.32.5 python-dotenv==1.2.1
+
+      - name: 판정 기록
+        id: rec
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}  # 본문은 환경변수로만 넘긴다(명령에 끼워 넣지 않음)
+        run: |
+          set +e
+          python3 review_from_issue.py > /tmp/result.txt
+          echo "ok=$?" >> "$GITHUB_OUTPUT"
+          cat /tmp/result.txt
+
+      - name: 사이트 데이터에 반영
+        if: steps.rec.outputs.ok == '0'
+        run: python3 news_collect.py --apply-reviews-only
+
+      - name: 커밋 및 푸시
+        if: steps.rec.outputs.ok == '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/news_review.csv site/data/news.json site/data/calendar_notes.json
+          git commit -m "chore: 사람 판정 반영 (#${{ github.event.issue.number }})"
+          for i in 1 2 3; do git pull --rebase && git push && break; sleep 5; done
+
+      - name: 이슈에 결과 남기고 닫기
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OK: ${{ steps.rec.outputs.ok }}
+          NUM: ${{ github.event.issue.number }}
+        run: |
+          if [ ! -s /tmp/result.txt ]; then echo "처리 중 오류가 났어요. Actions 로그를 확인해 주세요." > /tmp/result.txt; fi
+          if [ "$OK" = "0" ]; then echo "" >> /tmp/result.txt; echo "몇 분 뒤 사이트에 반영돼요." >> /tmp/result.txt; fi
+          gh issue comment "$NUM" --repo "$GITHUB_REPOSITORY" --body-file /tmp/result.txt
+          if [ "$OK" = "0" ]; then gh issue close "$NUM" --repo "$GITHUB_REPOSITORY"; fi
