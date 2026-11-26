@@ -400,6 +400,54 @@ def check_result(result, candidates, banned):
     return ids, summary, status, reason
 
 
+# ---- 사람 검토 (HITL) ----
+# data/news_review.csv 에 사람이 내린 판정을 적는다(review.py 로 추가).
+#   지표키, 판정(승인/거절), AI판정(검토 당시 AI 판정), 메모, 검토일
+# - 승인: 사이트에 '사람 확인'으로 연결 표시
+# - 거절: 기사를 숨기고 '사람이 확인한 결과 관련 기사가 없어요'로 표시
+# AI 판정은 ai_status 에 따로 남겨, 사람 판정과 얼마나 일치했는지 셀 수 있게 한다.
+REVIEW_CSV = os.path.join(ROOT, "data", "news_review.csv")
+REVIEW_FIELDS = ["지표키", "판정", "AI판정", "메모", "검토일"]
+
+
+def load_reviews():
+    if not os.path.exists(REVIEW_CSV):
+        return {}
+    out = {}
+    with open(REVIEW_CSV, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row.get("판정") in ("승인", "거절") and row.get("지표키"):
+                out[row["지표키"]] = row  # 같은 지표를 다시 검토하면 마지막 판정이 이긴다
+    return out
+
+
+def apply_review(item, review):
+    """AI 판정(ai_status) 위에 사람 판정을 덮는다. 여러 번 실행해도 결과가 같다."""
+    item.setdefault("ai_status", item.get("status"))
+    item["status"] = item["ai_status"]
+    item.pop("human", None)
+    if not review:
+        return
+    item["human"] = {"decision": review["판정"], "memo": review.get("메모", ""), "date": review.get("검토일", "")}
+    item["status"] = "linked" if review["판정"] == "승인" else "none"
+
+
+def review_stats(reviews):
+    """사람 검토 기록으로 AI 판정이 얼마나 맞았는지 센다."""
+    s = {"total": len(reviews), "linked_approved": 0, "linked_rejected": 0,
+         "review_approved": 0, "review_rejected": 0}
+    for r in reviews.values():
+        ai = r.get("AI판정")
+        ok = r["판정"] == "승인"
+        if ai == "linked":
+            s["linked_approved" if ok else "linked_rejected"] += 1
+        elif ai == "review":
+            s["review_approved" if ok else "review_rejected"] += 1
+    checked = s["linked_approved"] + s["linked_rejected"]
+    s["linked_precision"] = round(s["linked_approved"] / checked, 3) if checked else None
+    return s
+
+
 # ---- 메인 ----
 def main():
     today = date.today()
@@ -461,13 +509,23 @@ def main():
                 ids, summary, status, reason = check_result(result, candidates, banned)
                 item.update({"status": status, "summary": summary, "reason": reason,
                              "articles": [candidates[i] for i in ids], "ai": True})
+        item["ai_status"] = item["status"]
         items.append(item)
         log(f"{m['key']}: {item['status']} ({len(item['articles'])}건, {provider})")
+
+    # ---- 사람 검토 반영 (HITL) ----
+    reviews = load_reviews()
+    for it in items:
+        apply_review(it, reviews.get(it["key"]))
+    applied = sum(1 for it in items if it.get("human"))
+    if applied:
+        log(f"사람 검토 반영 {applied}건")
 
     out = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
         "model": MODEL if client else None,
         "items": items,
+        "review_stats": review_stats(reviews),
     }
     with open(NEWS_JSON, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
