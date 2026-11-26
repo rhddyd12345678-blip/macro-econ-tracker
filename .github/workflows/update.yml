@@ -2,7 +2,9 @@ name: 매크로 지표 자동 업데이트
 
 on:
   schedule:
-    - cron: "0 22 * * *"  # UTC 22:00 = KST 07:00
+    # GitHub 예약 실행은 혼잡 시 3.5~7.5시간 늦게 시작됨(2026-11 실측) → 아침 7시(KST) 전에 끝나도록
+    # 밤 23:17 KST로 예약. 정각은 혼잡이 심해 17분으로 피함. 미국 지표(22:30 KST 발표)도 반영됨.
+    - cron: "17 14 * * *"  # UTC 14:17 = KST 23:17
   workflow_dispatch:
     inputs:
       force_news:
