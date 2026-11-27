@@ -1,6 +1,46 @@
 {
- "generated_at": "2026-11-26 23:05",
+ "generated_at": "2026-11-27 22:46",
  "notes": {
+  "한국|기준금리|2026-11-26": {
+   "country": "한국",
+   "indicator": "기준금리",
+   "period": "2026-11-26",
+   "release_date": "2026-11-26",
+   "value": 3.25,
+   "prev": 3.0,
+   "diff": 0.25,
+   "unit": "%p",
+   "hold": false,
+   "basis": "prev",
+   "summary": "한은이 반도체 호황과 물가 부담 속에 기준금리를 3.25%로 올렸고, 내년 성장률 전망은 4.1%로 높였다고 보도됐어요.",
+   "meaning": "기준금리를 올렸다는 건 돈을 빌리는 비용을 높여서 과열된 수요와 물가를 누르겠다는 긴축 신호로 읽혀요. 물가가 2.82%로 목표 2%보다 높고 직전 결정에 이어 연달아 올린 만큼, 한은이 물가를 아직 충분히 잡지 못했다고 본다고 해석할 수 있어요. 앞으로도 금리를 쉽게 내리기보다는 높은 수준을 유지할 여지가 커졌다고 볼 수 있어요.",
+   "status": "linked",
+   "reason": "발표 당일 나온 여러 기사가 3.0%에서 3.25%로 올린 인상을 직접 다뤘어요. 그중 배경(반도체·물가)과 성장률 전망까지 담은 [7]·[10]·[5]를 골랐고, [0]의 '2년 만에'라는 표현은 직전 결정도 인상이었다는 배경 정보나 '올해 세 번째 인상'이라는 다른 보도([3]·[6])와 맞지 않아서 뺐어요.",
+   "articles": [
+    {
+     "title": "반도체 호황·물가 부담에…한은, 기준금리 3.25%로 인상(종합)",
+     "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFAyVjQ5a2pZQkZiQnFEQTRnVFRjVkxkVVVjNVNSZHhfdEdxcWZpOE94Q01tbGxTaS1EMzhLQmE4cWRUUTJfN1JVV3V0bk5sVTM1SkotTTR5cnk1dEHSAWBBVV95cUxPc21aSGtsRkhCWk5qcUN0V1o3SUFxNXFhRTlHMjVtMkdUVG1CZENjdHRqcFk2UXRBNkdIUjVWYWFXU0l0S3ZUYWw1eHpFVWZHMGFIM0NtZXJJN2FpTzUtcV8?oc=5",
+     "source": "연합뉴스",
+     "published": "2026-11-26"
+    },
+    {
+     "title": "[속보]한은, 기준금리 연 3.25%로 인상···내년 성장률 4.1%로 상향",
+     "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBiYjMzLXZKa0FWOHZPOXJVN015Mk9KMFBWVmEycjdpY2tnUkt1LVhoaXNmcEJXSWw4Rk1GcW9uRE4tcFpFUFUwSTVNQkNENjl5bGdjNjVfaUhSd9IBX0FVX3lxTE0wekFmem5ENkx2YmJPTHY0VnIycGtDakpCcVl0UjlSYjNpaVlzdE5qbEdVZFJ0dG82d19YRXF5R1hlTU1VYlVPenRDQzh6Vlg4SUxpcF8yWW5MblZqLU8w?oc=5",
+     "source": "경향신문",
+     "published": "2026-11-26"
+    },
+    {
+     "title": "한은, 기준금리 3.25%로 인상…내년 성장률 4.1% 전망",
+     "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9qSnJONXBfbnlPNGp2YnVGVnRYNkZGSER4UEpPbFJoOUlUMTFoSUsxWjBSUnMyOEZydUhqOTBFVFZYTElZNkx6Ukg5QTRLbnBaR1lILWFRTkFDb1k?oc=5",
+     "source": "KBS 뉴스",
+     "published": "2026-11-26"
+    }
+   ],
+   "provider": "구글 뉴스(한국어)",
+   "ai": true,
+   "checked_at": "2026-11-27",
+   "ai_status": "linked"
+  },
   "미국|PCE 근원|2026-10-01": {
    "country": "미국",
    "indicator": "PCE 근원",
